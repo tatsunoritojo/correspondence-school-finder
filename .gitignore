@@ -138,3 +138,6 @@ frontend-engineer-instructions.md
 qa-engineer-instructions.md
 setup-guide.md
 types.ts
+
+# Local Netlify folder
+.netlify

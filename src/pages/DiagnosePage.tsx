@@ -124,7 +124,6 @@ export const DiagnosePage: React.FC = () => {
                 onNext={handleNext}
                 onBack={handleBack}
                 isFirst={currentQuestionIndex === 0}
-                isLast={currentQuestionIndex === QUESTIONS.length - 1}
             />
         </div>
     );

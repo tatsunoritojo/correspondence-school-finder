@@ -10,7 +10,6 @@ interface QuestionCardProps {
     onNext: () => void;
     onBack: () => void;
     isFirst: boolean;
-    isLast: boolean;
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({
@@ -20,7 +19,6 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     onNext,
     onBack,
     isFirst,
-    isLast,
 }) => {
     const isKnockout = question.type === 'knockout';
 
