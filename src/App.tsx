@@ -1,4 +1,4 @@
-import React from "react";
+// React import not needed in React 17+
 import { HashRouter, Routes, Route } from "react-router-dom";
 import StartPage from "./pages/StartPage";
 import QuestionsPage from "./pages/QuestionsPage";

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { QuestionCard } from '../components/QuestionCard';
 import { QUESTIONS } from '../data/questions';
 import { Answers, AnswerValue, AxisId, DiagnosticResult } from '../types';
 import { calculateScores } from '../lib/scoring';
-import { loadChildResult } from '../lib/storage';
+import { LocalStorageRepository } from '../lib/storage';
 import { Loader2 } from 'lucide-react';
 
-export const DiagnosePage: React.FC = () => {
+export const DiagnosePage = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const childId = searchParams.get('child_id');
@@ -26,14 +26,15 @@ export const DiagnosePage: React.FC = () => {
             return;
         }
 
-        const data = loadChildResult(childId);
-        if (data) {
-            setChildResult(data);
-        } else {
-            alert('データが見つかりませんでした。');
-            navigate('/');
-        }
-        setIsLoading(false);
+        LocalStorageRepository.loadData(childId).then(data => {
+            if (data.child) {
+                setChildResult(data.child);
+            } else {
+                alert('データが見つかりませんでした。');
+                navigate('/');
+            }
+            setIsLoading(false);
+        });
     }, [childId, navigate]);
 
     if (isLoading || !childResult) {
@@ -73,7 +74,7 @@ export const DiagnosePage: React.FC = () => {
     };
 
     const finishDiagnosis = () => {
-        const scores = calculateScores(answers, QUESTIONS, knockoutAxis);
+        const scores = calculateScores(answers, knockoutAxis);
         const parentResult: DiagnosticResult = {
             role: 'parent',
             answers,

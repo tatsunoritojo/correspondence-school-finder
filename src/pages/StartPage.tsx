@@ -1,4 +1,4 @@
-import React from "react";
+// React import not needed in React 17+
 import { useNavigate } from "react-router-dom";
 import { User, Users, ExternalLink } from "lucide-react";
 

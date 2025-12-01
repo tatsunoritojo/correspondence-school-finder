@@ -11,11 +11,12 @@ export type AxisId =
 export interface Axis {
   id: AxisId;
   name: string;
-  nameEn: string;
+  nameEn?: string;
   definition: string;
-  shortDescription: string;
-  chartLabel: string; // Ultra short label for radar chart
-  psychologicalContext: string; // For internal logic/AI context
+  description?: string;
+  shortDescription?: string;
+  chartLabel?: string; // Ultra short label for radar chart
+  psychologicalContext?: string; // For internal logic/AI context
   osChecklist: string[]; // Open School Questions
 }
 
@@ -31,6 +32,7 @@ export interface Question {
 
 export type AnswerValue = 1 | 2 | 3 | 4 | 5;
 export type AnswerMap = Record<QuestionId, AnswerValue>;
+export type Answers = AnswerMap; // Alias for compatibility
 export type ScoreMap = Record<AxisId, number>;
 
 export interface DiagnosisResult {
@@ -40,6 +42,9 @@ export interface DiagnosisResult {
   scores: ScoreMap;
   timestamp: number;
 }
+
+// Alias for compatibility
+export type DiagnosticResult = DiagnosisResult;
 
 export interface ParentChildData {
   child: DiagnosisResult | null;
