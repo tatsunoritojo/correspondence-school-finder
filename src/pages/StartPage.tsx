@@ -1,61 +1,92 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { User, Users } from 'lucide-react';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { User, Users, ExternalLink } from "lucide-react";
 
-export const StartPage: React.FC = () => {
-    const navigate = useNavigate();
+const StartPage = () => {
+  const navigate = useNavigate();
 
-    const handleStart = (role: 'child' | 'parent') => {
-        navigate(`/questions?role=${role}`);
-    };
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
+       {/* Background Decoration: Warm Blobs */}
+       <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-orange-200/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+       <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-yellow-200/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
 
-    return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-center p-4">
-            <div className="max-w-md w-full text-center space-y-8 animate-fade-in">
-                <div className="space-y-2">
-                    <h1 className="text-3xl font-bold text-gray-900">通信制高校 診断</h1>
-                    <p className="text-gray-600">
-                        あなたの価値観や優先したいことを整理して、<br />
-                        自分に合った学校選びの軸を見つけましょう。
-                    </p>
-                </div>
-
-                <div className="grid gap-4">
-                    <button
-                        onClick={() => handleStart('child')}
-                        className="group relative bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all border-2 border-transparent hover:border-blue-500 text-left"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-blue-100 text-blue-600 rounded-full group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                <User size={32} />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-gray-900">生徒として診断する</h3>
-                                <p className="text-sm text-gray-500">自分の気持ちを整理したい方</p>
-                            </div>
-                        </div>
-                    </button>
-
-                    <button
-                        onClick={() => handleStart('parent')}
-                        className="group relative bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all border-2 border-transparent hover:border-green-500 text-left"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-green-100 text-green-600 rounded-full group-hover:bg-green-600 group-hover:text-white transition-colors">
-                                <Users size={32} />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-gray-900">保護者として診断する</h3>
-                                <p className="text-sm text-gray-500">お子様の学校選びを考えたい方</p>
-                            </div>
-                        </div>
-                    </button>
-                </div>
-
-                <p className="text-xs text-gray-400">
-                    所要時間：約3分（全17問）
-                </p>
-            </div>
+      <div className="glass-card p-8 md:p-12 rounded-[2.5rem] max-w-lg w-full text-center relative z-10 shadow-xl border-white/60 mb-8">
+        <div className="mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-stone-700 mb-2 tracking-tight">
+            通信制高校<span className="text-orange-500">診断</span>
+            </h1>
+            <p className="text-stone-500 text-sm leading-relaxed">
+            あなたの価値観や「これから」を整理して、<br/>
+            自分らしい学校選びのヒントを見つけませんか？
+            </p>
         </div>
-    );
+
+        <div className="flex flex-col gap-4">
+          <button 
+            onClick={() => navigate("/questions?role=child")}
+            className="group relative bg-white hover:bg-orange-50 border-2 border-transparent hover:border-orange-200 text-left p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4"
+          >
+            <div className="w-12 h-12 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <User size={24} />
+            </div>
+            <div>
+                <span className="block font-bold text-lg text-stone-700 group-hover:text-orange-700 transition-colors">生徒として診断する</span>
+                <span className="block text-xs text-stone-400">自分の気持ちを整理したい方</span>
+            </div>
+          </button>
+
+          <button 
+            onClick={() => navigate("/questions?role=parent")}
+            className="group relative bg-white hover:bg-teal-50 border-2 border-transparent hover:border-teal-200 text-left p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4"
+          >
+            <div className="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Users size={24} />
+            </div>
+            <div>
+                <span className="block font-bold text-lg text-stone-700 group-hover:text-teal-700 transition-colors">保護者として診断する</span>
+                <span className="block text-xs text-stone-400">お子様の学校選びを考えたい方</span>
+            </div>
+          </button>
+        </div>
+
+        <div className="mt-8 text-xs text-stone-400">
+            所要時間：約3分（全17問）
+        </div>
+      </div>
+      
+      {/* Footer Branding */}
+      <footer className="relative z-10 text-center">
+        <p className="text-[10px] text-stone-400 mb-1">Produced by</p>
+        <a 
+          href="https://onedrop2025.wixsite.com/my-site-1" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-stone-600 font-bold hover:text-orange-600 transition-colors bg-white/40 px-4 py-2 rounded-full backdrop-blur-sm border border-white/50"
+        >
+          <span>One Drop</span>
+          <span className="w-px h-3 bg-stone-300 mx-1"></span>
+          <span className="text-xs font-normal">東広島の学習塾</span>
+          <ExternalLink size={12} className="opacity-50" />
+        </a>
+      </footer>
+
+      <style>{`
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 10s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+      `}</style>
+    </div>
+  );
 };
+
+export default StartPage;

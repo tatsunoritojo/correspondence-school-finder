@@ -1,42 +1,47 @@
-export type Role = 'child' | 'parent';
-
 export type AxisId =
-    | 'AX01' // Schooling Frequency Tolerance
-    | 'AX02' // Cost Sensitivity
-    | 'AX03' // Online Learning Aptitude
-    | 'AX04' // Self-Management vs. Support Needs
-    | 'AX05' // Career Orientation
-    | 'AX06' // School Life Experience Priority
-    | 'AX07' // Mental Health Support Needs
-    | 'AX08'; // Specialized Course Interest
+  | "AX01" // Schooling Frequency Tolerance
+  | "AX02" // Cost Sensitivity
+  | "AX03" // Online Learning Aptitude
+  | "AX04" // Self-Management vs. Support Needs
+  | "AX05" // Career Orientation
+  | "AX06" // School Life Experience Priority
+  | "AX07" // Mental Health Support Needs
+  | "AX08"; // Specialized Course Interest
 
 export interface Axis {
-    id: AxisId;
-    name: string;
-    definition: string;
-    description: string; // For card UI
-    osChecklist: string[]; // Open School questions
+  id: AxisId;
+  name: string;
+  nameEn: string;
+  definition: string;
+  shortDescription: string;
+  chartLabel: string; // Ultra short label for radar chart
+  psychologicalContext: string; // For internal logic/AI context
+  osChecklist: string[]; // Open School Questions
 }
 
-export type QuestionId = string; // e.g., "Q1-1", "Q0-1"
+export type QuestionId = string;
+export type QuestionType = "knockout" | "normal";
 
 export interface Question {
-    id: QuestionId;
-    text: string;
-    type: 'knockout' | 'normal';
-    axis: AxisId | null; // null for knockout
+  id: QuestionId;
+  type: QuestionType;
+  axis: AxisId | null; // null for knockout
+  text: string;
 }
 
 export type AnswerValue = 1 | 2 | 3 | 4 | 5;
-
-export type Answers = Record<QuestionId, AnswerValue>;
-
+export type AnswerMap = Record<QuestionId, AnswerValue>;
 export type ScoreMap = Record<AxisId, number>;
 
-export interface DiagnosticResult {
-    role: Role;
-    answers: Answers;
-    knockoutAxis: AxisId | null;
-    scores: ScoreMap;
-    timestamp: number;
+export interface DiagnosisResult {
+  role: "child" | "parent";
+  answers: AnswerMap;
+  knockoutAxis: AxisId | null;
+  scores: ScoreMap;
+  timestamp: number;
+}
+
+export interface ParentChildData {
+  child: DiagnosisResult | null;
+  parent: DiagnosisResult | null;
 }

@@ -1,122 +1,371 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { RadarChart } from '../components/RadarChart';
-import { AxisCard } from '../components/AxisCard';
-import { SaveButton } from '../components/SaveButton';
-import { AXES } from '../data/axes';
-import { loadLocalProgress, saveChildResult } from '../lib/storage';
-import { DiagnosticResult } from '../types';
-import { Share2 } from 'lucide-react';
+import React, { useEffect, useState, useRef } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import html2canvas from "html2canvas";
+import { LocalStorageRepository } from "../lib/storage";
+import { getPersonalizedAdvice, AIAdvice } from "../lib/gemini";
+import { AXES } from "../data/constants";
+import { Axis, ParentChildData } from "../types";
+import RadarChart from "../components/RadarChart";
+import ResultCard from "../components/ResultCard";
+import { Share2, Download, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, ChevronUp, ExternalLink, MapPin, X, ChevronRight } from "lucide-react";
 
-export const ResultPage: React.FC = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [result, setResult] = useState<DiagnosticResult | null>(null);
-    const [childResult, setChildResult] = useState<DiagnosticResult | null>(null); // For parent view
+const ResultPage = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const childId = searchParams.get("child_id");
+  const role = (searchParams.get("role") as "child" | "parent") || "child";
+  
+  const [data, setData] = useState<ParentChildData | null>(null);
+  const [aiAdvice, setAiAdvice] = useState<AIAdvice | null>(null);
+  const [loadingAdvice, setLoadingAdvice] = useState(false);
+  const [showAllAxes, setShowAllAxes] = useState(false); 
+  
+  // Scroll Banner State
+  const [showFloatBanner, setShowFloatBanner] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  
+  const resultRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        // Try to get data from navigation state first (for parent flow)
-        if (location.state?.result) {
-            setResult(location.state.result);
-            if (location.state.childResult) {
-                setChildResult(location.state.childResult);
-            }
-        } else {
-            // Fallback to local storage
-            const saved = loadLocalProgress();
-            if (saved) {
-                setResult(saved);
-            } else {
-                navigate('/');
+  useEffect(() => {
+    if (childId) {
+      LocalStorageRepository.loadData(childId).then(async (loadedData) => {
+        setData(loadedData as any);
+        
+        // Generate AI Advice if viewing own result
+        const myResult = role === "child" ? loadedData.child : loadedData.parent;
+        if (myResult && !aiAdvice && !loadingAdvice) {
+            setLoadingAdvice(true);
+            try {
+                const advice = await getPersonalizedAdvice(myResult.scores, role);
+                setAiAdvice(advice);
+            } finally {
+                setLoadingAdvice(false);
             }
         }
-    }, [navigate, location.state]);
+      });
+    }
+  }, [childId, role]);
 
-    if (!result) return null;
-
-    const isParentView = !!childResult;
-    const role = result.role;
-
-    const handleShare = () => {
-        if (role === 'child') {
-            const id = saveChildResult(result);
-            const url = `${window.location.origin}/diagnose?child_id=${id}`;
-            navigator.clipboard.writeText(url);
-            alert('保護者共有用のURLをコピーしました！\nLINEやメールで送って、保護者の方にも診断してもらいましょう。');
-        }
+  // Scroll Listener for Floating Banner
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show banner after scrolling 400px
+      if (window.scrollY > 400) {
+        setShowFloatBanner(true);
+      } else {
+        setShowFloatBanner(false);
+      }
     };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4 pb-24">
-            <div className="max-w-md mx-auto space-y-8 animate-fade-in">
+  if (!data) return (
+    <div className="min-h-screen flex items-center justify-center bg-orange-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-400"></div>
+    </div>
+  );
 
-                {/* Header */}
-                <div className="text-center space-y-2">
-                    <h1 className="text-2xl font-bold text-gray-900">診断結果</h1>
-                    <p className="text-sm text-gray-600">
-                        {isParentView
-                            ? '親子それぞれの価値観が可視化されました'
-                            : 'あなたの学校選びの軸が見えてきました'}
-                    </p>
-                </div>
+  const displayResult = role === "child" ? data.child : data.parent;
+  // Fallback to viewing child data if parent hasn't answered yet but opens the link
+  const finalDisplay = displayResult || data.child;
 
-                {/* Radar Chart Section */}
-                <div id="result-chart-section" className="bg-white p-4 rounded-2xl shadow-sm">
-                    <RadarChart
-                        childScores={isParentView ? childResult.scores : result.scores}
-                        parentScores={isParentView ? result.scores : undefined}
-                    />
-                </div>
+  if (!finalDisplay) return <div className="p-8 text-center text-stone-500">データが見つかりません</div>;
 
-                {/* Gap Analysis (Parent View Only) */}
-                {isParentView && (
-                    <div className="bg-orange-50 border border-orange-100 p-4 rounded-xl">
-                        <h3 className="font-bold text-orange-800 mb-2 flex items-center gap-2">
-                            <span>💡</span> 親子で話し合うポイント
-                        </h3>
-                        <p className="text-sm text-orange-700 leading-relaxed">
-                            チャートの形が大きく違う部分は、価値観がズレている可能性があります。
-                            お互いの考えを話し合ってみましょう。
-                        </p>
+  const childScores = data.child?.scores;
+  const parentScores = data.parent?.scores;
+
+  // Sorting and Filtering Logic
+  const currentScores = finalDisplay.scores;
+  const sortedAxes = [...AXES].sort((a, b) => currentScores[b.id] - currentScores[a.id]);
+
+  const THRESHOLD = 3.5;
+  const highScoringAxes = sortedAxes.filter(axis => currentScores[axis.id] >= THRESHOLD);
+  const visibleAxes = highScoringAxes.length > 0 ? highScoringAxes : sortedAxes.slice(0, 3);
+  const hiddenAxes = sortedAxes.filter(axis => !visibleAxes.includes(axis));
+
+  const handleDownload = async () => {
+    const wasHidden = !showAllAxes;
+    if (wasHidden && hiddenAxes.length > 0) {
+        setShowAllAxes(true);
+        await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
+    if (resultRef.current) {
+      const canvas = await html2canvas(resultRef.current, { 
+        scale: 2,
+        backgroundColor: "#fff7ed", // orange-50 hex equivalent
+      });
+      const image = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = `diagnosis-result-${role}.png`;
+      link.click();
+    }
+  };
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}${window.location.pathname}#/questions?role=parent&child_id=${childId}`;
+    navigator.clipboard.writeText(url);
+    alert("保護者用URLをコピーしました！LINEやメールで送ってください。");
+  };
+
+  return (
+    <div className="min-h-screen bg-orange-50/30 pb-28 relative">
+      <div className="max-w-3xl mx-auto p-6" ref={resultRef}>
+        
+        {/* Header */}
+        <div className="text-center mb-8 mt-4">
+          <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold mb-3 tracking-wider">
+            DIAGNOSIS REPORT
+          </span>
+          <h1 className="text-2xl md:text-3xl font-bold text-stone-700">
+            {role === "child" ? "あなたの学校選びの軸" : "お子様との価値観診断"}
+          </h1>
+          {data.parent && data.child && (
+             <p className="text-teal-600 font-bold mt-2 flex items-center justify-center gap-1 text-sm bg-teal-50 py-1 px-3 rounded-full inline-flex mx-auto mt-3">
+                <MessageCircle size={14} /> 親子マッチング完了
+             </p>
+          )}
+        </div>
+
+        {/* AI Advisor Section */}
+        {aiAdvice && (
+            <div className="glass-card p-6 md:p-8 rounded-3xl mb-8 border-t-4 border-orange-300 shadow-lg animate-fade-in-up">
+                <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-500">
+                        <Sparkles size={18} />
                     </div>
-                )}
-
-                {/* Axis Cards */}
-                <div className="space-y-4">
-                    <h2 className="font-bold text-gray-700 text-lg px-2">
-                        {isParentView ? 'あなたの重視ポイント' : 'あなたの重視ポイント詳細'}
-                    </h2>
-                    {AXES.map(axis => (
-                        <AxisCard
-                            key={axis.id}
-                            axis={axis}
-                            score={result.scores[axis.id]}
-                        />
-                    ))}
+                    <h2 className="font-bold text-lg text-stone-700">AI Advisor Gemini</h2>
                 </div>
+                <p className="text-stone-700 leading-relaxed mb-6 font-medium">
+                    {aiAdvice.summary}
+                </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div className="bg-orange-50/80 p-4 rounded-xl border border-orange-100">
+                        <span className="text-xs font-bold text-orange-600 block mb-1">YOUR STRENGTH</span>
+                        <p className="text-sm text-stone-700">{aiAdvice.strengthComment}</p>
+                    </div>
+                    <div className="bg-stone-100/50 p-4 rounded-xl">
+                        <span className="text-xs font-bold text-stone-500 block mb-1">ADVICE</span>
+                        <p className="text-sm text-stone-700">{aiAdvice.weaknessComment}</p>
+                    </div>
+                </div>
+            </div>
+        )}
 
-                {/* Actions */}
-                <div className="space-y-4">
-                    <SaveButton targetId="result-chart-section" fileName="school-diagnosis-chart" />
+        {/* Chart Section */}
+        <div className="glass-card p-6 rounded-3xl mb-8 relative overflow-hidden shadow-sm">
+           <h2 className="text-lg font-bold text-center mb-4 text-stone-600">バランスチャート</h2>
+           <RadarChart 
+             axes={AXES} 
+             childScores={childScores} 
+             parentScores={parentScores} 
+           />
+           {data.parent && data.child && (
+               <div className="mt-4 p-4 bg-white/60 rounded-xl border border-teal-100 text-center text-xs text-stone-600">
+                   <p>
+                       <span className="text-orange-500 font-bold">● 生徒</span> と 
+                       <span className="text-teal-500 font-bold ml-2">● 保護者</span>
+                   </p>
+                   <p className="mt-1">形が重ならない部分は、話し合うべきポイントです。</p>
+               </div>
+           )}
+        </div>
 
-                    {role === 'child' && !isParentView && (
-                        <button
-                            onClick={handleShare}
-                            className="w-full bg-green-500 text-white font-bold py-4 rounded-xl shadow-md hover:bg-green-600 transition-all flex items-center justify-center gap-2"
+        {/* Details Cards Section */}
+        <div className="space-y-6">
+            <h2 className="text-xl font-bold text-stone-700 ml-2 flex items-center gap-2">
+                <AlertCircle size={20} className="text-orange-400" />
+                {role === "child" ? "あなたが重視しているポイント" : "診断詳細"}
+            </h2>
+            
+            {/* High Priority (Visible) Items */}
+            <div className="space-y-6">
+                {visibleAxes.map((axis: Axis) => (
+                    <ResultCard 
+                        key={axis.id} 
+                        axis={axis} 
+                        score={finalDisplay.scores[axis.id]}
+                        role={role}
+                    />
+                ))}
+            </div>
+
+            {/* Hidden / Low Priority Items */}
+            {hiddenAxes.length > 0 && (
+                <div className="mt-8">
+                    {!showAllAxes ? (
+                        <button 
+                            onClick={() => setShowAllAxes(true)}
+                            className="w-full py-4 bg-white/50 hover:bg-white rounded-2xl border-2 border-dashed border-stone-300 text-stone-500 font-bold flex items-center justify-center gap-2 transition-all group"
                         >
-                            <Share2 size={20} />
-                            保護者にも診断してもらう
+                            他の項目も確認する
+                            <ChevronDown className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
                         </button>
-                    )}
+                    ) : (
+                        <div className="animate-fade-in-up space-y-6">
+                             <div className="flex items-center gap-4 py-2">
+                                <div className="h-px bg-stone-300 flex-1"></div>
+                                <span className="text-xs font-bold text-stone-400">その他の項目</span>
+                                <div className="h-px bg-stone-300 flex-1"></div>
+                             </div>
+                             
+                             {hiddenAxes.map((axis: Axis) => (
+                                <ResultCard 
+                                    key={axis.id} 
+                                    axis={axis} 
+                                    score={finalDisplay.scores[axis.id]}
+                                    role={role}
+                                />
+                             ))}
 
-                    <button
-                        onClick={() => navigate('/')}
-                        className="w-full bg-white text-gray-600 font-bold py-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-all"
+                            <button 
+                                onClick={() => setShowAllAxes(false)}
+                                className="w-full py-3 text-stone-400 hover:text-stone-600 font-medium text-sm flex items-center justify-center gap-1 transition-colors"
+                            >
+                                <ChevronUp className="w-4 h-4" />
+                                閉じる
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+
+        {/* One Drop Partner Banner */}
+        <div className="mt-12 pt-8 border-t border-stone-200/50">
+            <div className="bg-gradient-to-br from-white to-orange-50 rounded-2xl p-6 shadow-sm border border-orange-100 relative overflow-hidden group">
+                {/* Decorative circle */}
+                <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange-100 rounded-full opacity-50 group-hover:scale-110 transition-transform duration-500" />
+                
+                <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-2 text-orange-600 font-bold text-xs tracking-wider">
+                        <MapPin size={12} />
+                        東広島の学習塾
+                    </div>
+                    <h3 className="text-lg font-bold text-stone-700 mb-2">
+                        通信制高校選びや<br className="md:hidden"/>学習のサポートなら
+                    </h3>
+                    <p className="text-sm text-stone-600 mb-4 leading-relaxed">
+                        メンタル面の不安や、学校のレポート課題に寄り添う「One Drop」にご相談ください。
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-3">
+                        <a 
+                            href="https://onedrop2025.wixsite.com/my-site-1" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="bg-stone-700 hover:bg-stone-600 text-white text-xs font-bold px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors shadow-md"
+                        >
+                            公式サイトを見る
+                            <ExternalLink size={12} />
+                        </a>
+                        <a 
+                            href="https://www.instagram.com/onedrop.2025/" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="bg-white hover:bg-pink-50 text-stone-700 hover:text-pink-600 border border-stone-200 text-xs font-bold px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors"
+                        >
+                            Instagram
+                            <ExternalLink size={12} />
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <p className="text-[10px] text-center text-stone-400 mt-4">
+                Produced by One Drop
+            </p>
+        </div>
+
+      </div>
+
+      {/* Floating Action Bar */}
+      <div className="fixed bottom-6 left-0 w-full px-4 z-50 pointer-events-none">
+          <div className="max-w-2xl mx-auto glass-card-dark p-3 rounded-2xl shadow-2xl flex justify-between items-center gap-3 pointer-events-auto backdrop-blur-xl bg-stone-800/90 border border-stone-700">
+              <button 
+                onClick={handleDownload}
+                className="flex-1 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition"
+              >
+                  <Download size={18} />
+                  画像を保存
+              </button>
+              
+              {role === "child" && !data.parent && (
+                  <button 
+                    onClick={handleCopyLink}
+                    className="flex-1 bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-orange-500/30"
+                  >
+                      <Share2 size={18} />
+                      保護者に送る
+                  </button>
+              )}
+
+              <button 
+                onClick={() => {
+                    if(confirm("診断をやり直しますか？")) navigate("/");
+                }}
+                className="w-12 h-12 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center text-white transition"
+                title="最初に戻る"
+              >
+                  <RefreshCw size={18} />
+              </button>
+          </div>
+      </div>
+
+      {/* Slide-in Notification Banner (One Drop) */}
+      <div className={`fixed bottom-24 right-4 z-40 transition-all duration-500 transform ${showFloatBanner && !bannerDismissed ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
+        <div className="bg-white/95 backdrop-blur-md border border-orange-200 p-4 rounded-2xl shadow-xl max-w-[300px] relative animate-fade-in-up">
+            <button 
+                onClick={() => setBannerDismissed(true)} 
+                className="absolute -top-2 -left-2 bg-stone-400 text-white rounded-full p-1 hover:bg-stone-500 shadow-sm"
+                aria-label="閉じる"
+            >
+                <X size={12}/>
+            </button>
+            <div className="flex items-start gap-3">
+                <div className="bg-orange-100 p-2 rounded-full text-orange-600 shrink-0 mt-1">
+                    <MessageCircle size={20} />
+                </div>
+                <div>
+                    <p className="text-xs font-bold text-stone-600 mb-1">お困りなら相談してみませんか？</p>
+                    <p className="text-[10px] text-stone-500 mb-2 leading-tight">
+                        東広島の学習塾「One Drop」が、メンタル・学習の悩みをサポートします。
+                    </p>
+                    <a 
+                        href="https://onedrop2025.wixsite.com/my-site-1" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-xs text-orange-600 font-bold flex items-center gap-1 hover:underline"
                     >
-                        トップに戻る
-                    </button>
+                        詳細を見る <ChevronRight size={12} />
+                    </a>
                 </div>
             </div>
         </div>
-    );
+      </div>
+      
+      <style>{`
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        .glass-card-dark {
+            background: rgba(41, 37, 36, 0.9); /* stone-800 */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+      `}</style>
+    </div>
+  );
 };
+
+export default ResultPage;

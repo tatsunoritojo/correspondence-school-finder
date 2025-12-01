@@ -1,20 +1,21 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { StartPage } from './pages/StartPage';
-import { QuestionsPage } from './pages/QuestionsPage';
-import { ResultPage } from './pages/ResultPage';
-import { DiagnosePage } from './pages/DiagnosePage';
+import React from "react";
+import { HashRouter, Routes, Route } from "react-router-dom";
+import StartPage from "./pages/StartPage";
+import QuestionsPage from "./pages/QuestionsPage";
+import ResultPage from "./pages/ResultPage";
 
-function App() {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<StartPage />} />
-                <Route path="/questions" element={<QuestionsPage />} />
-                <Route path="/result" element={<ResultPage />} />
-                <Route path="/diagnose" element={<DiagnosePage />} />
-            </Routes>
-        </BrowserRouter>
-    );
-}
+const App = () => {
+  return (
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<StartPage />} />
+        <Route path="/questions" element={<QuestionsPage />} />
+        <Route path="/result" element={<ResultPage />} />
+        {/* Alias for parent entry */}
+        <Route path="/diagnose" element={<QuestionsPage />} /> 
+      </Routes>
+    </HashRouter>
+  );
+};
 
 export default App;

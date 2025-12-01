@@ -1,46 +1,50 @@
-import { DiagnosticResult } from '../types';
+import { DiagnosisResult, ParentChildData } from "../types";
 
-const STORAGE_PREFIX = 'correspondence_finder_';
+const STORAGE_PREFIX = "csf_diagnosis_";
 
-export function generateUUID(): string {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-        return crypto.randomUUID();
-    }
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
+export const LocalStorageRepository = {
+  /**
+   * Save diagnosis result for a specific child ID.
+   * If role is child, overwrites/creates the record.
+   * If role is parent, appends to the existing record.
+   */
+  async saveResult(childId: string, result: DiagnosisResult): Promise<void> {
+    const key = `${STORAGE_PREFIX}${childId}`;
+    
+    // Simulate async IO for future API compatibility
+    await new Promise(resolve => setTimeout(resolve, 50));
 
-export function saveChildResult(result: DiagnosticResult): string {
-    const id = generateUUID();
-    const key = `${STORAGE_PREFIX}child_${id}`;
-    localStorage.setItem(key, JSON.stringify(result));
-    return id;
-}
-
-export function loadChildResult(id: string): DiagnosticResult | null {
-    const key = `${STORAGE_PREFIX}child_${id}`;
-    const data = localStorage.getItem(key);
-    if (!data) return null;
     try {
-        return JSON.parse(data) as DiagnosticResult;
+      const existingStr = localStorage.getItem(key);
+      const data: ParentChildData = existingStr ? JSON.parse(existingStr) : { child: null, parent: null };
+
+      if (result.role === "child") {
+        data.child = result;
+      } else {
+        data.parent = result;
+      }
+
+      localStorage.setItem(key, JSON.stringify(data));
     } catch (e) {
-        console.error('Failed to parse child result', e);
-        return null;
+      console.error("Failed to save result", e);
+      throw e;
     }
-}
+  },
 
-export function saveLocalProgress(result: DiagnosticResult) {
-    localStorage.setItem(`${STORAGE_PREFIX}current_progress`, JSON.stringify(result));
-}
-
-export function loadLocalProgress(): DiagnosticResult | null {
-    const data = localStorage.getItem(`${STORAGE_PREFIX}current_progress`);
-    if (!data) return null;
+  /**
+   * Load the full parent-child data structure.
+   */
+  async loadData(childId: string): Promise<ParentChildData> {
+    const key = `${STORAGE_PREFIX}${childId}`;
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    const str = localStorage.getItem(key);
+    if (!str) return { child: null, parent: null };
+    
     try {
-        return JSON.parse(data) as DiagnosticResult;
+      return JSON.parse(str);
     } catch (e) {
-        return null;
+      return { child: null, parent: null };
     }
-}
+  }
+};
