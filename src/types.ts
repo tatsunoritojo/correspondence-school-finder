@@ -38,7 +38,7 @@ export type ScoreMap = Record<AxisId, number>;
 export interface DiagnosisResult {
   role: "child" | "parent";
   answers: AnswerMap;
-  knockoutAxis: AxisId | null;
+  knockoutAnswers: AxisId[];
   scores: ScoreMap;
   timestamp: number;
 }

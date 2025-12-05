@@ -9,12 +9,12 @@ import { ChevronRight, Check, ChevronLeft } from "lucide-react";
 const QuestionsPage = () => {
   const [searchParams] = useSearchParams();
   const role = (searchParams.get("role") as "child" | "parent") || "child";
-  const childIdParam = searchParams.get("child_id"); 
+  const childIdParam = searchParams.get("child_id");
 
   const navigate = useNavigate();
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<AnswerMap>({});
-  
+
   // Sort: Knockout first
   const sortedQuestions = [
     ...QUESTIONS.filter(q => q.type === "knockout"),
@@ -37,6 +37,29 @@ const QuestionsPage = () => {
     }
   };
 
+  const toggleKnockoutAnswer = (axisId: AxisId) => {
+    const currentVal = (answers[currentQ.id] as unknown as AxisId[]) || [];
+    let newVal: AxisId[];
+
+    if (currentVal.includes(axisId)) {
+      newVal = currentVal.filter(id => id !== axisId);
+    } else {
+      if (currentVal.length >= 5) return; // Max 5
+      newVal = [...currentVal, axisId];
+    }
+
+    setAnswers({ ...answers, [currentQ.id]: newVal as any });
+  };
+
+  const handleKnockoutNext = () => {
+    const currentVal = (answers[currentQ.id] as unknown as AxisId[]) || [];
+    if (currentVal.length < 1) return; // Min 1
+
+    if (currentIdx < sortedQuestions.length - 1) {
+      setCurrentIdx(currentIdx + 1);
+    }
+  };
+
   const handleBack = () => {
     if (currentIdx > 0) {
       setCurrentIdx(currentIdx - 1);
@@ -49,16 +72,16 @@ const QuestionsPage = () => {
   const finishDiagnosis = async (finalAnswers: AnswerMap) => {
     // Extract Knockout Axis
     const knockoutQ = QUESTIONS.find(q => q.type === "knockout");
-    // The value stored for knockout is the AxisId string
-    const knockoutAxis = finalAnswers[knockoutQ!.id] as unknown as AxisId;
+    // The value stored for knockout is the AxisId[]
+    const knockoutAnswers = (finalAnswers[knockoutQ!.id] as unknown as AxisId[]) || [];
 
-    const scores = calculateScores(finalAnswers, knockoutAxis);
-    
+    const scores = calculateScores(finalAnswers, knockoutAnswers);
+
     // Create Result Object
     const result: DiagnosisResult = {
       role,
       answers: finalAnswers,
-      knockoutAxis,
+      knockoutAnswers,
       scores,
       timestamp: Date.now()
     };
@@ -78,26 +101,26 @@ const QuestionsPage = () => {
       {/* Fixed Header with Blur Background */}
       <div className="fixed top-0 left-0 w-full z-20 bg-orange-50/95 backdrop-blur-md border-b border-orange-100/50 shadow-sm transition-all">
         <div className="max-w-xl mx-auto px-6 py-4">
-            <div className="flex items-center justify-between mb-3">
-                <button 
-                  onClick={handleBack}
-                  className="p-2 -ml-2 rounded-full hover:bg-orange-100 text-stone-500 hover:text-orange-600 transition-colors"
-                  aria-label="戻る"
-                >
-                  <ChevronLeft size={24} />
-                </button>
-                <div className="text-xs font-bold text-stone-400 tracking-wider">
-                    QUESTION {currentIdx + 1} / {sortedQuestions.length}
-                </div>
-                <div className="w-8" /> {/* Spacer for center alignment */}
+          <div className="flex items-center justify-between mb-3">
+            <button
+              onClick={handleBack}
+              className="p-2 -ml-2 rounded-full hover:bg-orange-100 text-stone-500 hover:text-orange-600 transition-colors"
+              aria-label="戻る"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <div className="text-xs font-bold text-stone-400 tracking-wider">
+              QUESTION {currentIdx + 1} / {sortedQuestions.length}
             </div>
-            
-            <div className="h-2 bg-stone-200 rounded-full overflow-hidden">
-                <div 
-                    className="h-full bg-orange-400 rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(251,146,60,0.4)]"
-                    style={{ width: `${progress}%`}}
-                />
-            </div>
+            <div className="w-8" /> {/* Spacer for center alignment */}
+          </div>
+
+          <div className="h-2 bg-stone-200 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-orange-400 rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(251,146,60,0.4)]"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
       </div>
 
@@ -105,56 +128,91 @@ const QuestionsPage = () => {
       <div className="w-full max-w-xl animate-fade-in-up px-6 pb-10 pt-32">
         {/* Question Card */}
         <div className="glass-card p-8 md:p-10 rounded-[2rem] shadow-xl border-white/60 relative overflow-hidden">
-             {/* Decorative background element */}
-             <div className="absolute top-0 right-0 w-32 h-32 bg-orange-100 rounded-bl-[4rem] -mr-8 -mt-8 opacity-50 pointer-events-none"></div>
+          {/* Decorative background element */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-100 rounded-bl-[4rem] -mr-8 -mt-8 opacity-50 pointer-events-none"></div>
 
-            <span className="relative inline-block px-3 py-1 bg-orange-100 text-orange-700 text-[10px] font-bold tracking-wider rounded-full mb-6">
-                {currentQ.type === "knockout" ? "一番たいせつなこと" : `Q${currentIdx}`}
-            </span>
-            
-            <h2 className="relative text-xl md:text-2xl font-bold text-stone-700 mb-10 leading-relaxed">
+          <span className="relative inline-block px-3 py-1 bg-orange-100 text-orange-700 text-[10px] font-bold tracking-wider rounded-full mb-6">
+            {currentQ.type === "knockout" ? "一番たいせつなこと" : `Q${currentIdx}`}
+          </span>
+
+          <h2 className="relative text-xl md:text-2xl font-bold text-stone-700 mb-10 leading-relaxed">
             {currentQ.text}
-            </h2>
+          </h2>
 
-            <div className="relative flex flex-col gap-3 z-10">
+          <div className="relative flex flex-col gap-3 z-10">
             {currentQ.type === "knockout" ? (
-                // Knockout Options (Axes)
+              // Knockout Options (Axes)
+              <div className="flex flex-col gap-4">
                 <div className="grid grid-cols-1 gap-3">
-                    {AXES.map(axis => (
-                    <button
+                  {AXES.map(axis => {
+                    const selectedIds = (answers[currentQ.id] as unknown as AxisId[]) || [];
+                    const isSelected = selectedIds.includes(axis.id);
+
+                    return (
+                      <button
                         key={axis.id}
-                        onClick={() => handleAnswer(axis.id)}
-                        className="text-left px-6 py-4 rounded-xl border-2 border-stone-100 hover:border-orange-400 hover:bg-orange-50/90 transition-all duration-200 flex justify-between items-center group bg-white/60 active:scale-[0.98]"
-                    >
-                        <span className="font-medium text-stone-700">{axis.shortDescription}</span>
-                        <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-orange-500 transition-colors" />
-                    </button>
-                    ))}
+                        onClick={() => toggleKnockoutAnswer(axis.id)}
+                        className={`text-left px-6 py-4 rounded-xl border-2 transition-all duration-200 flex justify-between items-center group active:scale-[0.98]
+                                    ${isSelected
+                            ? "border-orange-500 bg-orange-50 shadow-md"
+                            : "border-stone-100 bg-white/60 hover:border-orange-300 hover:bg-orange-50/50"
+                          }
+                                `}
+                      >
+                        <span className={`font-medium ${isSelected ? "text-orange-700" : "text-stone-700"}`}>
+                          {axis.shortDescription}
+                        </span>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors
+                                    ${isSelected
+                            ? "border-orange-500 bg-orange-500 text-white"
+                            : "border-stone-300 text-transparent group-hover:border-orange-400"
+                          }
+                                `}>
+                          <Check size={14} strokeWidth={3} />
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
+
+                <div className="flex justify-center mt-2">
+                  <button
+                    onClick={handleKnockoutNext}
+                    disabled={!answers[currentQ.id] || (answers[currentQ.id] as unknown as AxisId[]).length === 0}
+                    className="px-8 py-3 bg-orange-500 hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2"
+                  >
+                    次へ進む
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+                <p className="text-center text-xs text-stone-400">
+                  1つ以上、5つまで選択できます
+                </p>
+              </div>
             ) : (
-                // Likert Scale Options
-                [
+              // Likert Scale Options
+              [
                 { val: 5, label: "とてもそう思う" },
                 { val: 4, label: "そう思う" },
                 { val: 3, label: "どちらともいえない" },
                 { val: 2, label: "あまりそう思わない" },
                 { val: 1, label: "全くそう思わない" }
-                ].map(opt => (
+              ].map(opt => (
                 <button
-                    key={opt.val}
-                    onClick={() => handleAnswer(opt.val)}
-                    className="group relative w-full text-left px-6 py-4 rounded-xl border border-stone-200 hover:border-orange-400 hover:bg-orange-50/90 transition-all duration-200 bg-white/60 active:scale-[0.98]"
+                  key={opt.val}
+                  onClick={() => handleAnswer(opt.val)}
+                  className="group relative w-full text-left px-6 py-4 rounded-xl border border-stone-200 hover:border-orange-400 hover:bg-orange-50/90 transition-all duration-200 bg-white/60 active:scale-[0.98]"
                 >
-                    <div className="flex items-center justify-between">
-                        <span className="text-stone-700 font-medium group-hover:text-orange-900">{opt.label}</span>
-                        <div className={`w-5 h-5 rounded-full border-2 border-stone-300 flex items-center justify-center group-hover:border-orange-500 group-hover:bg-orange-500 transition-colors`}>
-                            <Check className="w-3 h-3 text-white opacity-0 group-hover:opacity-100" />
-                        </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-stone-700 font-medium group-hover:text-orange-900">{opt.label}</span>
+                    <div className={`w-5 h-5 rounded-full border-2 border-stone-300 flex items-center justify-center group-hover:border-orange-500 group-hover:bg-orange-500 transition-colors`}>
+                      <Check className="w-3 h-3 text-white opacity-0 group-hover:opacity-100" />
                     </div>
+                  </div>
                 </button>
-                ))
+              ))
             )}
-            </div>
+          </div>
         </div>
       </div>
 
