@@ -17,7 +17,7 @@ export const DiagnosePage = () => {
 
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<Answers>({});
-    const [knockoutAxis, setKnockoutAxis] = useState<AxisId | null>(null);
+    const [knockoutAnswers, setKnockoutAnswers] = useState<AxisId[]>([]);
 
     useEffect(() => {
         if (!childId) {
@@ -50,7 +50,15 @@ export const DiagnosePage = () => {
 
     const handleAnswer = (value: AnswerValue | AxisId) => {
         if (currentQuestion.type === 'knockout') {
-            setKnockoutAxis(value as AxisId);
+            const axisId = value as AxisId;
+            setKnockoutAnswers(prev => {
+                if (prev.includes(axisId)) {
+                    return prev.filter(id => id !== axisId);
+                } else {
+                    if (prev.length >= 5) return prev;
+                    return [...prev, axisId];
+                }
+            });
         } else {
             setAnswers(prev => ({ ...prev, [currentQuestion.id]: value as AnswerValue }));
         }
@@ -74,11 +82,11 @@ export const DiagnosePage = () => {
     };
 
     const finishDiagnosis = () => {
-        const scores = calculateScores(answers, knockoutAxis);
+        const scores = calculateScores(answers, knockoutAnswers);
         const parentResult: DiagnosticResult = {
             role: 'parent',
             answers,
-            knockoutAxis,
+            knockoutAnswers,
             scores,
             timestamp: Date.now()
         };
@@ -92,7 +100,7 @@ export const DiagnosePage = () => {
     };
 
     const getCurrentAnswer = () => {
-        if (currentQuestion.type === 'knockout') return knockoutAxis || undefined;
+        if (currentQuestion.type === 'knockout') return knockoutAnswers;
         return answers[currentQuestion.id];
     };
 

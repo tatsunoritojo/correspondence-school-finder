@@ -7,7 +7,7 @@ import { AXES, QUESTIONS } from "../data/constants";
  */
 export function calculateScores(
   answers: AnswerMap,
-  knockoutAxis: AxisId | null
+  knockoutAnswers: AxisId[]
 ): ScoreMap {
   // Initialize scores bucket
   const rawScores: Record<AxisId, number[]> = {
@@ -37,12 +37,12 @@ export function calculateScores(
       avg = sum / scores.length;
     } else {
       // If no questions answered (should not happen in full flow), default to 0 or 1
-      avg = 1; 
+      avg = 1;
     }
 
     // Apply Knockout Factor
     // Specification: "Selected axis score is multiplied by x1.4"
-    if (knockoutAxis === axis.id) {
+    if (knockoutAnswers.includes(axis.id)) {
       avg = avg * 1.4;
     }
 
@@ -83,7 +83,7 @@ export function calculateGaps(child: ScoreMap, parent: ScoreMap): { gaps: ScoreM
   AXES.forEach(axis => {
     const gap = Math.abs(child[axis.id] - parent[axis.id]);
     gaps[axis.id] = Number(gap.toFixed(1));
-    
+
     if (gap > maxGap) {
       maxGap = gap;
       maxGapAxis = axis.id;

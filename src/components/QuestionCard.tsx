@@ -5,7 +5,7 @@ import { clsx } from 'clsx';
 
 interface QuestionCardProps {
     question: Question;
-    currentAnswer: AnswerValue | AxisId | undefined;
+    currentAnswer: AnswerValue | AxisId[] | undefined;
     onAnswer: (value: AnswerValue | AxisId) => void;
     onNext: () => void;
     onBack: () => void;
@@ -36,21 +36,24 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             <div className="space-y-3 mb-8">
                 {isKnockout ? (
                     <div className="grid grid-cols-1 gap-2">
-                        {AXES.map((axis) => (
-                            <button
-                                key={axis.id}
-                                onClick={() => onAnswer(axis.id)}
-                                className={clsx(
-                                    "p-4 text-left rounded-xl border-2 transition-all",
-                                    currentAnswer === axis.id
-                                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                                        : "border-gray-200 hover:border-blue-200 hover:bg-gray-50"
-                                )}
-                            >
-                                <div className="font-bold">{axis.name}</div>
-                                <div className="text-xs text-gray-500 mt-1">{axis.definition}</div>
-                            </button>
-                        ))}
+                        {AXES.map((axis) => {
+                            const isSelected = Array.isArray(currentAnswer) && currentAnswer.includes(axis.id);
+                            return (
+                                <button
+                                    key={axis.id}
+                                    onClick={() => onAnswer(axis.id)}
+                                    className={clsx(
+                                        "p-4 text-left rounded-xl border-2 transition-all",
+                                        isSelected
+                                            ? "border-blue-500 bg-blue-50 text-blue-700"
+                                            : "border-gray-200 hover:border-blue-200 hover:bg-gray-50"
+                                    )}
+                                >
+                                    <div className="font-bold">{axis.name}</div>
+                                    <div className="text-xs text-gray-500 mt-1">{axis.definition}</div>
+                                </button>
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="flex flex-col space-y-3">
@@ -107,7 +110,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                         disabled={!currentAnswer}
                         className={clsx(
                             "px-8 py-2 rounded-lg font-bold text-white transition-all shadow-md",
-                            !currentAnswer
+                            !currentAnswer || (Array.isArray(currentAnswer) && currentAnswer.length === 0)
                                 ? "bg-gray-300 cursor-not-allowed"
                                 : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg"
                         )}
