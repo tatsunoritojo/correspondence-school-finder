@@ -121,7 +121,7 @@ export const QUESTIONS: Question[] = [
     id: "Q0-1",
     type: "knockout",
     axis: null,
-    text: "通信制高校を選ぶうえで、絶対に譲れないものをひとつ選んでください。",
+    text: "通信制高校を選ぶうえで、絶対に譲れないものを1つ〜5つ選んでください。",
   },
   // AX01
   {
