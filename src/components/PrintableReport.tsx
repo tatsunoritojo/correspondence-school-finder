@@ -21,7 +21,7 @@ interface PrintableReportProps {
 const PrintableReport: React.FC<PrintableReportProps> = ({
     scores,
     knockoutAnswers,
-    respondentType,
+    respondentType: _respondentType,
     respondentName,
     diagnosisDate,
 }) => {
@@ -91,11 +91,11 @@ const PrintableReport: React.FC<PrintableReportProps> = ({
                 <h1>通信制高校診断結果レポート</h1>
             </header>
 
-            {/* セクション1: 診断結果の総合 */}
+            {/* セクション1: あなたの診断結果 */}
             <section className="report-section">
                 <h2>
                     <span className="section-number">1</span>
-                    診断結果の総合
+                    あなたの診断結果
                 </h2>
                 <div className="section-content-split">
                     {/* 左側: タイトルブロック */}
@@ -107,14 +107,21 @@ const PrintableReport: React.FC<PrintableReportProps> = ({
                             </div>
                             <div className="meta-info">
                                 <div className="meta-item">
-                                    <span className="meta-label">回答者</span>
-                                    <span className="meta-value">
-                                        {respondentType === 'child' ? '生徒' : '保護者'}
-                                    </span>
-                                </div>
-                                <div className="meta-item">
                                     <span className="meta-label">診断日</span>
                                     <span className="meta-value">{formatDate(diagnosisDate)}</span>
+                                </div>
+                                <div className="meta-item-priorities">
+                                    <span className="meta-label">あなたが重要視する視点</span>
+                                    <div className="priorities-tags">
+                                        {knockoutAnswers.map((axisId) => {
+                                            const axis = AXES.find((a) => a.id === axisId);
+                                            return axis ? (
+                                                <span key={axisId} className="priority-tag">
+                                                    {axis.chartLabel || axis.name}
+                                                </span>
+                                            ) : null;
+                                        })}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -123,15 +130,15 @@ const PrintableReport: React.FC<PrintableReportProps> = ({
                     {/* 右側: レーダーチャート */}
                     <div className="radar-container">
                         <RechartsRadar
-                            width={200}
-                            height={200}
-                            outerRadius="70%"
+                            width={300}
+                            height={300}
+                            outerRadius="55%"
                             data={chartData}
                         >
                             <PolarGrid stroke="#e7e5e4" strokeDasharray="3 3" />
                             <PolarAngleAxis
                                 dataKey="subject"
-                                tick={{ fill: '#57534e', fontSize: 8, fontWeight: 500 }}
+                                tick={{ fill: '#57534e', fontSize: 10, fontWeight: 500 }}
                             />
                             <PolarRadiusAxis
                                 angle={30}
