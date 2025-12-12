@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>通信制高校診断結果レポート - レイアウトイメージ</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .page-container {
+      background: white;
+      width: 210mm;
+      height: 297mm;
+      padding: 15mm;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    /* ヘッダー */
+    .report-header {
+      background-color: #1F2937;
+      padding: 3mm 5mm;
+      margin-bottom: 5mm;
+      text-align: center;
+    }
+
+    .report-header h1 {
+      font-size: 16pt;
+      font-weight: 700;
+      margin: 0;
+      color: white;
+    }
+
+    /* セクション */
+    .report-section {
+      margin-bottom: 5mm;
+      border: 1.5px solid #D1D5DB;
+      padding: 4mm;
+    }
+
+    .report-section h2 {
+      font-size: 14pt;
+      font-weight: 600;
+      margin-bottom: 3mm;
+      padding-bottom: 2mm;
+      border-bottom: 1px solid #9CA3AF;
+      color: #111827;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-number {
+      background-color: #3B82F6;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      font-size: 12pt;
+    }
+
+    /* セクション1の左右分割レイアウト */
+    .section-content-split {
+      display: flex;
+      gap: 5mm;
+      align-items: center;
+    }
+
+    /* 左側: タイトルブロック */
+    .title-block {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .title-decoration {
+      width: 100%;
+      border: 3px solid #3B82F6;
+      border-radius: 8px;
+      padding: 5mm;
+      background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .name-display {
+      margin-bottom: 4mm;
+      padding-bottom: 3mm;
+      border-bottom: 2px solid #3B82F6;
+    }
+
+    .name-label {
+      display: block;
+      font-size: 9pt;
+      color: #6B7280;
+      margin-bottom: 1mm;
+    }
+
+    .name-value {
+      display: block;
+      font-size: 18pt;
+      font-weight: 700;
+      color: #1F2937;
+    }
+
+    .meta-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2mm;
+    }
+
+    .meta-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .meta-label {
+      font-size: 9pt;
+      color: #6B7280;
+      font-weight: 600;
+    }
+
+    .meta-value {
+      font-size: 10pt;
+      color: #1F2937;
+      font-weight: 600;
+    }
+
+    /* レーダーチャート部分 */
+    .chart-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .radar-chart {
+      width: 180px;
+      height: 180px;
+      position: relative;
+    }
+
+    .radar-chart svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 軸の説明 */
+    .axes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2mm;
+      margin-top: 3mm;
+    }
+
+    .axis-card {
+      border: 1.5px solid #9CA3AF;
+      padding: 2mm;
+      background-color: #F9FAFB;
+      border-radius: 4px;
+    }
+
+    .axis-card h3 {
+      font-size: 9pt;
+      font-weight: 600;
+      margin-bottom: 1mm;
+      color: #111827;
+    }
+
+    .axis-card .score {
+      font-size: 9pt;
+      font-weight: 700;
+      color: #3B82F6;
+      margin-bottom: 1mm;
+    }
+
+    .axis-card .description {
+      font-size: 7pt;
+      color: #4B5563;
+      line-height: 1.3;
+    }
+
+    /* 質問リスト */
+    .question-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .question-list li {
+      padding: 1.5mm 0;
+      border-bottom: 0.5px solid #E5E7EB;
+      font-size: 8pt;
+      display: flex;
+      align-items: flex-start;
+      line-height: 1.4;
+    }
+
+    .question-list li:last-child {
+      border-bottom: none;
+    }
+
+    .question-list input[type="checkbox"] {
+      margin-right: 2mm;
+      margin-top: 1px;
+      flex-shrink: 0;
+      width: 3mm;
+      height: 3mm;
+    }
+
+    /* フッター */
+    .report-footer {
+      position: absolute;
+      bottom: 10mm;
+      left: 15mm;
+      right: 15mm;
+      padding-top: 2mm;
+      border-top: 1px solid #D1D5DB;
+      text-align: center;
+      font-size: 7pt;
+      color: #6B7280;
+    }
+
+    /* レーダーチャート（簡易SVG） */
+    .radar-svg {
+      transform: rotate(-90deg);
+    }
+
+    .radar-grid {
+      fill: none;
+      stroke: #D1D5DB;
+      stroke-width: 1;
+    }
+
+    .radar-axis {
+      stroke: #9CA3AF;
+      stroke-width: 1.5;
+    }
+
+    .radar-area {
+      fill: #3B82F6;
+      fill-opacity: 0.3;
+      stroke: #3B82F6;
+      stroke-width: 2;
+    }
+
+    .radar-label {
+      font-size: 8pt;
+      fill: #374151;
+      text-anchor: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <!-- ヘッダー -->
+    <header class="report-header">
+      <h1>通信制高校診断結果レポート</h1>
+    </header>
+
+    <!-- セクション1: 診断結果の総合 -->
+    <section class="report-section">
+      <h2>
+        <span class="section-number">1</span>
+        診断結果の総合
+      </h2>
+      
+      <div class="section-content-split">
+        <!-- 左側: タイトルブロック -->
+        <div class="title-block">
+          <div class="title-decoration">
+            <div class="name-display">
+              <span class="name-label">お名前</span>
+              <span class="name-value">山田 太郎</span>
+            </div>
+            <div class="meta-info">
+              <div class="meta-item">
+                <span class="meta-label">回答者</span>
+                <span class="meta-value">生徒</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">診断日</span>
+                <span class="meta-value">2025年12月12日</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右側: レーダーチャート -->
+        <div class="chart-container">
+          <div class="radar-chart">
+            <svg viewBox="0 0 200 200" class="radar-svg">
+              <!-- グリッド（同心円） -->
+              <circle cx="100" cy="100" r="80" class="radar-grid"/>
+              <circle cx="100" cy="100" r="60" class="radar-grid"/>
+              <circle cx="100" cy="100" r="40" class="radar-grid"/>
+              <circle cx="100" cy="100" r="20" class="radar-grid"/>
+              
+              <!-- 軸線（8本） -->
+              <line x1="100" y1="100" x2="100" y2="20" class="radar-axis"/>
+              <line x1="100" y1="100" x2="156.6" y2="43.4" class="radar-axis"/>
+              <line x1="100" y1="100" x2="180" y2="100" class="radar-axis"/>
+              <line x1="100" y1="100" x2="156.6" y2="156.6" class="radar-axis"/>
+              <line x1="100" y1="100" x2="100" y2="180" class="radar-axis"/>
+              <line x1="100" y1="100" x2="43.4" y2="156.6" class="radar-axis"/>
+              <line x1="100" y1="100" x2="20" y2="100" class="radar-axis"/>
+              <line x1="100" y1="100" x2="43.4" y2="43.4" class="radar-axis"/>
+              
+              <!-- データエリア -->
+              <polygon 
+                points="100,40 140,55 160,100 145,140 100,155 60,140 35,100 65,55" 
+                class="radar-area"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- セクション2: 診断結果の詳細 -->
+    <section class="report-section">
+      <h2>
+        <span class="section-number">2</span>
+        診断結果の詳細
+      </h2>
+
+      <div class="axes-grid">
+        <div class="axis-card">
+          <h3>スクーリング</h3>
+          <p class="score">スコア: 3.8</p>
+          <p class="description">週1-2回の通学が可能</p>
+        </div>
+        <div class="axis-card">
+          <h3>学費</h3>
+          <p class="score">スコア: 2.5</p>
+          <p class="description">コストを重視</p>
+        </div>
+        <div class="axis-card">
+          <h3>オンライン</h3>
+          <p class="score">スコア: 4.2</p>
+          <p class="description">自宅学習が得意</p>
+        </div>
+        <div class="axis-card">
+          <h3>サポート</h3>
+          <p class="score">スコア: 3.5</p>
+          <p class="description">適度な支援を希望</p>
+        </div>
+        <div class="axis-card">
+          <h3>進路</h3>
+          <p class="score">スコア: 4.0</p>
+          <p class="description">大学進学を重視</p>
+        </div>
+        <div class="axis-card">
+          <h3>専門性</h3>
+          <p class="score">スコア: 3.2</p>
+          <p class="description">特定分野に興味</p>
+        </div>
+        <div class="axis-card">
+          <h3>交流</h3>
+          <p class="score">スコア: 2.8</p>
+          <p class="description">少人数を好む</p>
+        </div>
+        <div class="axis-card">
+          <h3>柔軟性</h3>
+          <p class="score">スコア: 4.5</p>
+          <p class="description">自由な学習を重視</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- セクション3: 質問リスト -->
+    <section class="report-section" style="margin-bottom: 8mm;">
+      <h2>
+        <span class="section-number">3</span>
+        オープンスクールで聞くべき質問
+      </h2>
+      <ul class="question-list">
+        <li>
+          <input type="checkbox">
+          <span>オンライン授業の配信方法や、録画視聴の可否について教えてください。</span>
+        </li>
+        <li>
+          <input type="checkbox">
+          <span>大学進学実績と、進路指導のサポート体制について詳しく伺いたいです。</span>
+        </li>
+        <li>
+          <input type="checkbox">
+          <span>学習計画の自由度と、個別のペース調整はどこまで可能ですか？</span>
+        </li>
+        <li>
+          <input type="checkbox">
+          <span>追加費用（教材費、イベント参加費など）の目安を教えてください。</span>
+        </li>
+        <li>
+          <input type="checkbox">
+          <span>スクーリング日程の選択肢と、振替制度について確認したいです。</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- フッター -->
+    <footer class="report-footer">
+      <p>通信制高校診断 - https://correspondence-school-finder.netlify.app</p>
+    </footer>
+  </div>
+
+  <script>
+    // 印刷プレビュー用の説明
+    console.log('このHTMLは実装後のレイアウトイメージです。');
+    console.log('実際の実装では、Rechartsを使用してより詳細なレーダーチャートが描画されます。');
+  </script>
+</body>
+</html>
