@@ -227,4 +227,29 @@ export const QUESTIONS: Question[] = [
     axis: "AX08",
     text: "勉強だけでなく、好きなことに没頭できる時間の多い学校が良いですか。",
   },
+  // Commuting Question (New)
+  {
+    id: "Q9-1",
+    type: "single_choice",
+    axis: null,
+    text: "通学時間について、希望に近いものを選んでください。",
+    options: [
+      { value: "30min", label: "自宅から30分以内" },
+      { value: "1hour", label: "自宅から1時間以内" },
+      { value: "any", label: "特にこだわらない（オンライン中心など）" },
+    ],
+  },
+  // Exam Style Question (New)
+  {
+    id: "Q10-1",
+    type: "multi_choice",
+    axis: null,
+    text: "希望する入試の方法を選んでください。（複数選択可）",
+    options: [
+      { value: "essay", label: "作文・小論文" },
+      { value: "interview", label: "面接" },
+      { value: "exam", label: "筆記試験" },
+      { value: "docs", label: "書類選考のみ" },
+    ],
+  },
 ];
