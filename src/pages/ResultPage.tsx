@@ -4,7 +4,7 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { LocalStorageRepository } from "../lib/storage";
 import { getPersonalizedAdvice, AIAdvice } from "../lib/gemini";
-import { AXES } from "../data/constants";
+import { AXES, COMMUTING_LABELS, EXAM_LABELS } from "../data/constants";
 import { Axis, ParentChildData } from "../types";
 import RadarChart from "../components/RadarChart";
 import ResultCard from "../components/ResultCard";
@@ -253,6 +253,43 @@ const ResultPage = () => {
                     )}
                 </div>
 
+                {/* New Answers Display Section */}
+                <div className="mt-8 space-y-6">
+                    <h2 className="text-xl font-bold text-stone-700 ml-2 flex items-center gap-2">
+                        <FileText size={20} className="text-orange-400" />
+                        通学条件・入試項目の希望
+                    </h2>
+                    <div className="glass-card p-6 rounded-2xl space-y-4">
+                        {/* Commuting Distance */}
+                        <div>
+                            <h3 className="text-sm font-bold text-stone-500 mb-2">通学時間</h3>
+                            <p className="text-base text-stone-700 font-medium">
+                                {finalDisplay.answers["Q9-1"]
+                                    ? COMMUTING_LABELS[finalDisplay.answers["Q9-1"] as string] || "未回答"
+                                    : "未回答"}
+                            </p>
+                        </div>
+                        {/* Entrance Exam */}
+                        <div>
+                            <h3 className="text-sm font-bold text-stone-500 mb-2">希望する入試方法</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {Array.isArray(finalDisplay.answers["Q10-1"]) && (finalDisplay.answers["Q10-1"] as string[]).length > 0 ? (
+                                    (finalDisplay.answers["Q10-1"] as string[]).map((val) => (
+                                        <span
+                                            key={val}
+                                            className="px-3 py-1 bg-orange-100 text-orange-700 text-sm font-medium rounded-full"
+                                        >
+                                            {EXAM_LABELS[val] || val}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <p className="text-base text-stone-700 font-medium">未回答</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Details Cards Section */}
                 <div className="space-y-6">
                     <h2 className="text-xl font-bold text-stone-700 ml-2 flex items-center gap-2">
@@ -473,6 +510,7 @@ const ResultPage = () => {
                     respondentType={role}
                     respondentName={respondentName}
                     diagnosisDate={new Date(finalDisplay.timestamp)}
+                    answers={finalDisplay.answers}
                 />
             </div>
         </div>

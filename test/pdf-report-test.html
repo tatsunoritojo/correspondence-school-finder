@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Test - Printable Report</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+    <link rel="stylesheet" href="../src/components/PrintableReport.css">
+</head>
+
+<body style="margin: 0; padding: 20px; background: #f5f5f5;">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } = Recharts;
+
+        // Dummy data
+        const AXES = [
+            { id: "AX01", name: "スクーリング頻度の許容度", chartLabel: "登校頻度", definition: "登校ペースの少なさや対人ストレスへの配慮" },
+            { id: "AX02", name: "学費・費用の重視度", chartLabel: "費用面", definition: "経済的負担や追加費用への敏感さ" },
+            { id: "AX03", name: "オンライン学習適性", chartLabel: "在宅学習", definition: "自宅でのデジタル学習への適性" },
+            { id: "AX04", name: "自己管理 vs サポート", chartLabel: "学習支援", definition: "自律学習度と外部サポートの必要性" },
+            { id: "AX05", name: "進路志向", chartLabel: "進路実績", definition: "卒業後の進路意識と学習意欲" },
+            { id: "AX06", name: "高校生活らしさ", chartLabel: "友人交流", definition: "行事や友人関係などへの期待度" },
+            { id: "AX07", name: "メンタルケアニーズ", chartLabel: "心のケア", definition: "心理的安全性と柔軟な対応の必要性" },
+            { id: "AX08", name: "専門コース志向", chartLabel: "専門学習", definition: "特定分野への興味関心と探究心" }
+        ];
+
+        const COMMUTING_LABELS = {
+            "30min": "自宅から30分以内",
+            "1hour": "自宅から1時間以内",
+            "any": "特にこだわらない(オンライン中心など)"
+        };
+
+        const EXAM_LABELS = {
+            "essay": "作文・小論文",
+            "interview": "面接",
+            "exam": "筆記試験",
+            "docs": "書類選考のみ"
+        };
+
+        const dummyScores = {
+            "AX01": 1.4,
+            "AX02": 1.0,
+            "AX03": 1.0,
+            "AX04": 1.0,
+            "AX05": 1.0,
+            "AX06": 1.0,
+            "AX07": 1.0,
+            "AX08": 1.0
+        };
+
+        const dummyKnockoutAnswers = ["AX01"];
+
+        const dummyAnswers = {
+            "Q9-1": "1hour",
+            "Q10-1": ["essay", "interview"]
+        };
+
+        function PrintableReport({ scores, knockoutAnswers, respondentName, diagnosisDate, answers }) {
+            const formatDate = (date) => {
+                return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+            };
+
+            const chartData = AXES.map((axis) => ({
+                subject: axis.chartLabel,
+                score: scores[axis.id] || 0,
+                fullMark: 5,
+            }));
+
+            const renderStars = (score) => {
+                return Array.from({ length: 5 }).map((_, i) => (
+                    <span
+                        key={i}
+                        className={`star ${i < Math.round(score) ? 'star-filled' : 'star-empty'}`}
+                    >
+                        ★
+                    </span>
+                ));
+            };
+
+            return (
+                <div className="printable-report">
+                    <header className="report-header">
+                        <h1>通信制高校診断結果レポート</h1>
+                    </header>
+
+                    <section className="report-section">
+                        <h2>
+                            <span className="section-number">1</span>
+                            あなたの診断結果
+                        </h2>
+                        <div className="section-content-split">
+                            <div className="title-block">
+                                <div className="title-decoration">
+                                    <div className="name-display">
+                                        <span className="name-label">お名前</span>
+                                        <span className="name-value">{respondentName}</span>
+                                    </div>
+                                    <div className="meta-info">
+                                        <div className="meta-item">
+                                            <span className="meta-label">診断日</span>
+                                            <span className="meta-value">{formatDate(diagnosisDate)}</span>
+                                        </div>
+                                        <div className="meta-item-priorities">
+                                            <span className="meta-label">あなたが重要視する視点</span>
+                                            <div className="priorities-tags">
+                                                {knockoutAnswers.map((axisId) => {
+                                                    const axis = AXES.find((a) => a.id === axisId);
+                                                    return axis ? (
+                                                        <span key={axisId} className="priority-tag">
+                                                            {axis.chartLabel || axis.name}
+                                                        </span>
+                                                    ) : null;
+                                                })}
+                                            </div>
+                                        </div>
+                                        <div className="meta-item">
+                                            <span className="meta-label">通学時間</span>
+                                            <span className="meta-value">
+                                                {answers["Q9-1"]
+                                                    ? COMMUTING_LABELS[answers["Q9-1"]] || "未回答"
+                                                    : "未回答"}
+                                            </span>
+                                        </div>
+                                        <div className="meta-item">
+                                            <span className="meta-label">希望する入試方法</span>
+                                            <span className="meta-value">
+                                                {Array.isArray(answers["Q10-1"]) && answers["Q10-1"].length > 0
+                                                    ? answers["Q10-1"].map(val => EXAM_LABELS[val] || val).join("、")
+                                                    : "未回答"}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="radar-container">
+                                <RadarChart
+                                    width={300}
+                                    height={300}
+                                    outerRadius="55%"
+                                    data={chartData}
+                                >
+                                    <PolarGrid stroke="#e7e5e4" strokeDasharray="3 3" />
+                                    <PolarAngleAxis
+                                        dataKey="subject"
+                                        tick={{ fill: '#57534e', fontSize: 10, fontWeight: 500 }}
+                                    />
+                                    <PolarRadiusAxis
+                                        angle={30}
+                                        domain={[0, 5]}
+                                        tick={false}
+                                        axisLine={false}
+                                    />
+                                    <Radar
+                                        name="スコア"
+                                        dataKey="score"
+                                        stroke="#f97316"
+                                        strokeWidth={2}
+                                        fill="#f97316"
+                                        fillOpacity={0.3}
+                                        dot={{ r: 3, fill: '#f97316', strokeWidth: 0 }}
+                                    />
+                                </RadarChart>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="report-section">
+                        <h2>
+                            <span className="section-number">2</span>
+                            診断結果の詳細
+                        </h2>
+                        <div className="axes-grid">
+                            {AXES.map((axis) => {
+                                const score = scores[axis.id] || 0;
+                                return (
+                                    <div key={axis.id} className="axis-card">
+                                        <div className="axis-card-header">
+                                            <h3>{axis.name}</h3>
+                                            <span className="score-badge">
+                                                {score.toFixed(1)}
+                                            </span>
+                                        </div>
+                                        <p className="description">{axis.definition}</p>
+                                        <div className="stars-container">{renderStars(score)}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+
+                    <section className="report-section">
+                        <h2>
+                            <span className="section-number">3</span>
+                            オープンスクールで聞くべき質問
+                        </h2>
+                        <ul className="question-list">
+                            <li>
+                                <span className="question-checkbox" />
+                                <span>
+                                    <span className="question-axis-label">登校頻度</span>
+                                    年間の必須登校日数は具体的に何日ですか？
+                                </span>
+                            </li>
+                            <li>
+                                <span className="question-checkbox" />
+                                <span>
+                                    <span className="question-axis-label">費用面</span>
+                                    就学支援金を除いた、実質負担額はいくらですか？
+                                </span>
+                            </li>
+                            <li>
+                                <span className="question-checkbox" />
+                                <span>
+                                    <span className="question-axis-label">在宅学習</span>
+                                    レポート提出はすべてタブレット/PCで完結しますか？
+                                </span>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <footer className="report-footer">
+                        <div className="footer-brand">
+                            <span className="footer-brand-name">One drop</span>
+                            <span className="footer-brand-desc">東広島の学習塾</span>
+                        </div>
+                        <span className="footer-url">
+                            https://correspondence-school-finder.netlify.app
+                        </span>
+                    </footer>
+                </div>
+            );
+        }
+
+        function App() {
+            return (
+                <div>
+                    <PrintableReport
+                        scores={dummyScores}
+                        knockoutAnswers={dummyKnockoutAnswers}
+                        respondentName="東城立憲"
+                        diagnosisDate={new Date()}
+                        answers={dummyAnswers}
+                    />
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

@@ -253,3 +253,17 @@ export const QUESTIONS: Question[] = [
     ],
   },
 ];
+
+// Label maps for new question types
+export const COMMUTING_LABELS: Record<string, string> = {
+  "30min": "自宅から30分以内",
+  "1hour": "自宅から1時間以内",
+  "any": "特にこだわらない（オンライン中心など）",
+};
+
+export const EXAM_LABELS: Record<string, string> = {
+  "essay": "作文・小論文",
+  "interview": "面接",
+  "exam": "筆記試験",
+  "docs": "書類選考のみ",
+};

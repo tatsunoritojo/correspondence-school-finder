@@ -6,8 +6,8 @@ import {
     PolarAngleAxis,
     PolarRadiusAxis,
 } from 'recharts';
-import { AXES } from '../data/constants';
-import { AxisId, ScoreMap } from '../types';
+import { AXES, COMMUTING_LABELS, EXAM_LABELS } from '../data/constants';
+import { AxisId, ScoreMap, AnswerMap } from '../types';
 import './PrintableReport.css';
 
 interface PrintableReportProps {
@@ -16,6 +16,7 @@ interface PrintableReportProps {
     respondentType: 'child' | 'parent';
     respondentName: string;
     diagnosisDate: Date;
+    answers: AnswerMap;
 }
 
 const PrintableReport: React.FC<PrintableReportProps> = ({
@@ -24,6 +25,7 @@ const PrintableReport: React.FC<PrintableReportProps> = ({
     respondentType: _respondentType,
     respondentName,
     diagnosisDate,
+    answers,
 }) => {
     // 日付フォーマット
     const formatDate = (date: Date) => {
@@ -122,6 +124,22 @@ const PrintableReport: React.FC<PrintableReportProps> = ({
                                             ) : null;
                                         })}
                                     </div>
+                                </div>
+                                <div className="meta-item">
+                                    <span className="meta-label">通学時間</span>
+                                    <span className="meta-value">
+                                        {answers["Q9-1"]
+                                            ? COMMUTING_LABELS[answers["Q9-1"] as string] || "未回答"
+                                            : "未回答"}
+                                    </span>
+                                </div>
+                                <div className="meta-item">
+                                    <span className="meta-label">希望する入試方法</span>
+                                    <span className="meta-value">
+                                        {Array.isArray(answers["Q10-1"]) && (answers["Q10-1"] as string[]).length > 0
+                                            ? (answers["Q10-1"] as string[]).map(val => EXAM_LABELS[val] || val).join("、")
+                                            : "未回答"}
+                                    </span>
                                 </div>
                             </div>
                         </div>
