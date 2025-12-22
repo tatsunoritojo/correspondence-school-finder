@@ -7,64 +7,64 @@ const StartPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
-       {/* Background Decoration: Warm Blobs */}
-       <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-orange-200/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-       <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-yellow-200/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+      {/* Background Decoration: Warm Blobs */}
+      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-orange-200/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-yellow-200/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
 
       <div className="glass-card p-8 md:p-12 rounded-[2.5rem] max-w-lg w-full text-center relative z-10 shadow-xl border-white/60 mb-8">
         <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-stone-700 mb-2 tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-bold text-stone-700 mb-2 tracking-tight">
             通信制高校<span className="text-orange-500">診断</span>
-            </h1>
-            <p className="text-stone-500 text-sm leading-relaxed">
-            あなたの価値観や「これから」を整理して、<br/>
+          </h1>
+          <p className="text-stone-500 text-sm leading-relaxed">
+            あなたの価値観や「これから」を整理して、<br />
             自分らしい学校選びのヒントを見つけませんか？
-            </p>
+          </p>
         </div>
 
         <div className="flex flex-col gap-4">
-          <button 
+          <button
             onClick={() => navigate("/questions?role=child")}
             className="group relative bg-white hover:bg-orange-50 border-2 border-transparent hover:border-orange-200 text-left p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4"
           >
             <div className="w-12 h-12 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <User size={24} />
+              <User size={24} />
             </div>
             <div>
-                <span className="block font-bold text-lg text-stone-700 group-hover:text-orange-700 transition-colors">生徒として診断する</span>
-                <span className="block text-xs text-stone-400">自分の気持ちを整理したい方</span>
+              <span className="block font-bold text-lg text-stone-700 group-hover:text-orange-700 transition-colors">生徒として診断する</span>
+              <span className="block text-xs text-stone-400">自分の気持ちを整理したい方</span>
             </div>
           </button>
 
-          <button 
+          <button
             onClick={() => navigate("/questions?role=parent")}
             className="group relative bg-white hover:bg-teal-50 border-2 border-transparent hover:border-teal-200 text-left p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4"
           >
             <div className="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Users size={24} />
+              <Users size={24} />
             </div>
             <div>
-                <span className="block font-bold text-lg text-stone-700 group-hover:text-teal-700 transition-colors">保護者として診断する</span>
-                <span className="block text-xs text-stone-400">お子様の学校選びを考えたい方</span>
+              <span className="block font-bold text-lg text-stone-700 group-hover:text-teal-700 transition-colors">保護者として診断する</span>
+              <span className="block text-xs text-stone-400">お子様の学校選びを考えたい方</span>
             </div>
           </button>
         </div>
 
         <div className="mt-8 text-xs text-stone-400">
-            所要時間：約3分（全17問）
+          所要時間：約3分（全17問）
         </div>
       </div>
-      
+
       {/* Footer Branding */}
       <footer className="relative z-10 text-center">
         <p className="text-[10px] text-stone-400 mb-1">Produced by</p>
-        <a 
-          href="https://onedrop2025.wixsite.com/my-site-1" 
-          target="_blank" 
+        <a
+          href="https://onedrop2025.wixsite.com/my-site-1"
+          target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-stone-600 font-bold hover:text-orange-600 transition-colors bg-white/40 px-4 py-2 rounded-full backdrop-blur-sm border border-white/50"
         >
-          <span>One Drop</span>
+          <span>One drop</span>
           <span className="w-px h-3 bg-stone-300 mx-1"></span>
           <span className="text-xs font-normal">東広島の学習塾</span>
           <ExternalLink size={12} className="opacity-50" />

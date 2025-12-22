@@ -56,13 +56,25 @@ const ResultPage = () => {
     }, [childId, role]);
 
     // Scroll Listener for Floating Banner
+    // Scroll Listener
+    const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+
     useEffect(() => {
         const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
             // Show banner after scrolling 400px
-            if (window.scrollY > 400) {
+            if (currentScrollY > 400) {
                 setShowFloatBanner(true);
             } else {
                 setShowFloatBanner(false);
+            }
+
+            // Hide scroll indicator after scrolling 50px
+            if (currentScrollY > 50) {
+                setShowScrollIndicator(false);
+            } else {
+                setShowScrollIndicator(true);
             }
         };
         window.addEventListener("scroll", handleScroll);
@@ -187,6 +199,14 @@ const ResultPage = () => {
                             <MessageCircle size={14} /> 親子マッチング完了
                         </p>
                     )}
+
+                    {/* Scroll Indicator (Mobile) */}
+                    <div className={`mt-6 md:hidden transition-opacity duration-500 ${showScrollIndicator ? 'opacity-100' : 'opacity-0'}`}>
+                        <div className="flex flex-col items-center gap-1 animate-bounce text-stone-400">
+                            <span className="text-[10px] font-bold tracking-widest uppercase">Scroll</span>
+                            <ChevronDown size={20} />
+                        </div>
+                    </div>
                 </div>
 
                 {/* AI Advisor Section */}
@@ -308,7 +328,7 @@ const ResultPage = () => {
                                 通信制高校選びや<br className="md:hidden" />学習のサポートなら
                             </h3>
                             <p className="text-sm text-stone-600 mb-4 leading-relaxed">
-                                メンタル面の不安や、学校のレポート課題に寄り添う「One Drop」にご相談ください。
+                                メンタル面の不安や、学校のレポート課題に寄り添う「One drop」にご相談ください。
                             </p>
 
                             <div className="flex flex-wrap gap-3">
@@ -334,7 +354,7 @@ const ResultPage = () => {
                         </div>
                     </div>
                     <p className="text-[10px] text-center text-stone-400 mt-4">
-                        Produced by One Drop
+                        Produced by One drop
                     </p>
                 </div>
 
@@ -400,7 +420,7 @@ const ResultPage = () => {
                         <div>
                             <p className="text-xs font-bold text-stone-600 mb-1">お困りなら相談してみませんか？</p>
                             <p className="text-[10px] text-stone-500 mb-2 leading-tight">
-                                東広島の学習塾「One Drop」が、メンタル・学習の悩みをサポートします。
+                                東広島の学習塾「One drop」が、メンタル・学習の悩みをサポートします。
                             </p>
                             <a
                                 href="https://onedrop2025.wixsite.com/my-site-1"

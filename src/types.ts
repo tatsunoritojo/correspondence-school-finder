@@ -21,16 +21,17 @@ export interface Axis {
 }
 
 export type QuestionId = string;
-export type QuestionType = "knockout" | "normal";
+export type QuestionType = "knockout" | "normal" | "single_choice" | "multi_choice";
 
 export interface Question {
   id: QuestionId;
   type: QuestionType;
   axis: AxisId | null; // null for knockout
   text: string;
+  options?: { value: string; label: string }[];
 }
 
-export type AnswerValue = 1 | 2 | 3 | 4 | 5;
+export type AnswerValue = 1 | 2 | 3 | 4 | 5 | string | string[];
 export type AnswerMap = Record<QuestionId, AnswerValue>;
 export type Answers = AnswerMap; // Alias for compatibility
 export type ScoreMap = Record<AxisId, number>;
