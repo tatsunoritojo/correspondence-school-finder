@@ -207,7 +207,7 @@ const PrintableReport: React.FC<PrintableReportProps> = ({
             {/* フッター */}
             <footer className="report-footer">
                 <div className="footer-brand">
-                    <span className="footer-brand-name">One Drop</span>
+                    <span className="footer-brand-name">One drop</span>
                     <span className="footer-brand-desc">東広島の学習塾</span>
                 </div>
                 <span className="footer-url">

@@ -19,7 +19,7 @@ export function calculateScores(
   QUESTIONS.forEach((q) => {
     if (q.type === "normal" && q.axis) {
       const val = answers[q.id];
-      if (val !== undefined) {
+      if (val !== undefined && typeof val === 'number') {
         rawScores[q.axis].push(val);
       }
     }
