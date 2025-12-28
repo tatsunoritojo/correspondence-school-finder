@@ -17,10 +17,23 @@ export function calculateScores(
 
   // 1. Group scores by axis
   QUESTIONS.forEach((q) => {
-    if (q.type === "normal" && q.axis) {
-      const val = answers[q.id];
-      if (val !== undefined && typeof val === 'number') {
-        rawScores[q.axis].push(val);
+    if (q.axis) {
+      // Handle normal Likert scale questions
+      if (q.type === "normal") {
+        const val = answers[q.id];
+        if (val !== undefined && typeof val === 'number') {
+          rawScores[q.axis].push(val);
+        }
+      }
+      // Handle single_choice questions with score values
+      else if (q.type === "single_choice" && q.options) {
+        const selectedValue = answers[q.id];
+        if (selectedValue !== undefined && typeof selectedValue === 'string') {
+          const selectedOption = q.options.find(opt => opt.value === selectedValue);
+          if (selectedOption && selectedOption.score !== undefined) {
+            rawScores[q.axis].push(selectedOption.score);
+          }
+        }
       }
     }
   });

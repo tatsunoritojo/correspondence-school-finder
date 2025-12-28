@@ -28,7 +28,7 @@ export interface Question {
   type: QuestionType;
   axis: AxisId | null; // null for knockout
   text: string;
-  options?: { value: string; label: string }[];
+  options?: { value: string; label: string; score?: number }[];
 }
 
 export type AnswerValue = 1 | 2 | 3 | 4 | 5 | string | string[];

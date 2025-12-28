@@ -3,16 +3,17 @@ import { Axis, Question } from "../types";
 export const AXES: Axis[] = [
   {
     id: "AX01",
-    name: "スクーリング頻度の許容度",
-    nameEn: "Schooling Frequency",
-    definition: "登校ペースの少なさや対人ストレスへの配慮",
-    shortDescription: "無理のない登校ペース",
-    chartLabel: "登校頻度",
-    psychologicalContext: "対人緊張や環境変化への感受性が高いタイプ。スモールステップでの適応を好む。",
+    name: "通学環境の柔軟性",
+    nameEn: "Schooling Flexibility",
+    definition: "登校ペース・交通手段・時間帯の柔軟性への希望",
+    shortDescription: "無理のない通学環境",
+    chartLabel: "通学環境",
+    psychologicalContext: "対人緊張や環境変化への感受性が高いタイプ。通学負担が少なく、自分のペースで適応できる環境を好む。",
     osChecklist: [
       "年間の必須登校日数は具体的に何日ですか？",
       "体調が悪い日に、当日の欠席連絡は必要ですか？",
-      "別室登校や午後からの登校は認められますか？"
+      "別室登校や午後からの登校は認められますか？",
+      "最寄り駅からの距離や、アクセスのしやすさはどうですか？"
     ]
   },
   {
@@ -252,6 +253,33 @@ export const QUESTIONS: Question[] = [
       { value: "docs", label: "書類選考のみ" },
     ],
   },
+  // Transportation Method (AX01 - Schooling Suitability)
+  {
+    id: "Q11-1",
+    type: "single_choice",
+    axis: "AX01",
+    text: "学校への通学方法について、どう考えますか？",
+    options: [
+      { value: "walk_bike", label: "徒歩・自転車圏内が理想", score: 5 },
+      { value: "parent_drive", label: "保護者の送迎が望ましい", score: 4 },
+      { value: "direct_transit", label: "公共交通機関（乗り換え少なめ）なら大丈夫", score: 3 },
+      { value: "any_transit", label: "公共交通機関での通学に抵抗はない", score: 2 },
+      { value: "online_only", label: "オンラインのみで通学は不要", score: 5 },
+    ],
+  },
+  // Schedule Flexibility (AX01 - Schooling Suitability)
+  {
+    id: "Q12-1",
+    type: "single_choice",
+    axis: "AX01",
+    text: "登校時間について、どう考えますか？",
+    options: [
+      { value: "morning_regular", label: "朝から規則正しく登校したい", score: 1 },
+      { value: "morning_ok", label: "午前中なら大丈夫", score: 2 },
+      { value: "afternoon_better", label: "午後からの登校がありがたい", score: 4 },
+      { value: "flexible", label: "時間帯は気にしない、自由に選びたい", score: 5 },
+    ],
+  },
 ];
 
 // Label maps for new question types
@@ -266,4 +294,19 @@ export const EXAM_LABELS: Record<string, string> = {
   "interview": "面接",
   "exam": "筆記試験",
   "docs": "書類選考のみ",
+};
+
+export const TRANSPORTATION_LABELS: Record<string, string> = {
+  "walk_bike": "徒歩・自転車圏内が理想",
+  "parent_drive": "保護者の送迎が望ましい",
+  "direct_transit": "公共交通機関（乗り換え少なめ）なら大丈夫",
+  "any_transit": "公共交通機関での通学に抵抗はない",
+  "online_only": "オンラインのみで通学は不要",
+};
+
+export const SCHEDULE_LABELS: Record<string, string> = {
+  "morning_regular": "朝から規則正しく登校したい",
+  "morning_ok": "午前中なら大丈夫",
+  "afternoon_better": "午後からの登校がありがたい",
+  "flexible": "時間帯は気にしない、自由に選びたい",
 };

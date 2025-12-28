@@ -52,7 +52,7 @@ const StartPage = () => {
         </div>
 
         <div className="mt-8 text-xs text-stone-400">
-          所要時間：約3分（全19問）
+          所要時間：約3-4分（全21問）
         </div>
       </div>
 
