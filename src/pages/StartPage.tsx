@@ -13,10 +13,15 @@ const StartPage = () => {
 
       <div className="glass-card p-8 md:p-12 rounded-[2.5rem] max-w-lg w-full text-center relative z-10 shadow-xl border-white/60 mb-8">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-stone-700 mb-2 tracking-tight">
-            通信制高校<span className="text-orange-500">診断</span>
+          <h1 className="text-center">
+            <div className="text-2xl md:text-3xl font-bold text-stone-700 mb-3 tracking-tight leading-relaxed">
+              通信制高校、どう選ぶ？
+            </div>
+            <div className="text-lg md:text-xl font-normal text-orange-500 tracking-wider pl-4">
+              わたしの こだわり 診断
+            </div>
           </h1>
-          <p className="text-stone-500 text-sm leading-relaxed">
+          <p className="text-stone-500 text-sm leading-relaxed mt-6">
             このツールは、あなたの気持ちや価値観をゆっくりと整理しながら、<br />
             自分に合った学校選びのヒントを見つけるお手伝いをします。<br />
             <span className="text-stone-400 text-xs mt-1 inline-block">正解はありません。リラックスして進めてくださいね。</span>
