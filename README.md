@@ -4,19 +4,44 @@
 
 ## 機能 (Features)
 
-- **診断機能**: 17問の質問（Knockout質問 + 16問）で、学校選びの軸を分析します。
+- **診断機能**: 19問の質問（Knockout質問 + 通常質問）で、学校選びの軸を分析します。
 - **レーダーチャート**: 8つの軸（スクーリング頻度、学費、オンライン適性など）を可視化します。
 - **親子診断**: 生徒と保護者がそれぞれ回答し、結果を比較して「話し合うべきポイント」を提示します。
-- **結果保存**: 診断結果やオープンスクールで聞くべき質問リストを画像として保存できます。
+- **PDFレポート**: 診断結果をA4形式のPDFレポートとしてダウンロードできます。
 - **レスポンシブ対応**: スマートフォン、タブレット、PCで快適に利用できます。
 
 ## 技術スタック (Tech Stack)
 
-- **Frontend**: React, TypeScript, Vite
+### Frontend
+- **Framework**: React, TypeScript, Vite
 - **Styling**: Tailwind CSS
 - **Charts**: Recharts
-- **Image Generation**: html2canvas
+- **PDF**: html2canvas + jsPDF（バックエンド移行予定）
 - **Routing**: React Router DOM
+- **Deploy**: Netlify
+
+### Backend (開発中)
+- **Framework**: Spring Boot 3.x (Java 21)
+- **PDF Generation**: Playwright for Java
+- **Deploy**: AWS (EC2/ECS)
+
+## アーキテクチャ (Architecture)
+
+```
+┌──────────────────┐       ┌──────────────────┐
+│    Netlify       │       │      AWS         │
+│  ┌────────────┐  │       │  ┌────────────┐  │
+│  │  Frontend  │──┼───────┼─▶│  Backend   │  │
+│  │  (React)   │  │  API  │  │  (Spring)  │  │
+│  └────────────┘  │       │  └────────────┘  │
+└──────────────────┘       │        │         │
+                           │        ▼         │
+                           │  ┌────────────┐  │
+                           │  │    S3      │  │
+                           │  │  (PDF保存)  │  │
+                           │  └────────────┘  │
+                           └──────────────────┘
+```
 
 ## セットアップと実行 (Getting Started)
 
@@ -48,15 +73,37 @@ npm run build
 ## プロジェクト構成 (Project Structure)
 
 ```
-src/
-  components/    # UIコンポーネント (QuestionCard, RadarChart など)
-  data/          # 静的データ (質問データ, 軸定義)
-  lib/           # コアロジック (スコアリング, ストレージ)
-  pages/         # ページコンポーネント (Start, Questions, Result, Diagnose)
-  types.ts       # TypeScript 型定義
+correspondence-school-finder/
+├── src/                    # フロントエンドソースコード
+│   ├── components/         # UIコンポーネント
+│   ├── data/               # 静的データ
+│   ├── lib/                # コアロジック
+│   ├── pages/              # ページコンポーネント
+│   └── types.ts            # TypeScript 型定義
+├── docs/                   # ドキュメント
+│   ├── backend-specification.md   # バックエンド仕様書
+│   └── backend-setup-guide.md     # バックエンド開発手順
+├── backend/                # バックエンド (Phase 1で作成予定)
+│   └── ...
+└── specification-v1.0.md   # フロントエンド仕様書
 ```
 
 ## ドキュメント (Documentation)
 
-- `specification-v1.0.md`: 詳細仕様書
-- `archive/`: 過去の指示書やセットアップガイド
+| ドキュメント | 説明 |
+|-------------|------|
+| [specification-v1.0.md](./specification-v1.0.md) | フロントエンド仕様書 |
+| [docs/backend-specification.md](./docs/backend-specification.md) | バックエンド仕様書（Phase 1: PDF生成） |
+| [docs/backend-setup-guide.md](./docs/backend-setup-guide.md) | バックエンド開発手順 |
+
+## 開発ロードマップ (Roadmap)
+
+- [x] **Phase 0**: フロントエンドMVP完成
+- [ ] **Phase 1**: PDF生成バックエンド（Spring Boot + Playwright）
+- [ ] **Phase 2**: データ永続化（PostgreSQL）
+- [ ] **Phase 3**: 学校マッチング機能
+- [ ] **Phase 4**: 管理ダッシュボード
+
+## ライセンス (License)
+
+Private - All rights reserved

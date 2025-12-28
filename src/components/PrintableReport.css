@@ -1,10 +1,120 @@
-/* PrintableReport.css - A4レポート専用スタイル */
+/* ============================================================
+   PrintableReport.css - A4レポート専用スタイル
+   
+   【全体構造】
+   .printable-report (A4用紙全体)
+   ├── .report-header (ヘッダー: タイトル)
+   ├── .report-section (セクション1: 診断結果の総合)
+   │   └── .section-content-split (左右分割)
+   │       ├── .title-block → .title-decoration (左: 名前・メタ情報)
+   │       └── .radar-container (右: レーダーチャート)
+   ├── .report-section (セクション2: 各軸の詳細)
+   │   └── .axes-grid → .axis-card (6つの軸カード)
+   ├── .report-section (セクション3: 学校見学で確認すべきポイント)
+   │   └── .question-list (質問リスト)
+   └── .report-footer (フッター: ブランド情報)
+   ============================================================ */
 
-/* A4サイズ設定 */
+/* ============================================================
+   サイズ管理用CSS変数
+   ※ここで各セクションの縦横サイズを一元管理できます
+   ============================================================ */
+:root {
+    /* ─────────────────────────────────────────────
+       A4用紙設定
+       ───────────────────────────────────────────── */
+    --paper-width: 210mm;
+    /* ← A4用紙の幅 */
+    --paper-min-height: 297mm;
+    /* ← A4用紙の最小高さ */
+    --paper-padding-vertical: 12mm;
+    /* ← 用紙の上下余白 */
+    --paper-padding-horizontal: 15mm;
+    /* ← 用紙の左右余白 */
+
+    /* ─────────────────────────────────────────────
+       ヘッダー
+       ───────────────────────────────────────────── */
+    --header-height: auto;
+    /* ← ヘッダーの高さ（autoで内容に合わせる）*/
+    --header-padding-vertical: 6mm;
+    /* ← ヘッダー内側の上下余白 */
+    --header-padding-horizontal: 8mm;
+    /* ← ヘッダー内側の左右余白 */
+    --header-margin-bottom: 6mm;
+    /* ← ヘッダー下の余白 */
+
+    /* ─────────────────────────────────────────────
+       セクション共通
+       ───────────────────────────────────────────── */
+    --section-padding: 5mm;
+    /* ← セクション内側の余白 */
+    --section-margin-bottom: 5mm;
+    /* ← セクション間の余白 */
+    --section-border-radius: 16px;
+    /* ← セクションの角丸 */
+
+    /* ─────────────────────────────────────────────
+       セクション1: 診断結果の総合
+       ───────────────────────────────────────────── */
+    --section1-height: 10mm;
+    /* ← セクション1の高さ（autoまたは固定値）*/
+    --section1-min-height: 10mm;
+    /* ← セクション1の最小高さ */
+    --section1-left-right-gap: 5mm;
+    /* ← 左右ボックス間の余白 */
+    --section1-left-flex: 1;
+    /* ← 左側（名前ボックス）の幅比率 */
+    --section1-right-flex: 1.3;
+    /* ← 右側（レーダーチャート）の幅比率 */
+    --section1-title-box-padding: 3mm;
+    /* ← 名前ボックス内側の余白 */
+    --section1-radar-padding: 3mm;
+    /* ← レーダーチャート周りの余白 */
+
+    /* ─────────────────────────────────────────────
+       セクション2: 各軸の詳細
+       ───────────────────────────────────────────── */
+    --section2-height: auto;
+    /* ← セクション2の高さ */
+    --section2-min-height: 60mm;
+    /* ← セクション2の最小高さ */
+    --section2-grid-gap: 3mm;
+    /* ← カード間の余白 */
+    --section2-card-padding: 3mm;
+    /* ← カード内側の余白 */
+
+    /* ─────────────────────────────────────────────
+       セクション3: 学校見学で確認すべきポイント
+       ───────────────────────────────────────────── */
+    --section3-height: auto;
+    /* ← セクション3の高さ */
+    --section3-min-height: 30mm;
+    /* ← セクション3の最小高さ */
+    --section3-item-padding: 2.5mm;
+    /* ← 質問項目の上下余白 */
+    --section3-item-gap: 2.5mm;
+    /* ← チェックボックスとテキストの間隔 */
+
+    /* ─────────────────────────────────────────────
+       フッター
+       ───────────────────────────────────────────── */
+    --footer-margin-top: 4mm;
+    /* ← フッター上の余白 */
+    --footer-padding-top: 3mm;
+    /* ← 境界線とテキストの間隔 */
+}
+
+/* ============================================================
+   A4用紙設定
+   ============================================================ */
 .printable-report {
-    width: 210mm;
-    min-height: 297mm;
-    padding: 12mm 15mm;
+    width: var(--paper-width);
+    /* ← CSS変数使用 */
+    min-height: var(--paper-min-height);
+    /* ← CSS変数使用 */
+    padding: var(--paper-padding-vertical) var(--paper-padding-horizontal);
+    /* ← CSS変数使用 */
     box-sizing: border-box;
     font-family: 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
     background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
@@ -12,71 +122,113 @@
     position: relative;
 }
 
-/* ヘッダー */
+/* ============================================================
+   ヘッダー（レポートタイトル）
+   ============================================================ */
 .report-header {
     background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
-    padding: 6mm 8mm;
+    height: var(--header-height);
+    /* ← CSS変数使用 */
+    padding: var(--header-padding-vertical) var(--header-padding-horizontal);
+    /* ← CSS変数使用 */
     border-radius: 12px;
-    margin-bottom: 6mm;
+    margin-bottom: var(--header-margin-bottom);
+    /* ← CSS変数使用 */
     text-align: center;
     box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
 }
 
 .report-header h1 {
-    font-size: 22pt;
+    font-size: 24pt;
+    /* ← タイトルのフォントサイズ */
     font-weight: 700;
     margin: 0;
     color: white;
     letter-spacing: 0.05em;
+    /* ← 文字間隔 */
 }
 
-/* セクション共通 */
+/* ============================================================
+   セクション共通スタイル
+   （セクション1, 2, 3 すべてに適用）
+   ============================================================ */
 .report-section {
     background: rgba(255, 255, 255, 0.9);
-    border-radius: 16px;
-    padding: 5mm;
-    margin-bottom: 5mm;
+    border-radius: var(--section-border-radius);
+    /* ← CSS変数使用 */
+    padding: var(--section-padding);
+    /* ← CSS変数使用 */
+    margin-bottom: var(--section-margin-bottom);
+    /* ← CSS変数使用 */
     border: 1px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 2px 8px rgba(251, 146, 60, 0.08);
 }
 
+/* セクションタイトル（h2） */
 .report-section h2 {
     font-size: 11pt;
+    /* ← セクションタイトルのフォントサイズ */
     font-weight: 700;
     margin: 0 0 4mm 0;
+    /* ← タイトル下の余白 */
     padding-bottom: 2mm;
+    /* ← タイトルと境界線の間 */
     border-bottom: 2px solid #fed7aa;
     color: #78716c;
     display: flex;
     align-items: center;
     gap: 2mm;
+    /* ← 番号とタイトルテキストの間隔 */
 }
 
+/* セクション番号バッジ（①②③） */
 .section-number {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 8mm;
+    /* ← 番号バッジの幅 */
     height: 8mm;
+    /* ← 番号バッジの高さ */
     background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
     color: white;
     border-radius: 50%;
     font-size: 11pt;
+    /* ← 番号のフォントサイズ */
     font-weight: 700;
     line-height: 1;
     transform: translateY(0);
 }
 
-/* セクション1: 診断結果の総合（左右分割） */
+/* ============================================================
+   セクション1: 診断結果の総合（左右分割レイアウト）
+   
+   【構造】
+   .section-content-split (横並びコンテナ)
+   ├── .title-block (左側: 名前・メタ情報ボックス)
+   │   └── .title-decoration (装飾付きボックス)
+   │       ├── .name-display (名前表示エリア)
+   │       ├── .meta-info (診断日・回答者タイプ)
+   │       └── .meta-item-priorities (重要視する視点)
+   └── .radar-container (右側: レーダーチャート)
+   ============================================================ */
+
+/* 左右分割コンテナ */
 .section-content-split {
     display: flex;
-    gap: 5mm;
+    gap: var(--section1-left-right-gap);
+    /* ← CSS変数使用 */
     align-items: stretch;
+    min-height: var(--section1-min-height);
+    /* ← CSS変数使用 */
 }
 
-/* 左側: タイトルブロック */
+/* ─────────────────────────────────────────────
+   左側: 名前・メタ情報ブロック
+   ───────────────────────────────────────────── */
 .title-block {
-    flex: 1;
+    flex: var(--section1-left-flex);
+    /* ← CSS変数使用 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -86,36 +238,45 @@
     width: 100%;
     border: 2px solid #f97316;
     border-radius: 12px;
-    padding: 3mm;
+    padding: var(--section1-title-box-padding);
+    /* ← CSS変数使用 */
     background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
     box-shadow: 0 2px 8px rgba(249, 115, 22, 0.1);
 }
 
+/* 名前表示エリア */
 .name-display {
     margin-bottom: 2.5mm;
+    /* ← 名前とメタ情報の間の余白 */
     padding-bottom: 2mm;
+    /* ← 名前の下の余白（境界線まで）*/
     border-bottom: 2px dashed #fed7aa;
 }
 
 .name-label {
     display: block;
     font-size: 8pt;
+    /* ← 「お名前」ラベルのフォントサイズ */
     color: #a8a29e;
     margin-bottom: 1mm;
+    /* ← ラベルと名前の間隔 */
     letter-spacing: 0.1em;
 }
 
 .name-value {
     display: block;
     font-size: 14pt;
+    /* ← 名前のフォントサイズ */
     font-weight: 700;
     color: #44403c;
 }
 
+/* メタ情報（診断日など） */
 .meta-info {
     display: flex;
     flex-direction: column;
     gap: 1.5mm;
+    /* ← 各メタ項目間の余白 */
 }
 
 .meta-item {
@@ -126,22 +287,25 @@
 
 .meta-label {
     font-size: 7.5pt;
+    /* ← メタ項目ラベルのフォントサイズ */
     color: #a8a29e;
     font-weight: 600;
 }
 
 .meta-value {
     font-size: 8pt;
+    /* ← メタ項目値のフォントサイズ */
     color: #57534e;
     font-weight: 600;
 }
 
-/* Priorities section */
+/* 重要視する視点セクション */
 .meta-item-priorities {
     display: flex;
     flex-direction: column;
     gap: 1.5mm;
     margin-top: 1.5mm;
+    /* ← 優先視点の上の余白 */
     padding-top: 1.5mm;
     border-top: 1px dashed #fed7aa;
 }
@@ -150,6 +314,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 2mm;
+    /* ← タグ間の余白 */
 }
 
 .priority-tag {
@@ -159,55 +324,83 @@
     background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
     color: #92400e;
     padding: 1.5mm 3mm;
+    /* ← タグ内側の余白（上下 左右）*/
     border-radius: 8px;
+    /* ← タグの角丸 */
     font-size: 7.5pt;
+    /* ← タグのフォントサイズ */
     font-weight: 600;
     border: 1px solid #fbbf24;
     line-height: 1;
     transform: translateY(0);
 }
 
-
-/* 右側: レーダーチャート */
+/* ─────────────────────────────────────────────
+   右側: レーダーチャートコンテナ
+   ───────────────────────────────────────────── */
 .radar-container {
-    flex: 1.3;
+    flex: var(--section1-right-flex);
+    /* ← CSS変数使用 */
     display: flex;
     align-items: center;
     justify-content: center;
     background: white;
     border-radius: 12px;
-    padding: 3mm;
+    padding: var(--section1-radar-padding);
+    /* ← CSS変数使用 */
 }
 
-/* セクション2: 軸カードのグリッド */
+/* ============================================================
+   セクション2: 各軸の詳細（6つの軸カードグリッド）
+   
+   【構造】
+   .axes-grid (2列グリッド)
+   └── .axis-card × 6 (各軸のカード)
+       ├── .axis-card-header (タイトル + スコアバッジ)
+       │   ├── h3 (軸名)
+       │   └── .score-badge (スコア表示)
+       └── .description (軸の説明文)
+   ============================================================ */
+
+/* 軸カードのグリッドレイアウト */
 .axes-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 3mm;
+    gap: var(--section2-grid-gap);
+    /* ← CSS変数使用 */
+    min-height: var(--section2-min-height);
+    /* ← CSS変数使用 */
 }
 
+/* 軸カード */
 .axis-card {
     border: 1px solid #e7e5e4;
     border-radius: 10px;
-    padding: 3mm;
+    padding: var(--section2-card-padding);
+    /* ← CSS変数使用 */
     background: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 100%);
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+/* カードヘッダー（タイトル + スコア） */
 .axis-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5mm;
+    /* ← ヘッダーと説明文の間隔 */
 }
 
+/* 軸名 */
 .axis-card h3 {
     font-size: 9pt;
+    /* ← 軸名のフォントサイズ */
     font-weight: 700;
     margin: 0;
     color: #44403c;
 }
 
+/* スコアバッジ */
 .axis-card .score-badge {
     display: inline-flex;
     align-items: center;
@@ -216,52 +409,78 @@
     background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
     color: white;
     padding: 1.5mm 3mm;
+    /* ← バッジ内側の余白（上下 左右）*/
     border-radius: 12px;
+    /* ← バッジの角丸 */
     font-size: 9pt;
+    /* ← スコアのフォントサイズ */
     font-weight: 700;
     line-height: 1;
     box-shadow: 0 2px 6px rgba(249, 115, 22, 0.3);
     transform: translateY(0);
 }
 
+/* 軸の説明文 */
 .axis-card .description {
     font-size: 7pt;
+    /* ← 説明文のフォントサイズ */
     color: #57534e;
     line-height: 1.6;
+    /* ← 行間 */
     margin: 0;
 }
 
-/* セクション3: 質問リスト */
+/* ============================================================
+   セクション3: 学校見学で確認すべきポイント（質問リスト）
+   
+   【構造】
+   .question-list (ul)
+   └── li × 複数 (各質問)
+       ├── .question-checkbox (チェックボックス)
+       ├── .question-axis-label (軸ラベル)
+       └── テキスト (質問文)
+   ============================================================ */
+
+/* 質問リスト */
 .question-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
+/* 各質問項目 */
 .question-list li {
     display: flex;
     align-items: flex-start;
-    gap: 2.5mm;
-    padding: 2.5mm 0;
+    gap: var(--section3-item-gap);
+    /* ← CSS変数使用 */
+    padding: var(--section3-item-padding) 0;
+    /* ← CSS変数使用 */
     border-bottom: 1px dashed #e7e5e4;
     font-size: 8pt;
     color: #57534e;
     line-height: 1.6;
 }
 
+/* 最後の質問は下線なし */
 .question-list li:last-child {
     border-bottom: none;
 }
 
+/* チェックボックス */
 .question-checkbox {
     width: 4mm;
+    /* ← チェックボックスの幅 */
     height: 4mm;
+    /* ← チェックボックスの高さ */
     border: 2px solid #f97316;
     border-radius: 3px;
+    /* ← チェックボックスの角丸 */
     margin-top: 0.5mm;
     flex-shrink: 0;
 }
 
+/* 軸ラベル（質問がどの軸に対応するか） */
 .question-axis-label {
     display: inline-flex;
     align-items: center;
@@ -269,62 +488,86 @@
     background: #fef3c7;
     color: #92400e;
     padding: 1mm 2mm;
+    /* ← ラベル内側の余白（上下 左右）*/
     border-radius: 6px;
+    /* ← ラベルの角丸 */
     font-size: 7pt;
+    /* ← ラベルのフォントサイズ */
     font-weight: 600;
     margin-right: 2mm;
+    /* ← ラベルと質問文の間隔 */
     line-height: 1;
     transform: translateY(0);
 }
 
-/* フッター */
+/* ============================================================
+   フッター（ブランド情報・URL）
+   ============================================================ */
 .report-footer {
-    margin-top: 4mm;
-    padding-top: 3mm;
+    margin-top: var(--footer-margin-top);
+    /* ← CSS変数使用 */
+    padding-top: var(--footer-padding-top);
+    /* ← CSS変数使用 */
     border-top: 1px solid #e7e5e4;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+/* ブランド情報 */
 .footer-brand {
     display: flex;
     align-items: center;
     gap: 2mm;
+    /* ← ブランド名と説明の間隔 */
 }
 
 .footer-brand-name {
     font-size: 9pt;
+    /* ← ブランド名のフォントサイズ */
     font-weight: 700;
     color: #78716c;
 }
 
 .footer-brand-desc {
     font-size: 7pt;
+    /* ← ブランド説明のフォントサイズ */
     color: #a8a29e;
 }
 
+/* URL表示 */
 .footer-url {
     font-size: 7pt;
+    /* ← URLのフォントサイズ */
     color: #a8a29e;
 }
 
-/* 星評価 */
+/* ============================================================
+   星評価（スコア表示用）
+   ============================================================ */
 .stars-container {
     display: flex;
     gap: 0.5mm;
+    /* ← 星同士の間隔 */
 }
 
 .star {
     width: 4mm;
+    /* ← 星の幅 */
     height: 4mm;
+    /* ← 星の高さ */
     font-size: 10pt;
+    /* ← 星のフォントサイズ */
 }
 
+/* 塗りつぶし星（獲得スコア） */
 .star-filled {
     color: #f59e0b;
+    /* ← 塗りつぶし星の色（ゴールド）*/
 }
 
+/* 空の星（未獲得スコア） */
 .star-empty {
     color: #d6d3d1;
+    /* ← 空の星の色（グレー）*/
 }
