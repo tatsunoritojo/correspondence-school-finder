@@ -112,18 +112,10 @@ const QuestionsPage = () => {
       {/* Fixed Header with Blur Background */}
       <div className="fixed top-0 left-0 w-full z-20 bg-orange-50/95 backdrop-blur-md border-b border-orange-100/50 shadow-sm transition-all">
         <div className="max-w-xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between mb-3">
-            <button
-              onClick={handleBack}
-              className="p-2 -ml-2 rounded-full hover:bg-orange-100 text-stone-500 hover:text-orange-600 transition-colors"
-              aria-label="戻る"
-            >
-              <ChevronLeft size={24} />
-            </button>
+          <div className="flex items-center justify-center mb-3">
             <div className="text-xs font-bold text-stone-400 tracking-wider">
               QUESTION {currentIdx + 1} / {sortedQuestions.length}
             </div>
-            <div className="w-8" /> {/* Spacer for center alignment */}
           </div>
 
           <div className="h-2 bg-stone-200 rounded-full overflow-hidden">
@@ -194,7 +186,14 @@ const QuestionsPage = () => {
                   })}
                 </div>
 
-                <div className="flex justify-center mt-2">
+                <div className="flex justify-center gap-3 mt-2">
+                  <button
+                    onClick={handleBack}
+                    className="px-6 py-3 bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
+                  >
+                    <ChevronLeft size={18} />
+                    戻る
+                  </button>
                   <button
                     onClick={handleNext}
                     disabled={!answers[currentQ.id] || (answers[currentQ.id] as unknown as AxisId[]).length === 0}
@@ -248,7 +247,14 @@ const QuestionsPage = () => {
                     );
                   })}
                 </div>
-                <div className="flex justify-center mt-2">
+                <div className="flex justify-center gap-3 mt-2">
+                  <button
+                    onClick={handleBack}
+                    className="px-6 py-3 bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
+                  >
+                    <ChevronLeft size={18} />
+                    戻る
+                  </button>
                   <button
                     onClick={handleNext}
                     disabled={!answers[currentQ.id] || (Array.isArray(answers[currentQ.id]) && (answers[currentQ.id] as string[]).length === 0)}
@@ -299,7 +305,14 @@ const QuestionsPage = () => {
                     )
                   })}
                 </div>
-                <div className="flex justify-center mt-2">
+                <div className="flex justify-center gap-3 mt-2">
+                  <button
+                    onClick={handleBack}
+                    className="px-6 py-3 bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
+                  >
+                    <ChevronLeft size={18} />
+                    戻る
+                  </button>
                   <button
                     onClick={handleNext}
                     disabled={!answers[currentQ.id]}

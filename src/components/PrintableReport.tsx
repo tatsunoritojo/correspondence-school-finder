@@ -225,8 +225,7 @@ const PrintableReport: React.FC<PrintableReportProps> = ({
             {/* フッター */}
             <footer className="report-footer">
                 <div className="footer-brand">
-                    <span className="footer-brand-name">One drop</span>
-                    <span className="footer-brand-desc">東広島の学習塾</span>
+                    <span className="footer-brand-name">One dorp 個別対話型サポート塾</span>
                 </div>
                 <span className="footer-url">
                     https://correspondence-school-finder.netlify.app

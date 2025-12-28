@@ -17,8 +17,9 @@ const StartPage = () => {
             通信制高校<span className="text-orange-500">診断</span>
           </h1>
           <p className="text-stone-500 text-sm leading-relaxed">
-            あなたの価値観や「これから」を整理して、<br />
-            自分らしい学校選びのヒントを見つけませんか？
+            このツールは、あなたの気持ちや価値観をゆっくりと整理しながら、<br />
+            自分に合った学校選びのヒントを見つけるお手伝いをします。<br />
+            <span className="text-stone-400 text-xs mt-1 inline-block">正解はありません。リラックスして進めてくださいね。</span>
           </p>
         </div>
 
@@ -51,7 +52,7 @@ const StartPage = () => {
         </div>
 
         <div className="mt-8 text-xs text-stone-400">
-          所要時間：約3分（全17問）
+          所要時間：約3分（全19問）
         </div>
       </div>
 
@@ -64,9 +65,7 @@ const StartPage = () => {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-stone-600 font-bold hover:text-orange-600 transition-colors bg-white/40 px-4 py-2 rounded-full backdrop-blur-sm border border-white/50"
         >
-          <span>One drop</span>
-          <span className="w-px h-3 bg-stone-300 mx-1"></span>
-          <span className="text-xs font-normal">東広島の学習塾</span>
+          <span>One dorp 個別対話型サポート塾</span>
           <ExternalLink size={12} className="opacity-50" />
         </a>
       </footer>
