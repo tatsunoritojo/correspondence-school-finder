@@ -256,9 +256,9 @@ export const QUESTIONS: Question[] = [
   // Transportation Method (AX01 - Schooling Suitability)
   {
     id: "Q11-1",
-    type: "single_choice",
+    type: "multi_choice",
     axis: "AX01",
-    text: "学校への通学方法について、どう考えますか？",
+    text: "学校への通学方法について、許容できるものを選んでください。（複数選択可）",
     options: [
       { value: "walk_bike", label: "徒歩・自転車圏内が理想", score: 5 },
       { value: "parent_drive", label: "保護者の送迎が望ましい", score: 4 },
@@ -270,9 +270,9 @@ export const QUESTIONS: Question[] = [
   // Schedule Flexibility (AX01 - Schooling Suitability)
   {
     id: "Q12-1",
-    type: "single_choice",
+    type: "multi_choice",
     axis: "AX01",
-    text: "登校時間について、どう考えますか？",
+    text: "登校時間について、許容できるものを選んでください。（複数選択可）",
     options: [
       { value: "morning_regular", label: "朝から規則正しく登校したい", score: 1 },
       { value: "morning_ok", label: "午前中なら大丈夫", score: 2 },

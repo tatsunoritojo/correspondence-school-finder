@@ -6,7 +6,7 @@ import {
     PolarAngleAxis,
     PolarRadiusAxis,
 } from 'recharts';
-import { AXES, COMMUTING_LABELS, EXAM_LABELS } from '../data/constants';
+import { AXES, COMMUTING_LABELS, EXAM_LABELS, TRANSPORTATION_LABELS, SCHEDULE_LABELS } from '../data/constants';
 import { AxisId, ScoreMap, AnswerMap } from '../types';
 import './PrintableReport.css';
 
@@ -130,6 +130,22 @@ const PrintableReport: React.FC<PrintableReportProps> = ({
                                     <span className="meta-value">
                                         {answers["Q9-1"]
                                             ? COMMUTING_LABELS[answers["Q9-1"] as string] || "未回答"
+                                            : "未回答"}
+                                    </span>
+                                </div>
+                                <div className="meta-item">
+                                    <span className="meta-label">通学方法</span>
+                                    <span className="meta-value">
+                                        {Array.isArray(answers["Q11-1"]) && (answers["Q11-1"] as string[]).length > 0
+                                            ? (answers["Q11-1"] as string[]).map(val => TRANSPORTATION_LABELS[val] || val).join("、")
+                                            : "未回答"}
+                                    </span>
+                                </div>
+                                <div className="meta-item">
+                                    <span className="meta-label">登校時間</span>
+                                    <span className="meta-value">
+                                        {Array.isArray(answers["Q12-1"]) && (answers["Q12-1"] as string[]).length > 0
+                                            ? (answers["Q12-1"] as string[]).map(val => SCHEDULE_LABELS[val] || val).join("、")
                                             : "未回答"}
                                     </span>
                                 </div>

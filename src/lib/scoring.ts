@@ -35,6 +35,24 @@ export function calculateScores(
           }
         }
       }
+      // Handle multi_choice questions with score values
+      else if (q.type === "multi_choice" && q.options) {
+        const selectedValues = answers[q.id];
+        if (Array.isArray(selectedValues) && selectedValues.length > 0) {
+          const scores: number[] = [];
+          selectedValues.forEach((val) => {
+            const option = q.options!.find(opt => opt.value === val);
+            if (option && option.score !== undefined) {
+              scores.push(option.score);
+            }
+          });
+          // Average the scores from selected options
+          if (scores.length > 0) {
+            const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+            rawScores[q.axis].push(avg);
+          }
+        }
+      }
     }
   });
 

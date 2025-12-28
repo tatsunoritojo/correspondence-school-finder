@@ -4,7 +4,7 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { LocalStorageRepository } from "../lib/storage";
 import { getPersonalizedAdvice, AIAdvice } from "../lib/gemini";
-import { AXES, COMMUTING_LABELS, EXAM_LABELS } from "../data/constants";
+import { AXES, COMMUTING_LABELS, EXAM_LABELS, TRANSPORTATION_LABELS, SCHEDULE_LABELS } from "../data/constants";
 import { Axis, ParentChildData } from "../types";
 import RadarChart from "../components/RadarChart";
 import ResultCard from "../components/ResultCard";
@@ -268,6 +268,42 @@ const ResultPage = () => {
                                     ? COMMUTING_LABELS[finalDisplay.answers["Q9-1"] as string] || "未回答"
                                     : "未回答"}
                             </p>
+                        </div>
+                        {/* Transportation Method */}
+                        <div>
+                            <h3 className="text-sm font-bold text-stone-500 mb-2">通学方法の許容範囲</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {Array.isArray(finalDisplay.answers["Q11-1"]) && (finalDisplay.answers["Q11-1"] as string[]).length > 0 ? (
+                                    (finalDisplay.answers["Q11-1"] as string[]).map((val) => (
+                                        <span
+                                            key={val}
+                                            className="px-3 py-1 bg-teal-100 text-teal-700 text-sm font-medium rounded-full"
+                                        >
+                                            {TRANSPORTATION_LABELS[val] || val}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <p className="text-base text-stone-700 font-medium">未回答</p>
+                                )}
+                            </div>
+                        </div>
+                        {/* Schedule Flexibility */}
+                        <div>
+                            <h3 className="text-sm font-bold text-stone-500 mb-2">登校時間の許容範囲</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {Array.isArray(finalDisplay.answers["Q12-1"]) && (finalDisplay.answers["Q12-1"] as string[]).length > 0 ? (
+                                    (finalDisplay.answers["Q12-1"] as string[]).map((val) => (
+                                        <span
+                                            key={val}
+                                            className="px-3 py-1 bg-teal-100 text-teal-700 text-sm font-medium rounded-full"
+                                        >
+                                            {SCHEDULE_LABELS[val] || val}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <p className="text-base text-stone-700 font-medium">未回答</p>
+                                )}
+                            </div>
                         </div>
                         {/* Entrance Exam */}
                         <div>
