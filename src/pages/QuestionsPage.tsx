@@ -15,12 +15,12 @@ const QuestionsPage = () => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<AnswerMap>({});
 
-  // Sort: Knockout first
+  // Sort: Knockout last (after all other questions)
   const sortedQuestions = [
-    ...QUESTIONS.filter(q => q.type === "knockout"),
     ...QUESTIONS.filter(q => q.type === "normal"),
     ...QUESTIONS.filter(q => q.type === "single_choice"),
-    ...QUESTIONS.filter(q => q.type === "multi_choice")
+    ...QUESTIONS.filter(q => q.type === "multi_choice"),
+    ...QUESTIONS.filter(q => q.type === "knockout")
   ];
 
   const currentQ = sortedQuestions[currentIdx];
