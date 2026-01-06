@@ -117,13 +117,6 @@ export const AXES: Axis[] = [
 ];
 
 export const QUESTIONS: Question[] = [
-  // Knockout Question
-  {
-    id: "Q0-1",
-    type: "knockout",
-    axis: null,
-    text: "通信制高校を選ぶうえで、絶対に譲れないものを1つ〜5つ選んでください。",
-  },
   // AX01
   {
     id: "Q1-1",
@@ -142,7 +135,7 @@ export const QUESTIONS: Question[] = [
     id: "Q2-1",
     type: "normal",
     axis: "AX02",
-    text: "通信制高校を選ぶとき、学費や総額をとても大事だと感じますか。",
+    text: "通信制高校を選ぶとき、経済的な負担（入学金・授業料・教材費などの総額）をとても大事だと感じますか。",
   },
   {
     id: "Q2-2",
@@ -187,7 +180,7 @@ export const QUESTIONS: Question[] = [
     id: "Q5-2",
     type: "normal",
     axis: "AX05",
-    text: "将来の選択肢を広げるため、今のうちから勉強や資格取得に取り組みたいと感じますか。",
+    text: "将来の選択肢を広げるため、高校在学中から勉強や資格取得に取り組みたいと感じますか。",
   },
   // AX06
   {
@@ -207,7 +200,7 @@ export const QUESTIONS: Question[] = [
     id: "Q7-1",
     type: "normal",
     axis: "AX07",
-    text: "これまでの学校生活で、心や体がしんどくなって通えなくなった（なりかけた）経験がありますか。",
+    text: "これまでの学校生活で、心や体がしんどくなって通えなくなった（なりかけた）ことがあり、今も不安を感じていますか。",
   },
   {
     id: "Q7-2",
@@ -279,6 +272,13 @@ export const QUESTIONS: Question[] = [
       { value: "afternoon_better", label: "午後からの登校がありがたい", score: 4 },
       { value: "flexible", label: "時間帯は気にしない、自由に選びたい", score: 5 },
     ],
+  },
+  // Knockout Question (moved to end)
+  {
+    id: "Q0-1",
+    type: "knockout",
+    axis: null,
+    text: "ここまでの質問を振り返って、あなたが特に大切にしたいと思った観点を1つ〜5つ選んでください。",
   },
 ];
 
