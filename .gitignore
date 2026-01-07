@@ -140,3 +140,12 @@ setup-guide.md
 
 # Local Netlify folder
 .netlify
+
+# Gradle build files
+backend/.gradle/
+backend/build/
+backend/gradle/wrapper/*.jar
+*.gradle.kts.swp
+
+# Test reports
+test_report.pdf

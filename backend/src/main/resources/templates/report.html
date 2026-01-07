@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>診断結果レポート</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: "Meiryo", "Yu Gothic", "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+            padding: 40px;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4F46E5;
+            padding-bottom: 20px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1F2937;
+        }
+
+        .meta-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .scores-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .scores-table th,
+        .scores-table td {
+            border: 1px solid #E5E7EB;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .scores-table th {
+            background-color: #F3F4F6;
+            font-weight: bold;
+        }
+
+        .comment-section {
+            background-color: #F9FAFB;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="title">通信制高校 診断結果レポート</div>
+        <div class="meta-info">
+            お名前: <span th:text="${respondentName}">名前</span> 様<br>
+            診断日: <span th:text="${diagnosisDate}">2024年1月1日</span>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="radarChart"></canvas>
+    </div>
+
+    <div class="comment-section">
+        <h3>診断結果詳細</h3>
+        <table class="scores-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>スコア</th>
+                    <th>評価</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="axis : ${axes}">
+                    <td th:text="${axis.name}">項目名</td>
+                    <td th:text="${#numbers.formatDecimal(scores.getOrDefault(axis.id, 0.0), 1, 1)}">0.0</td>
+                    <td th:text="${axis.description}">説明</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const chartData = /*[[${chartData}]]*/[];
+
+        const labels = chartData.map(item => item.subject);
+        const data = chartData.map(item => item.score);
+
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'あなたの傾向',
+                    data: data,
+                    fill: true,
+                    backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                    borderColor: 'rgb(79, 70, 229)',
+                    pointBackgroundColor: 'rgb(79, 70, 229)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(79, 70, 229)'
+                }]
+            },
+            options: {
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 5,
+                        grid: {
+                            color: '#E5E7EB'
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                animation: false // PDF生成用なのでアニメーション無効
+            }
+        });
+        /*]]>*/
+    </script>
+</body>
+
+</html>
