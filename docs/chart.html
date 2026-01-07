@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mermaid Diagram</title>
+    <!-- Load mermaid from CDN -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: white;
+            /* Ensure white background */
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mermaid">
+        flowchart LR
+        A[サイト訪問] --> B{役割選択}
+        B -->|生徒| C[診断開始]
+        B -->|保護者| C
+        C --> D[約20問に回答]
+        D --> E[結果表示 / レーダーチャート]
+        E --> F{次のアクション}
+        F --> G[PDFダウンロード]
+        F --> H[保護者へURL共有]
+        F --> I[OSチェックリスト確認]
+    </div>
+</body>
+
+</html>

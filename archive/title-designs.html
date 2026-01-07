@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タイトルデザイン案 - 通信制高校診断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #44403c;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #78716c;
+            font-size: 14px;
+        }
+
+        .designs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .design-card {
+            background: white;
+            border-radius: 24px;
+            padding: 60px 40px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .design-card:hover {
+            border-color: #f97316;
+            box-shadow: 0 12px 32px rgba(249, 115, 22, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .design-label {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .title-wrapper {
+            text-align: center;
+            width: 100%;
+        }
+
+        /* 案A: メインクエスチョン型 */
+        .design-a .line1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #78716c;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .design-a .line2 {
+            font-size: 20px;
+            font-weight: 400;
+            color: #f97316;
+            letter-spacing: 0.1em;
+            padding-left: 1em;
+        }
+
+        /* 案B: 強調スタイル型 */
+        .design-b .line1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #57534e;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .design-b .line2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #f97316;
+        }
+
+        .design-b .highlight {
+            position: relative;
+            padding: 0 4px;
+        }
+
+        .design-b .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: #fef3c7;
+            z-index: -1;
+        }
+
+        /* 案C: 区切り線エレガント型 */
+        .design-c .line1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #44403c;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .design-c .line2 {
+            font-size: 22px;
+            font-weight: 500;
+            color: #f97316;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .design-c .separator {
+            color: #fed7aa;
+            opacity: 0.6;
+            font-weight: 400;
+        }
+
+        /* 案D: リズム重視型 */
+        .design-d .line1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #57534e;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .design-d .line2 {
+            font-size: 24px;
+            font-weight: 400;
+            color: #f97316;
+            letter-spacing: 0.2em;
+            word-spacing: 0.3em;
+        }
+
+        /* 案E: グラデーション華やか型 */
+        .design-e .line1 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #78716c;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .design-e .line2 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 装飾要素 */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .blob-1 {
+            width: 200px;
+            height: 200px;
+            background: #f97316;
+            top: -50px;
+            right: -50px;
+        }
+
+        .blob-2 {
+            width: 150px;
+            height: 150px;
+            background: #fb923c;
+            bottom: -40px;
+            left: -40px;
+        }
+
+        .footer-brand {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #e7e5e4;
+        }
+
+        .footer-brand-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #78716c;
+            margin-bottom: 8px;
+        }
+
+        .footer-brand-url {
+            font-size: 12px;
+            color: #a8a29e;
+        }
+
+        @media (max-width: 768px) {
+            .designs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .design-card {
+                padding: 40px 30px;
+            }
+
+            .design-a .line1,
+            .design-b .line1,
+            .design-c .line1,
+            .design-d .line1,
+            .design-e .line1 {
+                font-size: 20px;
+            }
+
+            .design-a .line2,
+            .design-b .line2,
+            .design-c .line2,
+            .design-d .line2,
+            .design-e .line2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>タイトルデザイン比較</h1>
+            <p>通信制高校、どう選ぶ？/ わたしのこだわり診断</p>
+        </div>
+
+        <!-- Designs Grid -->
+        <div class="designs-grid">
+            <!-- 案A: メインクエスチョン型 -->
+            <div class="design-card design-a">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+                <div class="design-label">案A: メインクエスチョン型</div>
+                <div class="title-wrapper">
+                    <div class="line1">通信制高校、どう選ぶ？</div>
+                    <div class="line2">わたしの こだわり 診断</div>
+                </div>
+            </div>
+
+            <!-- 案B: 強調スタイル型 -->
+            <div class="design-card design-b">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+                <div class="design-label">案B: 強調スタイル型</div>
+                <div class="title-wrapper">
+                    <div class="line1">通信制高校、どう選ぶ？</div>
+                    <div class="line2">わたしの<span class="highlight">「こだわり」</span>診断</div>
+                </div>
+            </div>
+
+            <!-- 案C: 区切り線エレガント型 -->
+            <div class="design-card design-c">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+                <div class="design-label">案C: 区切り線エレガント型</div>
+                <div class="title-wrapper">
+                    <div class="line1">通信制高校、どう選ぶ？</div>
+                    <div class="line2">
+                        <span class="separator">━━</span>
+                        <span>わたしのこだわり診断</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 案D: リズム重視型 -->
+            <div class="design-card design-d">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+                <div class="design-label">案D: リズム重視型</div>
+                <div class="title-wrapper">
+                    <div class="line1">通信制高校、どう選ぶ？</div>
+                    <div class="line2">わたしの こだわり 診断</div>
+                </div>
+            </div>
+
+            <!-- 案E: グラデーション華やか型 -->
+            <div class="design-card design-e">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+                <div class="design-label">案E: グラデーション華やか型</div>
+                <div class="title-wrapper">
+                    <div class="line1">通信制高校、どう選ぶ？</div>
+                    <div class="line2">わたしのこだわり診断</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Branding -->
+        <div class="footer-brand">
+            <div class="footer-brand-name">One dorp 個別対話型サポート塾</div>
+            <div class="footer-brand-url">https://correspondence-school-finder.netlify.app</div>
+        </div>
+    </div>
+</body>
+</html>
