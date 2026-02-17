@@ -24,8 +24,8 @@ export default function FAQSection() {
                     <Image
                         src="/images/FAQ.png"
                         alt="「よくある質問」看板を持つ人物"
-                        width={80}
-                        height={110}
+                        width={140}
+                        height={190}
                         className="object-contain"
                     />
                 </div>

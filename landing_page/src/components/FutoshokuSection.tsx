@@ -15,8 +15,8 @@ export default function FutoshokuSection() {
                     <Image
                         src="/images/selection_point.png"
                         alt="「選び方のポイント」看板を持つ人物"
-                        width={100}
-                        height={140}
+                        width={140}
+                        height={190}
                         className="object-contain"
                     />
                 </div>
