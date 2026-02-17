@@ -9,23 +9,51 @@ export default function DiagnosisSection() {
                     <Image
                         src="/images/Recommend.png"
                         alt="「おすすめ」看板を持つ人物"
-                        width={80}
-                        height={110}
+                        width={100}
+                        height={140}
                         className="object-contain"
                     />
                 </div>
-                <div className="flex flex-col items-center gap-3 flex-1">
-                    <div className="border-2 border-accent rounded-md px-6 py-2 font-bold text-[15px] tracking-wider">
-                        通信制高校診断
-                    </div>
-                    <div className="flex flex-col items-center">
-                        <span
-                            className="font-hand text-[13px] text-text-sub block mb-1"
-                            style={{ transform: "rotate(-5deg)" }}
+                <div className="flex flex-col items-center gap-2 flex-1 pt-6">
+                    {/* 押してみて。テキスト + 矢印 */}
+                    <div className="flex items-center gap-1 self-end mr-4">
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            className="rotate-[200deg]"
                         >
-                            考えてみよう。
+                            <path
+                                d="M16 4C12 3 6 5 5 12"
+                                stroke="#666"
+                                strokeWidth="1.2"
+                                strokeLinecap="round"
+                            />
+                            <path
+                                d="M3 9L5 13L8 10"
+                                stroke="#666"
+                                strokeWidth="1.2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                        </svg>
+                        <span
+                            className="font-hand text-[13px] text-text-sub"
+                            style={{ transform: "rotate(-5deg)", display: "inline-block" }}
+                        >
+                            押してみて。
                         </span>
                     </div>
+                    {/* 通信制高校診断ボタン */}
+                    <a
+                        href="https://correspondence-school-finder.netlify.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="border-2 border-accent rounded-md px-6 py-2 font-bold text-[15px] tracking-wider no-underline text-text transition-all duration-200 hover:bg-accent hover:text-white"
+                    >
+                        通信制高校診断
+                    </a>
                 </div>
             </div>
 
@@ -44,18 +72,6 @@ export default function DiagnosisSection() {
                     <br />
                     そんな願いを叶えるお手伝いをするための診断サイトです。
                 </p>
-            </div>
-
-            {/* CTAボタン */}
-            <div className="text-center">
-                <a
-                    href="https://correspondence-school-finder.netlify.app/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block border-2 border-accent bg-transparent text-accent px-8 py-3.5 text-[15px] font-bold tracking-wider rounded transition-all duration-250 hover:bg-accent hover:text-white"
-                >
-                    通信制高校診断をはじめる →
-                </a>
             </div>
         </section>
     );
