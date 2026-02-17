@@ -9,32 +9,32 @@ export default function FutoshokuSection() {
     ];
 
     return (
-        <section className="py-4">
-            <div className="flex items-start gap-3">
+        <section className="py-4 md:py-0">
+            <div className="flex items-start md:items-center gap-3 md:gap-10 lg:gap-16">
                 <div className="flex-shrink-0">
                     <Image
                         src="/images/selection_point.png"
                         alt="「選び方のポイント」看板を持つ人物"
                         width={140}
                         height={190}
-                        className="object-contain"
+                        className="object-contain md:w-[240px] md:h-auto lg:w-[300px]"
                     />
                 </div>
-                <div className="flex-1 pt-1">
-                    <p className="font-bold text-sm mb-3">
+                <div className="flex-1 pt-1 md:pt-0">
+                    <p className="font-bold text-sm md:text-xl lg:text-2xl mb-3 md:mb-6">
                         【不登校状態の場合】
                     </p>
                     {items.map((text, i) => (
                         <p
                             key={i}
-                            className="text-text-sub mb-2"
-                            style={{ fontSize: "12.5px", lineHeight: 1.8 }}
+                            className="text-text-sub mb-2 md:mb-3"
+                            style={{ lineHeight: 1.8 }}
                         >
                             <span className="font-bold mr-0.5">★</span>
-                            {text}
+                            <span className="text-[12.5px] md:text-[16px] lg:text-[17px]">{text}</span>
                         </p>
                     ))}
-                    <p className="font-medium text-[13px] mt-5 leading-relaxed">
+                    <p className="font-medium text-[13px] md:text-[17px] lg:text-[19px] mt-5 md:mt-8 leading-relaxed">
                         我が子の学習の不安度・心の状態・生活リズムを整理してみましょう
                     </p>
                 </div>

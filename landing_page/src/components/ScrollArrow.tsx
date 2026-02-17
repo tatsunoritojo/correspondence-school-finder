@@ -5,7 +5,8 @@ import { fadeIn } from "@/lib/animations";
 
 export default function ScrollArrow() {
     return (
-        <div className="flex justify-center py-7">
+        /* モバイルのみ表示、PCでは非表示 */
+        <div className="flex justify-center py-7 md:hidden">
             <motion.div
                 initial={fadeIn.initial}
                 whileInView={fadeIn.whileInView}

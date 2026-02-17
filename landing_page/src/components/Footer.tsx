@@ -3,9 +3,9 @@ import { FaInstagram, FaFacebookF } from "react-icons/fa";
 
 export default function Footer() {
     return (
-        <footer className="py-8 pb-10">
+        <footer className="py-8 pb-10 md:py-0">
             {/* メインコンテンツ: イラスト左 + 情報右 */}
-            <div className="flex items-start gap-4">
+            <div className="flex items-start md:items-center gap-4 md:gap-10 lg:gap-16">
                 {/* Onedropイラスト */}
                 <div className="flex-shrink-0">
                     <Image
@@ -13,34 +13,34 @@ export default function Footer() {
                         alt="「One drop」看板を持つ人物"
                         width={140}
                         height={190}
-                        className="object-contain"
+                        className="object-contain md:w-[240px] md:h-auto lg:w-[300px]"
                     />
                 </div>
 
                 {/* 右側: 情報 */}
-                <div className="flex-1 text-center pt-2">
+                <div className="flex-1 text-center pt-2 md:pt-0">
                     {/* One drop ホームページ */}
                     <a
                         href="https://onedrop2025.wixsite.com/my-site-1"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block border-2 border-accent rounded-lg px-6 py-2 font-bold text-base tracking-widest mb-4 text-text no-underline transition-all duration-200 hover:bg-accent hover:text-white"
+                        className="inline-block border-2 border-accent rounded-lg px-6 py-2 md:px-10 md:py-3 font-bold text-base md:text-xl tracking-widest mb-4 md:mb-6 text-text no-underline transition-all duration-200 hover:bg-accent hover:text-white"
                     >
                         One drop
                     </a>
 
                     {/* 住所 */}
-                    <p className="text-sm font-medium mb-3">
+                    <p className="text-sm md:text-lg font-medium mb-3 md:mb-4">
                         広島県東広島市西条町下見303-1
                     </p>
 
                     {/* MAPボタン (ダーク) */}
-                    <div className="mb-3.5">
+                    <div className="mb-3.5 md:mb-5">
                         <a
                             href="https://maps.app.goo.gl/KF9t6frVCMa8K23J6"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-block bg-text text-white rounded px-7 py-1.5 text-[13px] font-medium no-underline tracking-wider transition-all duration-200 hover:opacity-80"
+                            className="inline-block bg-text text-white rounded px-7 py-1.5 md:px-10 md:py-2 text-[13px] md:text-[16px] font-medium no-underline tracking-wider transition-all duration-200 hover:opacity-80"
                         >
                             MAP
                         </a>
@@ -48,7 +48,7 @@ export default function Footer() {
 
                     {/* 営業時間 */}
                     <div
-                        className="text-[13px] text-text-sub mb-2"
+                        className="text-[13px] md:text-[16px] lg:text-[17px] text-text-sub mb-2"
                         style={{ lineHeight: 2 }}
                     >
                         <p className="font-medium">営業時間</p>
@@ -58,12 +58,12 @@ export default function Footer() {
                     </div>
 
                     {/* 案内テキスト */}
-                    <p className="text-xs text-text-light mb-3">
+                    <p className="text-xs md:text-sm text-text-light mb-3 md:mb-5">
                         お困りごとがあれば、ご相談ください。
                     </p>
 
                     {/* SNSアイコン */}
-                    <div className="flex justify-center gap-4">
+                    <div className="flex justify-center gap-4 md:gap-6">
                         <a
                             href="https://www.instagram.com/onedrop.2025?igsh=MXFrcWxqeGo3OWpzbQ%3D%3D&utm_source=qr"
                             target="_blank"
@@ -71,7 +71,7 @@ export default function Footer() {
                             aria-label="Instagram"
                             className="text-text opacity-60 hover:opacity-100 transition-opacity"
                         >
-                            <FaInstagram size={24} />
+                            <FaInstagram size={24} className="md:w-8 md:h-8" />
                         </a>
                         <a
                             href="https://www.facebook.com/profile.php?id=100022640424045&mibextid=wwXIfr&rdid=5Ao6wYiNrSUQSHjz&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F16bLFGu3EF%2F%3Fmibextid%3DwwXIfr#"
@@ -80,15 +80,14 @@ export default function Footer() {
                             aria-label="Facebook"
                             className="text-text opacity-60 hover:opacity-100 transition-opacity"
                         >
-                            <FaFacebookF size={24} />
+                            <FaFacebookF size={24} className="md:w-8 md:h-8" />
                         </a>
-
                     </div>
                 </div>
             </div>
 
             {/* コピーライト */}
-            <p className="text-[10px] text-text-light mt-6 text-center">
+            <p className="text-[10px] md:text-[13px] text-text-light mt-6 md:mt-8 text-center">
                 © 2025 One drop. All rights reserved.
             </p>
         </footer>
