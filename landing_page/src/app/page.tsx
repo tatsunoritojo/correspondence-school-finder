@@ -61,7 +61,7 @@ export default function Home() {
 
             {/* 誰かに話を聞いてほしいなら */}
             <SectionWrapper>
-                <p className="text-center text-sm text-text-sub font-hand py-2 pb-4 tracking-wider">
+                <p className="text-center text-[13px] text-text font-bold font-hand py-2 pb-4 tracking-wider">
                     誰かに話を聞いてほしいなら・・・
                 </p>
             </SectionWrapper>
