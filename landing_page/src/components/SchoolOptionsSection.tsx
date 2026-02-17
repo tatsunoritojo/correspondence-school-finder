@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { schoolOptions } from "@/data/schoolOptions";
 import SchoolModal from "./SchoolModal";
+import { staggerContainer, staggerItem } from "@/lib/animations";
 
 export default function SchoolOptionsSection() {
     const [modalOption, setModalOption] = useState<
@@ -24,21 +26,28 @@ export default function SchoolOptionsSection() {
                     />
                 </div>
 
-                {/* 3×3 グリッド */}
-                <div className="flex-1 pt-2">
+                {/* 3×3 グリッド（staggerアニメーション） */}
+                <motion.div
+                    className="flex-1 pt-2"
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: "-50px" }}
+                >
                     <div className="grid grid-cols-3 gap-2 mb-4">
                         {schoolOptions.map((opt) => (
-                            <button
+                            <motion.button
                                 key={opt.id}
+                                variants={staggerItem}
                                 onClick={() => setModalOption(opt)}
                                 aria-label={`${opt.label.replace(/\n/g, "")}の説明を見る`}
                                 className="border-[1.5px] border-border rounded-lg py-2.5 px-1 text-xs font-medium leading-snug text-center whitespace-pre-line min-h-[56px] flex items-center justify-center transition-all duration-200 select-none bg-white hover:-translate-y-px hover:shadow-md active:scale-[0.97]"
                             >
                                 {opt.label}
-                            </button>
+                            </motion.button>
                         ))}
                     </div>
-                </div>
+                </motion.div>
             </div>
 
             {/* 語彙の整理 */}
