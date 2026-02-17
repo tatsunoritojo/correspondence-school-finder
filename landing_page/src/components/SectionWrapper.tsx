@@ -2,20 +2,27 @@
 
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
-import { fadeInUp } from "@/lib/animations";
+import { fadeInUp, fadeInUpDelay } from "@/lib/animations";
 
 type Props = {
     children: ReactNode;
     className?: string;
+    delay?: number;
 };
 
-export default function SectionWrapper({ children, className = "" }: Props) {
+export default function SectionWrapper({
+    children,
+    className = "",
+    delay,
+}: Props) {
+    const anim = delay != null ? fadeInUpDelay(delay) : fadeInUp;
+
     return (
         <motion.div
-            initial={fadeInUp.initial}
-            whileInView={fadeInUp.whileInView}
-            viewport={fadeInUp.viewport}
-            transition={fadeInUp.transition}
+            initial={anim.initial}
+            whileInView={anim.whileInView}
+            viewport={anim.viewport}
+            transition={anim.transition}
             className={className}
         >
             {children}

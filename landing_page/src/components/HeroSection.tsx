@@ -1,10 +1,17 @@
+"use client";
+
+import { motion } from "framer-motion";
 import Image from "next/image";
+import { slideInLeft, slideInRight } from "@/lib/animations";
 
 export default function HeroSection() {
     return (
         <section className="pt-8 pb-0 flex items-start">
-            {/* 左サイド: テキスト */}
-            <div className="flex-1 pt-4">
+            {/* 左サイド: テキスト（左からスライドイン） */}
+            <motion.div
+                className="flex-1 pt-4"
+                {...slideInLeft}
+            >
                 <p className="font-hand text-sm text-text-sub mb-2">
                     義務教育のその先へ
                 </p>
@@ -21,10 +28,14 @@ export default function HeroSection() {
                     <br />
                     1つじゃない。
                 </p>
-            </div>
+            </motion.div>
 
-            {/* 右サイド: 画像 + ご案内します */}
-            <div className="flex-1 flex justify-end">
+            {/* 右サイド: 画像 + ご案内します（右からスライドイン） */}
+            <motion.div
+                className="flex-1 flex justify-end"
+                {...slideInRight}
+                transition={{ ...slideInRight.transition, delay: 0.2 }}
+            >
                 <div className="relative">
                     <span
                         className="absolute -top-1 -right-1 font-hand text-[11px] text-text-sub"
@@ -44,7 +55,7 @@ export default function HeroSection() {
                         className="object-contain"
                     />
                 </div>
-            </div>
+            </motion.div>
         </section>
     );
 }

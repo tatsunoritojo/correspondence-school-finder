@@ -1,4 +1,8 @@
+"use client";
+
+import { motion } from "framer-motion";
 import Image from "next/image";
+import { fadeInUp, pulse } from "@/lib/animations";
 
 export default function DiagnosisSection() {
     return (
@@ -37,12 +41,14 @@ export default function DiagnosisSection() {
                         </p>
                     </div>
 
-                    {/* CTAボタン（明確にボタンと分かるデザイン） */}
-                    <a
+                    {/* CTAボタン（パルスアニメーション付き） */}
+                    <motion.a
                         href="https://correspondence-school-finder.netlify.app/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 bg-accent text-white px-6 py-3 rounded-lg text-[14px] font-bold tracking-wider no-underline transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.97]"
+                        animate={pulse.animate}
+                        transition={pulse.transition}
                     >
                         診断をはじめる
                         <svg
@@ -60,7 +66,7 @@ export default function DiagnosisSection() {
                                 strokeLinejoin="round"
                             />
                         </svg>
-                    </a>
+                    </motion.a>
                 </div>
             </div>
         </section>
