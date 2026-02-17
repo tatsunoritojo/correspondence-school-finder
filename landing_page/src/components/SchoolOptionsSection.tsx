@@ -18,8 +18,8 @@ export default function SchoolOptionsSection() {
                     <Image
                         src="/images/Selection.png"
                         alt="「選択肢一覧」看板を持つ人物"
-                        width={100}
-                        height={140}
+                        width={140}
+                        height={190}
                         className="object-contain"
                     />
                 </div>

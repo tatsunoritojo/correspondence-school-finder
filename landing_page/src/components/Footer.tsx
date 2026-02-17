@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FaInstagram, FaFacebookF, FaTwitter } from "react-icons/fa";
+import { FaInstagram, FaFacebookF } from "react-icons/fa";
 
 export default function Footer() {
     return (
@@ -11,14 +11,24 @@ export default function Footer() {
                     <Image
                         src="/images/Onedrop.png"
                         alt="「One drop」看板を持つ人物"
-                        width={100}
-                        height={140}
+                        width={140}
+                        height={190}
                         className="object-contain"
                     />
                 </div>
 
                 {/* 右側: 情報 */}
                 <div className="flex-1 text-center pt-2">
+                    {/* One drop ホームページ */}
+                    <a
+                        href="https://onedrop2025.wixsite.com/my-site-1"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block border-2 border-accent rounded-lg px-6 py-2 font-bold text-base tracking-widest mb-4 text-text no-underline transition-all duration-200 hover:bg-accent hover:text-white"
+                    >
+                        One drop
+                    </a>
+
                     {/* 住所 */}
                     <p className="text-sm font-medium mb-3">
                         広島県東広島市西条町下見303-1
@@ -72,15 +82,7 @@ export default function Footer() {
                         >
                             <FaFacebookF size={24} />
                         </a>
-                        <a
-                            href="#"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Twitter"
-                            className="text-text opacity-60 hover:opacity-100 transition-opacity"
-                        >
-                            <FaTwitter size={24} />
-                        </a>
+
                     </div>
                 </div>
             </div>

@@ -2,8 +2,9 @@ import Image from "next/image";
 
 export default function HeroSection() {
     return (
-        <section className="pt-8 pb-0 flex justify-between items-start">
-            <div className="flex-1">
+        <section className="pt-8 pb-0 flex items-start">
+            {/* 左サイド: テキスト */}
+            <div className="flex-1 pt-4">
                 <p className="font-hand text-sm text-text-sub mb-2">
                     義務教育のその先へ
                 </p>
@@ -21,25 +22,28 @@ export default function HeroSection() {
                     1つじゃない。
                 </p>
             </div>
-            <div className="flex-shrink-0 ml-2 -mt-2 relative">
-                {/* ご案内します 吹き出し */}
-                <span
-                    className="absolute -top-1 -right-2 font-hand text-[11px] text-text-sub"
-                    style={{
-                        writingMode: "vertical-rl",
-                        letterSpacing: "2px",
-                    }}
-                >
-                    ご案内します
-                </span>
-                <Image
-                    src="/images/Introduction.png"
-                    alt="受付の女性イラスト"
-                    width={150}
-                    height={140}
-                    priority
-                    className="object-contain"
-                />
+
+            {/* 右サイド: 画像 + ご案内します */}
+            <div className="flex-1 flex justify-end">
+                <div className="relative">
+                    <span
+                        className="absolute -top-1 -right-1 font-hand text-[11px] text-text-sub"
+                        style={{
+                            writingMode: "vertical-rl",
+                            letterSpacing: "2px",
+                        }}
+                    >
+                        ご案内します
+                    </span>
+                    <Image
+                        src="/images/Introduction.png"
+                        alt="受付の女性イラスト"
+                        width={280}
+                        height={260}
+                        priority
+                        className="object-contain"
+                    />
+                </div>
             </div>
         </section>
     );
