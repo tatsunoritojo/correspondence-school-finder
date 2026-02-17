@@ -6,31 +6,28 @@ import { slideInLeft, slideInRight } from "@/lib/animations";
 
 export default function HeroSection() {
     return (
-        <section className="pt-8 pb-0 flex items-start">
-            {/* 左サイド: テキスト（左からスライドイン） */}
+        <section className="pt-8 pb-0 flex items-center md:items-center md:gap-8 lg:gap-16">
+            {/* 左サイド: テキスト */}
             <motion.div
-                className="flex-1 pt-4"
+                className="flex-1 pt-4 md:pt-0"
                 {...slideInLeft}
             >
-                <p className="font-hand text-sm text-text-sub mb-2">
+                <p className="font-hand text-sm md:text-lg lg:text-xl text-text-sub mb-2 md:mb-4">
                     義務教育のその先へ
                 </p>
-                <h1
-                    className="font-black leading-tight tracking-wider m-0"
-                    style={{ fontSize: "36px" }}
-                >
+                <h1 className="font-black leading-tight tracking-wider m-0 text-[36px] md:text-[56px] lg:text-[72px]">
                     こどもの進路
                     <br />
                     案内所
                 </h1>
-                <p className="mt-6 text-[15px] font-medium leading-relaxed text-center">
+                <p className="mt-6 md:mt-10 text-[15px] md:text-[20px] lg:text-[24px] font-medium leading-relaxed text-center md:text-left">
                     中学校卒業後の選択肢は
                     <br />
                     1つじゃない。
                 </p>
             </motion.div>
 
-            {/* 右サイド: 画像 + ご案内します（右からスライドイン） */}
+            {/* 右サイド: 画像 + ご案内します */}
             <motion.div
                 className="flex-1 flex justify-end"
                 {...slideInRight}
@@ -38,7 +35,7 @@ export default function HeroSection() {
             >
                 <div className="relative">
                     <span
-                        className="absolute -top-1 -right-1 font-hand text-[11px] text-text-sub"
+                        className="absolute -top-1 -right-1 md:-right-4 font-hand text-[11px] md:text-[15px] lg:text-[17px] text-text-sub"
                         style={{
                             writingMode: "vertical-rl",
                             letterSpacing: "2px",
@@ -52,7 +49,7 @@ export default function HeroSection() {
                         width={280}
                         height={260}
                         priority
-                        className="object-contain"
+                        className="object-contain md:w-[420px] md:h-auto lg:w-[520px]"
                     />
                 </div>
             </motion.div>

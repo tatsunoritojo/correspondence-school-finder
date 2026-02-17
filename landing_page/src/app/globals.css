@@ -13,11 +13,126 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes bounceArrow {
-  0%, 100% {
-    transform: translateY(0);
+/* ── PC スナップスクロール (md: 768px〜) ── */
+@media (min-width: 768px) {
+  html {
+    scroll-behavior: auto;
+    /* snap と smooth の競合を防止 */
   }
-  50% {
-    transform: translateY(8px);
+
+  .snap-container {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .snap-section {
+    scroll-snap-align: start;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* FAQ など内容が長いセクション用 */
+  .snap-section--scroll {
+    scroll-snap-align: start;
+    min-height: 100vh;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+}
+
+/* ── モバイルではスナップ無効 ── */
+@media (max-width: 767px) {
+  .snap-container {
+    height: auto;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .snap-section,
+  .snap-section--scroll {
+    height: auto;
+    min-height: auto;
+    scroll-snap-align: none;
+    display: block;
+    overflow: visible;
+  }
+}
+
+/* ── セクション間の薄い区切り線（PC のみ） ── */
+@media (min-width: 768px) {
+
+  .snap-section+.snap-section::before,
+  .snap-section--scroll+.snap-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 1px;
+    background: #ccc;
+    opacity: 0.5;
+  }
+}
+
+/* ── PC用スクロールインジケーター ── */
+@media (min-width: 768px) {
+  .scroll-indicator {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.4;
+    animation: fadeInIndicator 1s ease-in 0.8s both;
+  }
+
+  .scroll-indicator span {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #999;
+    text-transform: uppercase;
+  }
+
+  @keyframes fadeInIndicator {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(8px);
+    }
+
+    to {
+      opacity: 0.4;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  @keyframes bounceDown {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(5px);
+    }
+  }
+
+  .scroll-indicator svg {
+    animation: bounceDown 2s ease-in-out infinite;
   }
 }
