@@ -517,7 +517,7 @@ const ResultPage = () => {
                     <button
                         onClick={handlePdfDownloadClick}
                         disabled={isGeneratingPdf}
-                        className="flex-1 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
+                        className="flex-1 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white py-3 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-1.5 transition disabled:opacity-50"
                     >
                         {isGeneratingPdf ? (
                             <>
@@ -526,18 +526,20 @@ const ResultPage = () => {
                             </>
                         ) : (
                             <>
-                                <FileText size={18} />
-                                {isMobileDevice() ? 'レポートを保存・共有' : 'レポートをPDFでダウンロード'}
+                                <FileText size={16} />
+                                <span className="hidden md:inline">{isMobileDevice() ? 'レポートを保存・共有' : 'レポートをPDFでダウンロード'}</span>
+                                <span className="md:hidden">レポート保存</span>
                             </>
                         )}
                     </button>
 
                     <button
                         onClick={handleShareSite}
-                        className="flex-1 bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-orange-500/30"
+                        className="flex-1 bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-white py-3 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-1.5 transition shadow-lg shadow-orange-500/30"
                     >
-                        <Share2 size={18} />
-                        サイトを共有する
+                        <Share2 size={16} />
+                        <span className="hidden md:inline">サイトを共有する</span>
+                        <span className="md:hidden">共有</span>
                     </button>
 
                     <button

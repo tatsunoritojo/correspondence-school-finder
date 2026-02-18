@@ -173,7 +173,7 @@ const QuestionsPage = () => {
                         <span className={`font-medium ${isSelected ? "text-orange-700" : "text-stone-700"}`}>
                           {axis.shortDescription}
                         </span>
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors
+                        <div className={`w-6 h-6 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition-colors
                                     ${isSelected
                             ? "border-orange-500 bg-orange-500 text-white"
                             : "border-stone-300 text-transparent group-hover:border-orange-400"
@@ -235,7 +235,7 @@ const QuestionsPage = () => {
                         <span className={`font-medium ${isSelected ? "text-orange-700" : "text-stone-700"}`}>
                           {opt.label}
                         </span>
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors
+                        <div className={`w-6 h-6 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition-colors
                                                 ${isSelected
                             ? "border-orange-500 bg-orange-500 text-white"
                             : "border-stone-300 text-transparent group-hover:border-orange-400"
@@ -292,7 +292,7 @@ const QuestionsPage = () => {
                           <span className={`font-medium ${isSelected ? "text-orange-900 font-bold" : "text-stone-700 group-hover:text-orange-900"}`}>
                             {opt.label}
                           </span>
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors
+                          <div className={`w-5 h-5 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition-colors
                                 ${isSelected
                               ? "border-orange-500 bg-orange-500"
                               : "border-stone-300 group-hover:border-orange-500 group-hover:bg-orange-500"
