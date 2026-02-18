@@ -70,7 +70,7 @@ const StartPage = () => {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-stone-600 font-bold hover:text-orange-600 transition-colors bg-white/40 px-4 py-2 rounded-full backdrop-blur-sm border border-white/50"
         >
-          <span>One dorp 個別対話型サポート塾</span>
+          <span>One drop 個別対話型サポート塾</span>
           <ExternalLink size={12} className="opacity-50" />
         </a>
       </footer>
