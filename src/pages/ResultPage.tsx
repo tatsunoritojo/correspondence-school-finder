@@ -251,7 +251,7 @@ const ResultPage = () => {
                 {/* Header */}
                 <div className="text-center mb-8 mt-4">
                     <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold mb-3 tracking-wider">
-                        DIAGNOSIS REPORT
+                        診断レポート
                     </span>
                     <h1 className="text-2xl md:text-3xl font-bold text-stone-700">
                         {role === "child" ? "あなたの学校選びの軸" : "お子様との価値観診断"}
@@ -272,24 +272,40 @@ const ResultPage = () => {
                 </div>
 
                 {/* AI Advisor Section */}
+                {loadingAdvice && (
+                    <div className="glass-card p-6 md:p-8 rounded-3xl mb-8 border-t-4 border-orange-200 shadow-sm animate-pulse">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-400">
+                                <Sparkles size={18} />
+                            </div>
+                            <h2 className="font-bold text-lg text-stone-400">AI アドバイザー</h2>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="h-4 bg-stone-200 rounded w-3/4"></div>
+                            <div className="h-4 bg-stone-200 rounded w-full"></div>
+                            <div className="h-4 bg-stone-200 rounded w-2/3"></div>
+                        </div>
+                        <p className="text-xs text-stone-400 mt-4 text-center">AI がアドバイスを作成しています...</p>
+                    </div>
+                )}
                 {aiAdvice && (
                     <div className="glass-card p-6 md:p-8 rounded-3xl mb-8 border-t-4 border-orange-300 shadow-lg animate-fade-in-up">
                         <div className="flex items-center gap-2 mb-4">
                             <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-500">
                                 <Sparkles size={18} />
                             </div>
-                            <h2 className="font-bold text-lg text-stone-700">AI Advisor Gemini</h2>
+                            <h2 className="font-bold text-lg text-stone-700">AI アドバイザー</h2>
                         </div>
                         <p className="text-stone-700 leading-relaxed mb-6 font-medium">
                             {aiAdvice.summary}
                         </p>
                         <div className="grid md:grid-cols-2 gap-4">
                             <div className="bg-orange-50/80 p-4 rounded-xl border border-orange-100">
-                                <span className="text-xs font-bold text-orange-600 block mb-1">YOUR STRENGTH</span>
+                                <span className="text-xs font-bold text-orange-600 block mb-1">あなたの強み</span>
                                 <p className="text-sm text-stone-700">{aiAdvice.strengthComment}</p>
                             </div>
                             <div className="bg-stone-100/50 p-4 rounded-xl">
-                                <span className="text-xs font-bold text-stone-500 block mb-1">ADVICE</span>
+                                <span className="text-xs font-bold text-stone-500 block mb-1">アドバイス</span>
                                 <p className="text-sm text-stone-700">{aiAdvice.weaknessComment}</p>
                             </div>
                         </div>

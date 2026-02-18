@@ -11,15 +11,15 @@ interface AIAdvice {
     weaknessComment: string;
 }
 
-const AXES_MAP: Record<string, string> = {
-    schooling_freq: "スクーリング頻度",
-    online: "オンライン学習適性",
-    cost: "学費",
-    support: "サポート体制",
-    social: "人間関係・交流",
-    flexibility: "柔軟性",
-    career: "進路・キャリア",
-    mental: "メンタルケア",
+const AXES_INFO: Record<string, { name: string; definition: string }> = {
+    AX01: { name: "通学環境の柔軟性", definition: "登校ペース・交通手段・時間帯の柔軟性への希望" },
+    AX02: { name: "学費・費用の重視度", definition: "経済的負担や追加費用への敏感さ" },
+    AX03: { name: "オンライン学習適性", definition: "自宅でのデジタル学習への適性" },
+    AX04: { name: "自己管理 vs サポート", definition: "自律学習度と外部サポートの必要性" },
+    AX05: { name: "進路志向", definition: "卒業後の進路意識と学習意欲" },
+    AX06: { name: "高校生活らしさ", definition: "行事や友人関係などへの期待度" },
+    AX07: { name: "メンタルケアニーズ", definition: "心理的安全性と柔軟な対応の必要性" },
+    AX08: { name: "専門コース志向", definition: "特定分野への興味関心と探究心" },
 };
 
 // Simple in-memory rate limiting
@@ -98,7 +98,12 @@ export const handler: Handler = async (event: HandlerEvent) => {
     }
 
     const sortedAxes = Object.entries(body.scores)
-        .map(([id, score]) => ({ id, name: AXES_MAP[id] || id, score }))
+        .map(([id, score]) => ({
+            id,
+            name: AXES_INFO[id]?.name || id,
+            definition: AXES_INFO[id]?.definition || "",
+            score,
+        }))
         .sort((a, b) => b.score - a.score);
 
     const topAxis = sortedAxes[0];
@@ -108,8 +113,8 @@ export const handler: Handler = async (event: HandlerEvent) => {
 以下の診断結果（スコア 1.0〜5.0）に基づき、ユーザー（${body.role === "child" ? "中学生本人" : "保護者"}）に対して、
 共感的で前向きなアドバイスを作成してください。
 
-【診断スコア】
-${sortedAxes.map((a) => `${a.name}: ${a.score}`).join("\n")}
+【診断スコア（各軸の名前 / 意味 / スコア）】
+${sortedAxes.map((a) => `${a.name}（${a.definition}）: ${a.score}`).join("\n")}
 
 【タスク】
 以下の3つの項目を含むJSONのみを返してください（余計なテキストは不要）。
