@@ -215,10 +215,33 @@ const ResultPage = () => {
         setRespondentName("");
     };
 
-    const handleCopyLink = () => {
-        const url = `${window.location.origin}${window.location.pathname}#/questions?role=parent&child_id=${childId}`;
-        navigator.clipboard.writeText(url);
-        alert("保護者用URLをコピーしました！LINEやメールで送ってください。");
+    const handleShareSite = async () => {
+        const siteUrl = "https://correspondence-school-finder.vercel.app/";
+        const shareText = "こどもの進路案内所 — 中学校卒業後の進路選択を支援するサイトです。通信制高校診断もできます。";
+
+        // モバイル: Web Share API を優先
+        if (isMobileDevice() && navigator.share) {
+            try {
+                await navigator.share({
+                    title: "こどもの進路案内所",
+                    text: shareText,
+                    url: siteUrl,
+                });
+                return;
+            } catch (e) {
+                // ユーザーがキャンセルした場合はそのまま終了
+                if ((e as DOMException).name === "AbortError") return;
+            }
+        }
+
+        // PC / フォールバック: クリップボードにコピー
+        try {
+            await navigator.clipboard.writeText(siteUrl);
+            alert("サイトのURLをコピーしました！LINEやメールで共有してください。");
+        } catch {
+            // clipboard API が使えない場合
+            prompt("以下のURLをコピーしてください:", siteUrl);
+        }
     };
 
     return (
@@ -493,15 +516,13 @@ const ResultPage = () => {
                         )}
                     </button>
 
-                    {role === "child" && !data.parent && (
-                        <button
-                            onClick={handleCopyLink}
-                            className="flex-1 bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-orange-500/30"
-                        >
-                            <Share2 size={18} />
-                            保護者に送る
-                        </button>
-                    )}
+                    <button
+                        onClick={handleShareSite}
+                        className="flex-1 bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-orange-500/30"
+                    >
+                        <Share2 size={18} />
+                        サイトを共有する
+                    </button>
 
                     <button
                         onClick={() => {
