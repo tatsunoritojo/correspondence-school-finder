@@ -1,5 +1,3 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
 import type { Handler, HandlerEvent } from "@netlify/functions";
 
 interface RequestBody {
@@ -26,8 +24,8 @@ const AXES_MAP: Record<string, string> = {
 
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, number[]>();
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
-const RATE_LIMIT_MAX = 10; // max requests per window
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const RATE_LIMIT_MAX = 10;
 
 function isRateLimited(ip: string): boolean {
     const now = Date.now();
@@ -39,7 +37,7 @@ function isRateLimited(ip: string): boolean {
     return false;
 }
 
-const headers = {
+const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -47,20 +45,18 @@ const headers = {
 };
 
 export const handler: Handler = async (event: HandlerEvent) => {
-    // Handle preflight
     if (event.httpMethod === "OPTIONS") {
-        return { statusCode: 204, headers, body: "" };
+        return { statusCode: 204, headers: corsHeaders, body: "" };
     }
 
     if (event.httpMethod !== "POST") {
         return {
             statusCode: 405,
-            headers,
+            headers: corsHeaders,
             body: JSON.stringify({ error: "Method not allowed" }),
         };
     }
 
-    // Rate limiting
     const clientIp =
         event.headers["x-forwarded-for"] ||
         event.headers["client-ip"] ||
@@ -68,49 +64,39 @@ export const handler: Handler = async (event: HandlerEvent) => {
     if (isRateLimited(clientIp)) {
         return {
             statusCode: 429,
-            headers,
-            body: JSON.stringify({
-                error: "Too many requests. Please try again later.",
-            }),
+            headers: corsHeaders,
+            body: JSON.stringify({ error: "Too many requests" }),
         };
     }
 
-    // Validate API key exists
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-        console.error("GEMINI_API_KEY environment variable is not set");
         return {
             statusCode: 500,
-            headers,
-            body: JSON.stringify({ error: "Server configuration error" }),
+            headers: corsHeaders,
+            body: JSON.stringify({ error: "GEMINI_API_KEY not configured" }),
         };
     }
 
-    // Parse and validate request body
     let body: RequestBody;
     try {
         body = JSON.parse(event.body || "{}");
     } catch {
         return {
             statusCode: 400,
-            headers,
-            body: JSON.stringify({ error: "Invalid request body" }),
+            headers: corsHeaders,
+            body: JSON.stringify({ error: "Invalid JSON" }),
         };
     }
 
-    if (
-        !body.scores ||
-        !body.role ||
-        !["child", "parent"].includes(body.role)
-    ) {
+    if (!body.scores || !body.role || !["child", "parent"].includes(body.role)) {
         return {
             statusCode: 400,
-            headers,
-            body: JSON.stringify({ error: "Missing required fields: scores, role" }),
+            headers: corsHeaders,
+            body: JSON.stringify({ error: "Missing scores or role" }),
         };
     }
 
-    // Build prompt
     const sortedAxes = Object.entries(body.scores)
         .map(([id, score]) => ({ id, name: AXES_MAP[id] || id, score }))
         .sort((a, b) => b.score - a.score);
@@ -137,36 +123,74 @@ JSONフォーマットの例:
 {"summary": "...", "strengthComment": "...", "weaknessComment": "..."}`;
 
     try {
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        // Gemini REST API を直接呼び出し（外部パッケージ不要）
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
+        const geminiResponse = await fetch(geminiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 512,
+                },
+            }),
+        });
 
-        // Extract JSON from response (handle markdown code blocks)
+        if (!geminiResponse.ok) {
+            const errText = await geminiResponse.text();
+            console.error("Gemini API error:", geminiResponse.status, errText);
+            return {
+                statusCode: 502,
+                headers: corsHeaders,
+                body: JSON.stringify({
+                    error: "Gemini API error",
+                    status: geminiResponse.status,
+                    detail: errText.slice(0, 200),
+                }),
+            };
+        }
+
+        const geminiData = await geminiResponse.json();
+        const responseText =
+            geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+        // Extract JSON from response
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
-            throw new Error("No JSON found in response");
+            console.error("No JSON in Gemini response:", responseText);
+            return {
+                statusCode: 502,
+                headers: corsHeaders,
+                body: JSON.stringify({ error: "Invalid Gemini response format" }),
+            };
         }
 
         const advice: AIAdvice = JSON.parse(jsonMatch[0]);
 
-        // Validate response shape
         if (!advice.summary || !advice.strengthComment || !advice.weaknessComment) {
-            throw new Error("Invalid response shape from Gemini");
+            return {
+                statusCode: 502,
+                headers: corsHeaders,
+                body: JSON.stringify({ error: "Incomplete advice from Gemini" }),
+            };
         }
 
         return {
             statusCode: 200,
-            headers,
+            headers: corsHeaders,
             body: JSON.stringify(advice),
         };
     } catch (error) {
-        console.error("Gemini API error:", error);
+        console.error("Function error:", error);
         return {
             statusCode: 500,
-            headers,
-            body: JSON.stringify({ error: "Failed to generate advice" }),
+            headers: corsHeaders,
+            body: JSON.stringify({
+                error: "Internal function error",
+                message: String(error),
+            }),
         };
     }
 };
