@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+import type { Handler, HandlerEvent } from "@netlify/functions";
+
 interface RequestBody {
     scores: Record<string, number>;
     role: "child" | "parent";
@@ -37,19 +39,14 @@ function isRateLimited(ip: string): boolean {
     return false;
 }
 
-export default async function handler(event: {
-    httpMethod: string;
-    headers: Record<string, string>;
-    body: string | null;
-}) {
-    // CORS headers
-    const headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Content-Type": "application/json",
-    };
+const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Type": "application/json",
+};
 
+export const handler: Handler = async (event: HandlerEvent) => {
     // Handle preflight
     if (event.httpMethod === "OPTIONS") {
         return { statusCode: 204, headers, body: "" };
@@ -64,12 +61,17 @@ export default async function handler(event: {
     }
 
     // Rate limiting
-    const clientIp = event.headers["x-forwarded-for"] || event.headers["client-ip"] || "unknown";
+    const clientIp =
+        event.headers["x-forwarded-for"] ||
+        event.headers["client-ip"] ||
+        "unknown";
     if (isRateLimited(clientIp)) {
         return {
             statusCode: 429,
             headers,
-            body: JSON.stringify({ error: "Too many requests. Please try again later." }),
+            body: JSON.stringify({
+                error: "Too many requests. Please try again later.",
+            }),
         };
     }
 
@@ -96,7 +98,11 @@ export default async function handler(event: {
         };
     }
 
-    if (!body.scores || !body.role || !["child", "parent"].includes(body.role)) {
+    if (
+        !body.scores ||
+        !body.role ||
+        !["child", "parent"].includes(body.role)
+    ) {
         return {
             statusCode: 400,
             headers,
@@ -163,4 +169,4 @@ JSONフォーマットの例:
             body: JSON.stringify({ error: "Failed to generate advice" }),
         };
     }
-}
+};
