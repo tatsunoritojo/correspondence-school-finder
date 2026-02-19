@@ -95,15 +95,15 @@ export default function FutoshokuSection() {
                     />
                 </div>
                 <div className="text-center md:text-left">
-                    <p className="text-xs md:text-sm text-text-light tracking-widest uppercase mb-1">
+                    <p className="text-[10px] md:text-xs text-text-light tracking-[0.15em] mb-1 font-light">
                         Selection Point
                     </p>
-                    <h3 className="font-bold text-lg md:text-2xl lg:text-3xl text-text">
+                    <h3 className="font-bold text-base md:text-xl lg:text-2xl text-text tracking-wide">
                         不登校状態の場合の
                         <br className="md:hidden" />
                         選び方のポイント
                     </h3>
-                    <p className="text-xs md:text-sm text-text-sub mt-2 leading-relaxed">
+                    <p className="text-[11px] md:text-xs text-text-light mt-2 leading-relaxed">
                         お子様の状態に合わせた進路選択のヒント
                     </p>
                 </div>
@@ -125,9 +125,9 @@ export default function FutoshokuSection() {
                         >
                             <button
                                 onClick={() => toggle(item.id)}
-                                className="w-full text-left rounded-xl border border-border bg-white transition-all duration-200 hover:shadow-md active:scale-[0.99] overflow-hidden"
+                                className="w-full text-left rounded-xl border border-border/40 bg-white/30 backdrop-blur-sm transition-all duration-200 hover:bg-white/50 active:scale-[0.99] overflow-hidden"
                                 style={{
-                                    borderLeftWidth: "4px",
+                                    borderLeftWidth: "3px",
                                     borderLeftColor: item.color,
                                 }}
                             >
@@ -139,10 +139,10 @@ export default function FutoshokuSection() {
                                             style={{ backgroundColor: item.color }}
                                         />
                                         <div className="min-w-0">
-                                            <span className="block font-bold text-sm md:text-base text-text">
+                                            <span className="block font-semibold text-[13px] md:text-sm text-text tracking-wide">
                                                 {item.title}
                                             </span>
-                                            <span className="block text-xs md:text-sm text-text-sub mt-0.5 truncate">
+                                            <span className="block text-[11px] md:text-xs text-text-light mt-0.5 truncate">
                                                 {item.summary}
                                             </span>
                                         </div>
@@ -183,8 +183,8 @@ export default function FutoshokuSection() {
                                             <div className="px-4 pb-4 md:px-6 md:pb-5 pt-0">
                                                 <div className="border-t border-border/60 pt-3">
                                                     <p
-                                                        className="text-xs md:text-sm text-text-sub"
-                                                        style={{ lineHeight: 1.9 }}
+                                                        className="text-[12px] md:text-[13px] text-text-sub"
+                                                        style={{ lineHeight: 1.85 }}
                                                     >
                                                         {item.detail}
                                                     </p>
