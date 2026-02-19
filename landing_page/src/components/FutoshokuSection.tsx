@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 type FutoshokuItem = {
@@ -47,33 +46,6 @@ const items: FutoshokuItem[] = [
     },
 ];
 
-const cardVariants = {
-    hidden: { opacity: 0, y: 24 },
-    show: (i: number) => ({
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.5,
-            ease: "easeOut",
-            delay: i * 0.12,
-        },
-    }),
-};
-
-const expandVariants = {
-    collapsed: { height: 0, opacity: 0 },
-    expanded: {
-        height: "auto",
-        opacity: 1,
-        transition: { duration: 0.3, ease: "easeOut" },
-    },
-    exit: {
-        height: 0,
-        opacity: 0,
-        transition: { duration: 0.2, ease: "easeIn" },
-    },
-};
-
 export default function FutoshokuSection() {
     const [openId, setOpenId] = useState<string | null>(null);
 
@@ -82,135 +54,110 @@ export default function FutoshokuSection() {
     };
 
     return (
-        <section className="py-6 md:py-0">
-            {/* ヘッダー: 画像 + タイトル */}
-            <div className="flex flex-col items-center md:flex-row md:items-center gap-4 md:gap-10 lg:gap-16 mb-6 md:mb-10">
+        <section className="py-4 md:py-0">
+            <div className="flex items-start md:items-center gap-3 md:gap-10 lg:gap-16">
+                {/* イラスト */}
                 <div className="flex-shrink-0">
                     <Image
                         src="/images/selection_point.png"
                         alt="「選び方のポイント」看板を持つ人物"
                         width={140}
                         height={190}
-                        className="object-contain w-[100px] md:w-[200px] lg:w-[260px]"
+                        className="object-contain w-[100px] md:w-[200px] md:h-auto lg:w-[260px]"
                     />
                 </div>
-                <div className="text-center md:text-left">
-                    <p className="text-[10px] md:text-xs text-text-light tracking-[0.15em] mb-1 font-light">
-                        Selection Point
-                    </p>
-                    <h3 className="font-bold text-base md:text-xl lg:text-2xl text-text tracking-wide">
-                        不登校状態の場合の
-                        <br className="md:hidden" />
-                        選び方のポイント
-                    </h3>
-                    <p className="text-[11px] md:text-xs text-text-light mt-2 leading-relaxed">
-                        お子様の状態に合わせた進路選択のヒント
-                    </p>
-                </div>
-            </div>
 
-            {/* アコーディオンカード */}
-            <div className="space-y-3 md:space-y-4">
-                {items.map((item, i) => {
-                    const isOpen = openId === item.id;
+                {/* 右コンテンツ: タイトル + アコーディオン + メッセージ */}
+                <div className="flex-1 pt-2 md:pt-0">
+                    {/* セクションタイトル */}
+                    <div className="mb-3 md:mb-5">
+                        <h3 className="font-bold text-[15px] md:text-xl lg:text-2xl text-text tracking-wide">
+                            不登校状態の場合の
+                            <br className="md:hidden" />
+                            選び方のポイント
+                        </h3>
+                        <p className="text-[11px] md:text-xs text-text-light mt-1 leading-relaxed">
+                            お子様の状態に合わせた進路選択のヒント
+                        </p>
+                    </div>
 
-                    return (
-                        <motion.div
-                            key={item.id}
-                            custom={i}
-                            variants={cardVariants}
-                            initial="hidden"
-                            whileInView="show"
-                            viewport={{ once: true, margin: "-30px" }}
-                        >
-                            <button
-                                onClick={() => toggle(item.id)}
-                                className="w-full text-left rounded-xl border border-border/40 bg-white/30 backdrop-blur-sm transition-all duration-200 hover:bg-white/50 active:scale-[0.99] overflow-hidden"
-                                style={{
-                                    borderLeftWidth: "3px",
-                                    borderLeftColor: item.color,
-                                }}
+                    {/* アコーディオンリスト（FAQ準拠ボーダー区切り型） */}
+                    {items.map((item, i) => {
+                        const isOpen = openId === item.id;
+                        return (
+                            <div
+                                key={item.id}
+                                className={
+                                    i < items.length - 1
+                                        ? "border-b border-border"
+                                        : ""
+                                }
                             >
-                                {/* カードヘッダー */}
-                                <div className="flex items-center justify-between px-4 py-3.5 md:px-6 md:py-4">
-                                    <div className="flex items-center gap-3 min-w-0">
+                                <button
+                                    onClick={() => toggle(item.id)}
+                                    aria-expanded={isOpen}
+                                    className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between py-3 md:py-4 px-1 text-left gap-2 md:gap-4"
+                                    style={{
+                                        WebkitTapHighlightColor: "transparent",
+                                    }}
+                                >
+                                    <div className="flex items-center gap-2.5 md:gap-3 min-w-0">
                                         <span
                                             className="flex-shrink-0 w-2 h-2 rounded-full"
-                                            style={{ backgroundColor: item.color }}
+                                            style={{
+                                                backgroundColor: item.color,
+                                            }}
                                         />
                                         <div className="min-w-0">
-                                            <span className="block font-semibold text-[13px] md:text-sm text-text tracking-wide">
+                                            <span className="block font-semibold text-[13px] md:text-[17px] lg:text-[19px] text-text tracking-wide">
                                                 {item.title}
                                             </span>
-                                            <span className="block text-[11px] md:text-xs text-text-light mt-0.5 truncate">
+                                            <span className="block text-[10px] md:text-xs text-text-light mt-0.5 truncate">
                                                 {item.summary}
                                             </span>
                                         </div>
                                     </div>
 
-                                    {/* 展開アイコン */}
-                                    <motion.span
-                                        className="flex-shrink-0 ml-3 text-text-light"
-                                        animate={{ rotate: isOpen ? 180 : 0 }}
-                                        transition={{ duration: 0.25 }}
+                                    {/* 展開アイコン（FAQ統一 +/× 型） */}
+                                    <span
+                                        className="flex-shrink-0 w-[22px] h-[22px] md:w-[30px] md:h-[30px] flex items-center justify-center rounded-full border-[1.5px] border-border text-base md:text-xl text-text-light transition-transform duration-250"
+                                        style={{
+                                            transform: isOpen
+                                                ? "rotate(45deg)"
+                                                : "rotate(0deg)",
+                                        }}
                                     >
-                                        <svg
-                                            width="18"
-                                            height="18"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
-                                            <polyline points="6 9 12 15 18 9" />
-                                        </svg>
-                                    </motion.span>
-                                </div>
+                                        +
+                                    </span>
+                                </button>
 
                                 {/* 展開コンテンツ */}
-                                <AnimatePresence initial={false}>
-                                    {isOpen && (
-                                        <motion.div
-                                            key="content"
-                                            variants={expandVariants}
-                                            initial="collapsed"
-                                            animate="expanded"
-                                            exit="exit"
-                                            className="overflow-hidden"
-                                        >
-                                            <div className="px-4 pb-4 md:px-6 md:pb-5 pt-0">
-                                                <div className="border-t border-border/60 pt-3">
-                                                    <p
-                                                        className="text-[12px] md:text-[13px] text-text-sub"
-                                                        style={{ lineHeight: 1.85 }}
-                                                    >
-                                                        {item.detail}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </button>
-                        </motion.div>
-                    );
-                })}
-            </div>
+                                <div
+                                    className="overflow-hidden transition-all duration-300"
+                                    style={{
+                                        maxHeight: isOpen ? "400px" : "0px",
+                                        opacity: isOpen ? 1 : 0,
+                                    }}
+                                >
+                                    <p
+                                        className="px-1 pb-3 md:pb-4 text-text-sub text-[12px] md:text-[15px] lg:text-[17px]"
+                                        style={{ lineHeight: 1.9 }}
+                                    >
+                                        {item.detail}
+                                    </p>
+                                </div>
+                            </div>
+                        );
+                    })}
 
-            {/* フッターメッセージ */}
-            <motion.p
-                className="text-center font-medium text-sm md:text-base lg:text-lg text-text mt-6 md:mt-10 leading-relaxed"
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-            >
-                我が子の学習の不安度・心の状態・
-                <br className="md:hidden" />
-                生活リズムを整理してみましょう
-            </motion.p>
+                    {/* フッターメッセージ */}
+                    <p className="text-center font-medium text-[12px] md:text-sm lg:text-base text-text mt-4 md:mt-6 leading-relaxed">
+                        我が子の学習の不安度・心の状態・
+                        <br className="md:hidden" />
+                        生活リズムを整理してみましょう
+                    </p>
+                </div>
+            </div>
         </section>
     );
 }
