@@ -21,7 +21,7 @@ export default function SchoolOptionsSection() {
                         alt="「選択肢一覧」看板を持つ人物"
                         width={140}
                         height={190}
-                        className="object-contain w-[120px] md:w-[240px] md:h-auto lg:w-[300px]"
+                        className="object-contain w-[100px] md:w-[200px] md:h-auto lg:w-[260px]"
                     />
                 </div>
 

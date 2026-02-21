@@ -6,7 +6,6 @@ import Image from "next/image";
 type FutoshokuItem = {
     id: string;
     title: string;
-    summary: string;
     detail: string;
     color: string;
 };
@@ -15,7 +14,6 @@ const items: FutoshokuItem[] = [
     {
         id: "fulltime",
         title: "全日制高校",
-        summary: "小規模・負担の軽い高校向き",
         detail:
             "できれば小規模で負担の軽い高校を選択したい。体調不良がそこまでひどくなく、朝から起きられる場合おすすめ。",
         color: "#6B8E6B",
@@ -23,7 +21,6 @@ const items: FutoshokuItem[] = [
     {
         id: "parttime",
         title: "定時制高校",
-        summary: "朝が苦手・自学が難しい方向き",
         detail:
             "朝起きられないかつ、自分で勉強するのがしんどいと感じる場合おすすめ",
         color: "#7B8FB2",
@@ -31,7 +28,6 @@ const items: FutoshokuItem[] = [
     {
         id: "correspondence",
         title: "通信制高校",
-        summary: "心身の不安が大きい方向き",
         detail:
             "体調面（心と体両方）の不安が大きい場合おすすめ。卒業率やサポート内容を事前に確認することをおすすめします（公立より私立の方が卒業率は高いという現状がある）。",
         color: "#B28B6B",
@@ -39,7 +35,6 @@ const items: FutoshokuItem[] = [
     {
         id: "special",
         title: "特別支援学校",
-        summary: "充実した支援が必要な方向き",
         detail:
             "今後もより充実した支援が必要である場合おすすめ。療育手帳が必須",
         color: "#9B7BB2",
@@ -108,14 +103,9 @@ export default function FutoshokuSection() {
                                                 backgroundColor: item.color,
                                             }}
                                         />
-                                        <div className="min-w-0">
-                                            <span className="block font-semibold text-[13px] md:text-[17px] lg:text-[19px] text-text tracking-wide">
-                                                {item.title}
-                                            </span>
-                                            <span className="block text-[10px] md:text-xs text-text-light mt-0.5 truncate">
-                                                {item.summary}
-                                            </span>
-                                        </div>
+                                        <span className="font-semibold text-[13px] md:text-[17px] lg:text-[19px] text-text tracking-wide">
+                                            {item.title}
+                                        </span>
                                     </div>
 
                                     {/* 展開アイコン（FAQ統一 +/× 型） */}
