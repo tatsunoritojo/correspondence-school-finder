@@ -14,7 +14,7 @@ export default function DiagnosisSection() {
                         alt="「おすすめ」看板を持つ人物"
                         width={140}
                         height={190}
-                        className="object-contain md:w-[240px] md:h-auto lg:w-[300px]"
+                        className="object-contain w-[100px] md:w-[200px] md:h-auto lg:w-[260px]"
                     />
                 </div>
                 <div className="flex-1 flex flex-col items-center pt-2 md:pt-0">
@@ -26,17 +26,23 @@ export default function DiagnosisSection() {
                     {/* 説明文 */}
                     <div
                         className="text-center text-text-sub mb-4 md:mb-8"
-                        style={{ lineHeight: 1.9 }}
+                        style={{ lineHeight: 2.0 }}
                     >
                         <p className="text-[13px] md:text-[17px] lg:text-[19px]">
-                            10人に1人が通信制高校を
+                            10人に1人が通信制高校を選ぶ時代になった今。
                             <br />
-                            選ぶ時代になった今、
+                            私たちは子どもの選択肢を
+                            <br className="md:hidden" />
+                            どう考えていけばいいのか。
                         </p>
-                        <p className="mt-1 md:mt-3 text-[13px] md:text-[17px] lg:text-[19px]">
-                            わが子にあった学校を
+                        <p className="mt-2 md:mt-4 text-[13px] md:text-[17px] lg:text-[19px]">
+                            できるだけ、わが子にあった学校が
+                            <br className="md:hidden" />
+                            見つかればと願うのは当たり前のこと。
                             <br />
-                            見つけるお手伝いをします。
+                            そんな願いを叶えるお手伝いをする
+                            <br className="md:hidden" />
+                            ための診断サイトです。
                         </p>
                     </div>
 
