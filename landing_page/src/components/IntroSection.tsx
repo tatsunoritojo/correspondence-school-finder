@@ -1,10 +1,10 @@
 export default function IntroSection() {
     return (
-        <section className="text-center py-4 md:py-0" style={{ lineHeight: 2.2 }}>
-            <p className="font-bold text-[15px] md:text-[22px] lg:text-[26px] mb-6 md:mb-10">
+        <section className="text-left md:text-center py-4 md:py-0" style={{ lineHeight: 2.2 }}>
+            <p className="font-bold text-[20px] md:text-[26px] lg:text-[30px] mb-6 md:mb-10 text-center">
                 合格できる学校ではなく、続けられる学校を。
             </p>
-            <div className="text-[14px] md:text-[17px] lg:text-[19px] text-text-sub space-y-4 md:space-y-6">
+            <div className="text-[14px] md:text-[16px] lg:text-[18px] text-text-sub space-y-4 md:space-y-6">
                 <p>
                     高校受験で、はじめて受験を経験する方も多くいらっしゃると思います。
                     <br className="hidden md:inline" />

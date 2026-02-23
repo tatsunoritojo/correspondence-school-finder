@@ -17,7 +17,7 @@ export default function SchoolOptionsSection() {
             <div className="flex flex-col items-center md:flex-row md:items-center gap-4 md:gap-10 lg:gap-16">
                 <div className="flex-shrink-0">
                     <Image
-                        src="/images/Selection.png"
+                        src="/images/Selection.webp"
                         alt="「選択肢一覧」看板を持つ人物"
                         width={140}
                         height={190}
@@ -26,7 +26,7 @@ export default function SchoolOptionsSection() {
                 </div>
 
                 <motion.div
-                    className="flex-1 pt-2 md:pt-0"
+                    className="flex-1 w-full pt-2 md:pt-0"
                     variants={staggerContainer}
                     initial="hidden"
                     whileInView="show"
@@ -39,7 +39,7 @@ export default function SchoolOptionsSection() {
                                 variants={staggerItem}
                                 onClick={() => setModalOption(opt)}
                                 aria-label={`${opt.label.replace(/\n/g, "")}の説明を見る`}
-                                className="border-[1.5px] md:border-2 border-border rounded-lg py-2.5 md:py-4 lg:py-5 px-1 md:px-2 text-xs md:text-base lg:text-lg font-medium leading-snug text-center whitespace-pre-line min-h-[56px] md:min-h-[80px] lg:min-h-[96px] flex items-center justify-center transition-all duration-200 select-none bg-white hover:-translate-y-px hover:shadow-md active:scale-[0.97]"
+                                className="border-[1.5px] md:border-2 border-text-light/40 rounded-lg py-2.5 md:py-4 lg:py-5 px-1 md:px-2 text-sm md:text-lg lg:text-xl font-medium leading-snug text-center whitespace-pre-line min-h-[56px] md:min-h-[80px] lg:min-h-[96px] flex items-center justify-center transition-all duration-200 select-none bg-white shadow-sm hover:-translate-y-px hover:shadow-lg active:scale-[0.97]"
                             >
                                 {opt.label}
                             </motion.button>
@@ -49,15 +49,15 @@ export default function SchoolOptionsSection() {
             </div>
 
             {/* 語彙の整理 */}
-            <div className="mt-4 md:mt-6 text-center text-[11.5px] md:text-[15px] lg:text-[16px] text-text-sub leading-relaxed">
+            <div className="mt-4 md:mt-6 bg-white/60 border border-border rounded-lg p-4 text-left text-[14px] md:text-[16px] lg:text-[18px] text-text-sub leading-relaxed">
                 <p className="font-bold mb-1">【語彙の整理】</p>
                 <p>
                     <span className="mr-1">•</span>
-                    高卒資格…学歴として高校卒業（高卒）となります。
+                    高卒資格…通信制高校を卒業すると、全日制高校と同じ「高等学校卒業資格」が得られます。学歴としては「高卒」となります。
                 </p>
                 <p>
                     <span className="mr-1">•</span>
-                    高卒扱い…
+                    高卒扱い…「高卒扱い」という言葉が使われることがありますが、通信制高校の卒業は正式な高校卒業資格です。制度上の違いはありません。
                 </p>
             </div>
 
