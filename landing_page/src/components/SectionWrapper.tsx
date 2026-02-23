@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
 import { fadeInUp, fadeInUpDelay } from "@/lib/animations";
+import { useAccessibility } from "@/contexts/AccessibilityContext";
 
 type Props = {
     children: ReactNode;
@@ -15,6 +16,12 @@ export default function SectionWrapper({
     className = "",
     delay,
 }: Props) {
+    const { reducedMotion } = useAccessibility();
+
+    if (reducedMotion) {
+        return <div className={className}>{children}</div>;
+    }
+
     const anim = delay != null ? fadeInUpDelay(delay) : fadeInUp;
 
     return (

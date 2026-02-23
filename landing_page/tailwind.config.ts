@@ -9,15 +9,15 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                bg: "#F5F0E8",
-                "bg-light": "#FAF7F2",
-                text: "#333333",
-                "text-sub": "#666666",
-                "text-light": "#999999",
-                accent: "#333333",
-                "card-bg": "#FFFFFF",
-                border: "#DDDDDD",
-                link: "#2C5F9E",
+                bg: "rgb(var(--color-bg-rgb) / <alpha-value>)",
+                "bg-light": "rgb(var(--color-bg-light-rgb) / <alpha-value>)",
+                text: "rgb(var(--color-text-rgb) / <alpha-value>)",
+                "text-sub": "rgb(var(--color-text-sub-rgb) / <alpha-value>)",
+                "text-light": "rgb(var(--color-text-light-rgb) / <alpha-value>)",
+                accent: "rgb(var(--color-accent-rgb) / <alpha-value>)",
+                "card-bg": "rgb(var(--color-card-bg-rgb) / <alpha-value>)",
+                border: "rgb(var(--color-border-rgb) / <alpha-value>)",
+                link: "rgb(var(--color-link-rgb) / <alpha-value>)",
             },
             fontFamily: {
                 sans: ['"Noto Sans JP"', "sans-serif"],

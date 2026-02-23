@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, Zen_Kurenaido } from "next/font/google";
 import "./globals.css";
+import { AccessibilityProvider } from "@/contexts/AccessibilityContext";
+import SkipLink from "@/components/SkipLink";
 
 const notoSansJP = Noto_Sans_JP({
     subsets: ["latin"],
@@ -61,7 +63,10 @@ export default function RootLayout({
             <body
                 className={`${notoSansJP.variable} ${zenKurenaido.variable} font-sans`}
             >
-                {children}
+                <AccessibilityProvider>
+                    <SkipLink />
+                    {children}
+                </AccessibilityProvider>
             </body>
         </html>
     );

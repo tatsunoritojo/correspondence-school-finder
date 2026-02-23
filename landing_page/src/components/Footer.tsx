@@ -2,7 +2,7 @@ import { FaInstagram } from "react-icons/fa";
 
 export default function Footer() {
     return (
-        <footer className="py-8 pb-10 md:py-0">
+        <footer className="py-8 pb-10 md:py-0" aria-label="お問い合わせ・所在地情報">
             {/* メインコンテンツ */}
             <div className="text-center">
                 {/* One drop ホームページ */}

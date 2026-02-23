@@ -2,13 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── CSS カスタムプロパティ（デフォルト値） ── */
+:root {
+  --color-bg-rgb: 245 240 232;
+  --color-bg-light-rgb: 250 247 242;
+  --color-text-rgb: 51 51 51;
+  --color-text-sub-rgb: 102 102 102;
+  --color-text-light-rgb: 153 153 153;
+  --color-accent-rgb: 51 51 51;
+  --color-card-bg-rgb: 255 255 255;
+  --color-border-rgb: 221 221 221;
+  --color-link-rgb: 44 95 158;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: #F5F0E8;
-  color: #333333;
+  background-color: rgb(var(--color-bg-rgb));
+  color: rgb(var(--color-text-rgb));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -151,4 +164,153 @@ body {
 
 .cta-pulse {
   animation: cta-pulse 2.5s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════════
+   アクセシビリティモード スタイル
+   ══════════════════════════════════════════════ */
+
+/* ── ハイコントラスト ── */
+html.a11y-high-contrast {
+  --color-bg-rgb: 0 0 0;
+  --color-bg-light-rgb: 24 24 24;
+  --color-text-rgb: 255 255 255;
+  --color-text-sub-rgb: 220 220 220;
+  --color-text-light-rgb: 180 180 180;
+  --color-accent-rgb: 255 255 255;
+  --color-card-bg-rgb: 30 30 30;
+  --color-border-rgb: 120 120 120;
+  --color-link-rgb: 100 180 255;
+}
+
+html.a11y-high-contrast .bg-white {
+  background-color: rgb(30 30 30) !important;
+}
+
+html.a11y-high-contrast .bg-\[\#fafafa\] {
+  background-color: rgb(40 40 40) !important;
+}
+
+html.a11y-high-contrast .bg-\[\#f0ece4\] {
+  background-color: rgb(50 50 50) !important;
+}
+
+html.a11y-high-contrast .border-gray-200 {
+  border-color: rgb(80 80 80) !important;
+}
+
+html.a11y-high-contrast .border-gray-300 {
+  border-color: rgb(80 80 80) !important;
+}
+
+/* bg-text / bg-accent + text-white の反転（MAP・トップに戻る等） */
+html.a11y-high-contrast .bg-text {
+  background-color: rgb(220 220 220) !important;
+  color: rgb(0 0 0) !important;
+}
+
+html.a11y-high-contrast .bg-accent.text-white {
+  background-color: rgb(220 220 220) !important;
+  color: rgb(0 0 0) !important;
+}
+
+/* hover 時の反転 */
+html.a11y-high-contrast .hover\:bg-accent:hover {
+  background-color: rgb(100 180 255) !important;
+  color: rgb(0 0 0) !important;
+}
+
+html.a11y-high-contrast .bg-white\/60 {
+  background-color: rgb(30 30 30 / 0.6) !important;
+}
+
+html.a11y-high-contrast .shadow-sm,
+html.a11y-high-contrast .shadow-md,
+html.a11y-high-contrast .shadow-xl {
+  box-shadow: 0 0 0 1px rgb(80 80 80) !important;
+}
+
+html.a11y-high-contrast .hover\:shadow-lg:hover {
+  box-shadow: 0 0 0 1px rgb(120 120 120) !important;
+}
+
+html.a11y-high-contrast .cta-pulse {
+  background-color: rgb(100 180 255) !important;
+  color: rgb(0 0 0) !important;
+  box-shadow: none !important;
+}
+
+html.a11y-high-contrast .scroll-indicator span {
+  color: rgb(180 180 180) !important;
+}
+
+html.a11y-high-contrast .scroll-indicator svg path,
+html.a11y-high-contrast .scroll-indicator svg line {
+  stroke: rgb(180 180 180) !important;
+}
+
+/* ── アニメーション停止 ── */
+html.a11y-reduced-motion *,
+html.a11y-reduced-motion *::before,
+html.a11y-reduced-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ── 文字拡大 ── */
+html.a11y-large-text {
+  zoom: 1.5;
+}
+
+/* fixed要素の打消し（BackToTopなど小さいUI） */
+html.a11y-large-text .fixed {
+  zoom: calc(1 / 1.5);
+}
+
+/* SchoolModalは拡大を維持 */
+html.a11y-large-text .fixed.school-modal-overlay {
+  zoom: 1;
+}
+
+/* トグル: html zoom を打消した上で目標倍率を適用 */
+html.a11y-large-text .fixed.a11y-toggle-container {
+  zoom: calc(var(--a11y-target-zoom) / 1.5);
+}
+
+/* ── アクセシビリティトグル ── */
+.a11y-toggle-container {
+  --a11y-target-zoom: 1.25;
+  zoom: var(--a11y-target-zoom);
+}
+
+.a11y-toggle-container h3 {
+  font-size: 17px;
+}
+
+.a11y-toggle-container .a11y-setting-label {
+  font-size: 15px;
+}
+
+.a11y-toggle-container .a11y-setting-desc {
+  font-size: 13px;
+}
+
+@media (min-width: 768px) {
+  .a11y-toggle-container {
+    --a11y-target-zoom: 1.5;
+  }
+}
+
+/* ── フォーカスインジケーター強化 ── */
+html.a11y-enhanced-focus *:focus-visible {
+  outline: 3px solid #2C5F9E !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 6px rgba(44, 95, 158, 0.2) !important;
+}
+
+/* ── リンク下線 ── */
+html.a11y-underline-links a:not(.cta-pulse):not([role="button"]) {
+  text-decoration: underline !important;
 }

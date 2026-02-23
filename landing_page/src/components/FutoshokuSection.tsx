@@ -49,7 +49,7 @@ export default function FutoshokuSection() {
     };
 
     return (
-        <section className="py-4 md:py-0">
+        <section className="py-4 md:py-0" aria-label="不登校の場合の選び方">
             <div className="flex flex-col items-center md:flex-row md:items-center gap-3 md:gap-10 lg:gap-16">
                 {/* イラスト */}
                 <div className="flex-shrink-0">
@@ -66,9 +66,9 @@ export default function FutoshokuSection() {
                 <div className="flex-1 w-full pt-2 md:pt-0">
                     {/* セクションタイトル */}
                     <div className="mb-3 md:mb-5">
-                        <h3 className="font-bold text-[17px] md:text-[22px] lg:text-[26px] text-text tracking-wide">
+                        <h2 className="font-bold text-[17px] md:text-[22px] lg:text-[26px] text-text tracking-wide">
                             不登校状態の場合の選び方のポイント
-                        </h3>
+                        </h2>
                         <p className="text-[14px] md:text-[16px] lg:text-[18px] text-text-light mt-1 leading-relaxed">
                             それぞれの学校の特徴を、ゆっくり見てみましょう
                         </p>
@@ -88,8 +88,10 @@ export default function FutoshokuSection() {
                                     }`}
                                 >
                                     <button
+                                        id={`futoshoku-btn-${item.id}`}
                                         onClick={() => toggle(item.id)}
                                         aria-expanded={isOpen}
+                                        aria-controls={`futoshoku-panel-${item.id}`}
                                         className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between p-5 md:p-6 text-left gap-4"
                                         style={{
                                             WebkitTapHighlightColor: "transparent",
@@ -115,6 +117,9 @@ export default function FutoshokuSection() {
 
                                     {/* 展開コンテンツ */}
                                     <div
+                                        id={`futoshoku-panel-${item.id}`}
+                                        role="region"
+                                        aria-labelledby={`futoshoku-btn-${item.id}`}
                                         className="overflow-hidden transition-all duration-300"
                                         style={{
                                             maxHeight: isOpen ? "400px" : "0px",
