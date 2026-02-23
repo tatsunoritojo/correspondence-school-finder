@@ -44,7 +44,7 @@ export default function HeroSection() {
 
             {/* 右サイド: 画像 + ご案内します */}
             <Wrapper
-                className="flex-1 flex justify-center md:justify-end"
+                className="flex-1 flex justify-center md:justify-end a11y-hero-image"
                 {...rightProps}
             >
                 <div className="relative">
