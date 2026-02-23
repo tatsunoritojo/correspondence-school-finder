@@ -15,7 +15,7 @@ export default function DiagnosisSection() {
                 </div>
                 <div className="flex-1 w-full flex flex-col items-center pt-2 md:pt-0">
                     {/* セクション見出し */}
-                    <h2 className="border-b-2 border-accent pb-1 mb-3 md:border-2 md:border-accent md:rounded-md md:px-10 md:py-3 lg:px-14 lg:py-4 font-bold text-[20px] md:text-[26px] lg:text-[30px] tracking-wider md:mb-6 lg:mb-8">
+                    <h2 className="border-b-2 border-accent pb-1 mb-3 font-bold text-[20px] md:text-[26px] lg:text-[30px] tracking-wider md:mb-6 lg:mb-8">
                         通信制高校診断
                     </h2>
 
