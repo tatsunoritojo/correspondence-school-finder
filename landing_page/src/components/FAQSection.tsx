@@ -18,7 +18,7 @@ export default function FAQSection() {
 
     return (
         <section className="py-4 md:py-0">
-            <div className="flex items-start md:items-center gap-3 md:gap-10 lg:gap-16">
+            <div className="flex flex-col items-center md:flex-row md:items-center gap-3 md:gap-10 lg:gap-16">
                 {/* イラスト */}
                 <div className="flex-shrink-0">
                     <Image
@@ -31,7 +31,7 @@ export default function FAQSection() {
                 </div>
 
                 {/* Q&A リスト */}
-                <div className="flex-1 pt-2 md:pt-0">
+                <div className="flex-1 w-full pt-2 md:pt-0">
                     {faqItems.map((item, i) => {
                         const isOpen = openIds.has(item.id);
                         return (
@@ -44,7 +44,7 @@ export default function FAQSection() {
                                 <button
                                     onClick={() => toggle(item.id)}
                                     aria-expanded={isOpen}
-                                    className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between py-3.5 md:py-5 px-1 text-[13px] md:text-[17px] lg:text-[19px] font-semibold text-text text-left gap-2 md:gap-4"
+                                    className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between py-3.5 md:py-5 px-1 text-[15px] md:text-[19px] lg:text-[21px] font-semibold text-text text-left gap-2 md:gap-4"
                                     style={{ WebkitTapHighlightColor: "transparent" }}
                                 >
                                     <span>{item.question}</span>
@@ -65,7 +65,7 @@ export default function FAQSection() {
                                     }}
                                 >
                                     <p
-                                        className="px-1 pb-3.5 md:pb-5 text-text-sub text-[12.5px] md:text-[15px] lg:text-[17px]"
+                                        className="px-1 pb-3.5 md:pb-5 text-text-sub text-[14.5px] md:text-[17px] lg:text-[19px]"
                                         style={{ lineHeight: 1.9 }}
                                     >
                                         {item.answer}

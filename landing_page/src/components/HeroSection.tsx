@@ -6,21 +6,21 @@ import { slideInLeft, slideInRight } from "@/lib/animations";
 
 export default function HeroSection() {
     return (
-        <section className="pt-8 pb-0 flex items-center md:items-center md:gap-8 lg:gap-16">
+        <section className="pt-8 pb-0 flex flex-col items-center gap-4 md:flex-row md:items-center md:gap-8 lg:gap-16">
             {/* 左サイド: テキスト */}
             <motion.div
-                className="flex-1 pt-4 md:pt-0"
+                className="flex-1 pt-4 md:pt-0 text-center md:text-left"
                 {...slideInLeft}
             >
-                <p className="font-hand text-sm md:text-lg lg:text-xl text-text-sub mb-2 md:mb-4">
+                <p className="font-hand text-base md:text-xl lg:text-2xl text-text-sub mb-2 md:mb-4">
                     義務教育のその先へ
                 </p>
-                <h1 className="font-black leading-tight tracking-wider m-0 text-[36px] md:text-[56px] lg:text-[72px]">
+                <h1 className="font-black leading-tight tracking-wider m-0 text-[38px] md:text-[58px] lg:text-[74px]">
                     こどもの進路
                     <br />
                     案内所
                 </h1>
-                <p className="mt-6 md:mt-10 text-[15px] md:text-[20px] lg:text-[24px] font-medium leading-relaxed text-center md:text-left">
+                <p className="mt-6 md:mt-10 text-[17px] md:text-[22px] lg:text-[26px] font-medium leading-relaxed text-center md:text-left">
                     中学校卒業後の選択肢は
                     <br />
                     1つじゃない。
@@ -29,7 +29,7 @@ export default function HeroSection() {
 
             {/* 右サイド: 画像 + ご案内します */}
             <motion.div
-                className="flex-1 flex justify-end"
+                className="flex-1 flex justify-center md:justify-end"
                 {...slideInRight}
                 transition={{ ...slideInRight.transition, delay: 0.2 }}
             >
@@ -49,7 +49,7 @@ export default function HeroSection() {
                         width={280}
                         height={260}
                         priority
-                        className="object-contain md:w-[420px] md:h-auto lg:w-[520px]"
+                        className="object-contain max-w-[200px] md:max-w-none md:w-[420px] md:h-auto lg:w-[520px]"
                     />
                 </div>
             </motion.div>

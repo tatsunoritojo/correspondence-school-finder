@@ -16,7 +16,7 @@ export default function Footer() {
                 </a>
 
                 {/* 住所 */}
-                <p className="text-sm md:text-lg font-medium mb-3 md:mb-4">
+                <p className="text-base md:text-xl font-medium mb-3 md:mb-4">
                     広島県東広島市西条町下見303-1
                 </p>
 
@@ -26,7 +26,7 @@ export default function Footer() {
                         href="https://maps.app.goo.gl/KF9t6frVCMa8K23J6"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block bg-text text-white rounded px-7 py-1.5 md:px-10 md:py-2 text-[13px] md:text-[16px] font-medium no-underline tracking-wider transition-all duration-200 hover:opacity-80"
+                        className="inline-block bg-text text-white rounded px-7 py-1.5 md:px-10 md:py-2 text-[15px] md:text-[18px] font-medium no-underline tracking-wider transition-all duration-200 hover:opacity-80"
                     >
                         MAP
                     </a>
@@ -34,7 +34,7 @@ export default function Footer() {
 
                 {/* 営業時間 */}
                 <div
-                    className="text-[13px] md:text-[16px] lg:text-[17px] text-text-sub mb-2"
+                    className="text-[15px] md:text-[18px] lg:text-[19px] text-text-sub mb-2"
                     style={{ lineHeight: 2 }}
                 >
                     <p className="font-medium">営業時間</p>
@@ -44,7 +44,7 @@ export default function Footer() {
                 </div>
 
                 {/* 案内テキスト */}
-                <p className="text-xs md:text-sm text-text-light mb-3 md:mb-5">
+                <p className="text-sm md:text-base text-text-light mb-3 md:mb-5">
                     お困りごとがあれば、ご相談ください。
                 </p>
 

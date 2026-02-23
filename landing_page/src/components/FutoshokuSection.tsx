@@ -50,7 +50,7 @@ export default function FutoshokuSection() {
 
     return (
         <section className="py-4 md:py-0">
-            <div className="flex items-start md:items-center gap-3 md:gap-10 lg:gap-16">
+            <div className="flex flex-col items-center md:flex-row md:items-center gap-3 md:gap-10 lg:gap-16">
                 {/* イラスト */}
                 <div className="flex-shrink-0">
                     <Image
@@ -63,15 +63,13 @@ export default function FutoshokuSection() {
                 </div>
 
                 {/* 右コンテンツ: タイトル + アコーディオン + メッセージ */}
-                <div className="flex-1 pt-2 md:pt-0">
+                <div className="flex-1 w-full pt-2 md:pt-0">
                     {/* セクションタイトル */}
                     <div className="mb-3 md:mb-5">
-                        <h3 className="font-bold text-[15px] md:text-xl lg:text-2xl text-text tracking-wide">
-                            不登校状態の場合の
-                            <br className="md:hidden" />
-                            選び方のポイント
+                        <h3 className="font-bold text-[17px] md:text-[22px] lg:text-[26px] text-text tracking-wide">
+                            不登校状態の場合の選び方のポイント
                         </h3>
-                        <p className="text-[11px] md:text-xs text-text-light mt-1 leading-relaxed">
+                        <p className="text-[13px] md:text-sm text-text-light mt-1 leading-relaxed">
                             お子様の状態に合わせた進路選択のヒント
                         </p>
                     </div>
@@ -103,7 +101,7 @@ export default function FutoshokuSection() {
                                                 backgroundColor: item.color,
                                             }}
                                         />
-                                        <span className="font-semibold text-[13px] md:text-[17px] lg:text-[19px] text-text tracking-wide">
+                                        <span className="font-semibold text-[15px] md:text-[19px] lg:text-[21px] text-text tracking-wide">
                                             {item.title}
                                         </span>
                                     </div>
@@ -130,7 +128,7 @@ export default function FutoshokuSection() {
                                     }}
                                 >
                                     <p
-                                        className="px-1 pb-3 md:pb-4 text-text-sub text-[12px] md:text-[15px] lg:text-[17px]"
+                                        className="px-1 pb-3 md:pb-4 text-text-sub text-[14px] md:text-[17px] lg:text-[19px]"
                                         style={{ lineHeight: 1.9 }}
                                     >
                                         {item.detail}
@@ -141,10 +139,8 @@ export default function FutoshokuSection() {
                     })}
 
                     {/* フッターメッセージ */}
-                    <p className="text-center font-medium text-[12px] md:text-sm lg:text-base text-text mt-4 md:mt-6 leading-relaxed">
-                        我が子の学習の不安度・心の状態・
-                        <br className="md:hidden" />
-                        生活リズムを整理してみましょう
+                    <p className="text-center font-medium text-[14px] md:text-base lg:text-lg text-text mt-4 md:mt-6 leading-relaxed">
+                        我が子の学習の不安度・心の状態・生活リズムを整理してみましょう
                     </p>
                 </div>
             </div>

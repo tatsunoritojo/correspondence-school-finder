@@ -76,7 +76,7 @@ export default function Home() {
             {/* ── セクション7: Footer ── */}
             <SnapSection>
                 <SectionWrapper>
-                    <p className="text-center text-[13px] md:text-[15px] text-text font-bold font-hand py-2 pb-4 tracking-wider">
+                    <p className="text-center text-[15px] md:text-[17px] text-text font-bold font-hand py-2 pb-4 tracking-wider">
                         誰かに話を聞いてほしいなら・・・
                     </p>
                 </SectionWrapper>
