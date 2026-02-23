@@ -17,7 +17,7 @@ export default function FAQSection() {
     };
 
     return (
-        <section className="py-10 md:py-0">
+        <section className="py-10 md:py-0" aria-label="よくあるご質問">
             <div className="flex flex-col items-center md:flex-row md:items-start gap-6 md:gap-10 lg:gap-16">
                 {/* イラスト */}
                 <div className="flex-shrink-0">
@@ -69,8 +69,10 @@ export default function FAQSection() {
                                                 }`}
                                             >
                                                 <button
+                                                    id={`faq-btn-${item.id}`}
                                                     onClick={() => toggle(item.id)}
                                                     aria-expanded={isOpen}
+                                                    aria-controls={`faq-panel-${item.id}`}
                                                     className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between p-5 md:p-6 text-[15px] md:text-[18px] lg:text-[20px] font-semibold text-text text-left gap-4"
                                                     style={{ WebkitTapHighlightColor: "transparent" }}
                                                 >
@@ -82,6 +84,9 @@ export default function FAQSection() {
 
                                                 {/* ④ 構造化された回答 */}
                                                 <div
+                                                    id={`faq-panel-${item.id}`}
+                                                    role="region"
+                                                    aria-labelledby={`faq-btn-${item.id}`}
                                                     className="overflow-hidden transition-all duration-300"
                                                     style={{
                                                         maxHeight: isOpen ? "600px" : "0px",

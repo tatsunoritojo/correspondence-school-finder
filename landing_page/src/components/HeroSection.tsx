@@ -3,14 +3,29 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { slideInLeft, slideInRight } from "@/lib/animations";
+import { useAccessibility } from "@/contexts/AccessibilityContext";
 
 export default function HeroSection() {
+    const { reducedMotion } = useAccessibility();
+
+    const Wrapper = reducedMotion ? "div" : motion.div;
+    const leftProps = reducedMotion ? {} : slideInLeft;
+    const rightProps = reducedMotion
+        ? {}
+        : {
+              ...slideInRight,
+              transition: { ...slideInRight.transition, delay: 0.2 },
+          };
+
     return (
-        <section className="pt-8 pb-0 flex flex-col items-center gap-4 md:flex-row md:items-center md:gap-8 lg:gap-16">
+        <section
+            className="pt-8 pb-0 flex flex-col items-center gap-4 md:flex-row md:items-center md:gap-8 lg:gap-16"
+            aria-label="こどもの進路案内所 トップ"
+        >
             {/* 左サイド: テキスト */}
-            <motion.div
+            <Wrapper
                 className="flex-1 pt-4 md:pt-0 text-center md:text-left"
-                {...slideInLeft}
+                {...leftProps}
             >
                 <p className="font-hand text-base md:text-xl lg:text-2xl text-text-sub mb-2 md:mb-4">
                     義務教育のその先へ
@@ -25,13 +40,12 @@ export default function HeroSection() {
                     <br />
                     1つじゃない。
                 </p>
-            </motion.div>
+            </Wrapper>
 
             {/* 右サイド: 画像 + ご案内します */}
-            <motion.div
+            <Wrapper
                 className="flex-1 flex justify-center md:justify-end"
-                {...slideInRight}
-                transition={{ ...slideInRight.transition, delay: 0.2 }}
+                {...rightProps}
             >
                 <div className="relative">
                     <span
@@ -52,7 +66,7 @@ export default function HeroSection() {
                         className="object-contain max-w-[200px] md:max-w-none md:w-[420px] md:h-auto lg:w-[520px]"
                     />
                 </div>
-            </motion.div>
+            </Wrapper>
         </section>
     );
 }

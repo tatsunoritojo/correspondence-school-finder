@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function DiagnosisSection() {
     return (
-        <section className="py-4 md:py-0">
+        <section className="py-4 md:py-0" aria-label="通信制高校診断">
             <div className="flex flex-col items-center md:flex-row md:items-center gap-3 md:gap-10 lg:gap-16 mb-5 md:mb-0">
                 <div className="flex-shrink-0">
                     <Image
@@ -15,9 +15,9 @@ export default function DiagnosisSection() {
                 </div>
                 <div className="flex-1 w-full flex flex-col items-center pt-2 md:pt-0">
                     {/* セクション見出し */}
-                    <div className="border-b-2 border-accent pb-1 mb-3 md:border-2 md:border-accent md:rounded-md md:px-10 md:py-3 lg:px-14 lg:py-4 font-bold text-[20px] md:text-[26px] lg:text-[30px] tracking-wider md:mb-6 lg:mb-8">
+                    <h2 className="border-b-2 border-accent pb-1 mb-3 md:border-2 md:border-accent md:rounded-md md:px-10 md:py-3 lg:px-14 lg:py-4 font-bold text-[20px] md:text-[26px] lg:text-[30px] tracking-wider md:mb-6 lg:mb-8">
                         通信制高校診断
-                    </div>
+                    </h2>
 
                     {/* 説明文 */}
                     <div
@@ -35,6 +35,10 @@ export default function DiagnosisSection() {
                             そんな願いを叶えるお手伝いをするための診断サイトです。
                         </p>
                     </div>
+
+                    <p className="text-[12px] md:text-[13px] text-text-light mb-3 md:mb-4">
+                        会員登録・個人情報の入力は一切不要です
+                    </p>
 
                     {/* CTAボタン */}
                     <a

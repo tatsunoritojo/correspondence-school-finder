@@ -6,14 +6,29 @@ import Image from "next/image";
 import { schoolOptions } from "@/data/schoolOptions";
 import SchoolModal from "./SchoolModal";
 import { staggerContainer, staggerItem } from "@/lib/animations";
+import { useAccessibility } from "@/contexts/AccessibilityContext";
 
 export default function SchoolOptionsSection() {
     const [modalOption, setModalOption] = useState<
         (typeof schoolOptions)[number] | null
     >(null);
+    const { reducedMotion } = useAccessibility();
+
+    const ContainerWrapper = reducedMotion ? "div" : motion.div;
+    const ItemWrapper = reducedMotion ? "button" : motion.button;
+
+    const containerProps = reducedMotion
+        ? {}
+        : {
+              variants: staggerContainer,
+              initial: "hidden" as const,
+              whileInView: "show" as const,
+              viewport: { once: true, margin: "-50px" },
+          };
 
     return (
-        <section className="py-4 md:py-0">
+        <section className="py-4 md:py-0" aria-label="進路の選択肢一覧">
+            <h2 className="sr-only">進路の選択肢</h2>
             <div className="flex flex-col items-center md:flex-row md:items-center gap-4 md:gap-10 lg:gap-16">
                 <div className="flex-shrink-0">
                     <Image
@@ -25,27 +40,26 @@ export default function SchoolOptionsSection() {
                     />
                 </div>
 
-                <motion.div
+                <ContainerWrapper
                     className="flex-1 w-full pt-2 md:pt-0"
-                    variants={staggerContainer}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, margin: "-50px" }}
+                    {...containerProps}
                 >
                     <div className="grid grid-cols-3 gap-2 md:gap-4 lg:gap-5 mb-4">
                         {schoolOptions.map((opt) => (
-                            <motion.button
+                            <ItemWrapper
                                 key={opt.id}
-                                variants={staggerItem}
+                                {...(reducedMotion
+                                    ? {}
+                                    : { variants: staggerItem })}
                                 onClick={() => setModalOption(opt)}
                                 aria-label={`${opt.label.replace(/\n/g, "")}の説明を見る`}
                                 className="border-[1.5px] md:border-2 border-text-light/40 rounded-lg py-2.5 md:py-4 lg:py-5 px-1 md:px-2 text-sm md:text-lg lg:text-xl font-medium leading-snug text-center whitespace-pre-line min-h-[56px] md:min-h-[80px] lg:min-h-[96px] flex items-center justify-center transition-all duration-200 select-none bg-white shadow-sm hover:-translate-y-px hover:shadow-lg active:scale-[0.97]"
                             >
                                 {opt.label}
-                            </motion.button>
+                            </ItemWrapper>
                         ))}
                     </div>
-                </motion.div>
+                </ContainerWrapper>
             </div>
 
             {/* 語彙の整理 */}
@@ -57,7 +71,7 @@ export default function SchoolOptionsSection() {
                 </p>
                 <p>
                     <span className="mr-1">•</span>
-                    高卒扱い…「高卒扱い」という言葉が使われることがありますが、通信制高校の卒業は正式な高校卒業資格です。制度上の違いはありません。
+                    高卒扱い…正式な「高卒資格」ではなく、高校卒業と同等として扱われることを意味します。専修学校高等課程・高等専門学校・特別支援学校・高卒認定試験がこれに該当します。進学や就職の際の扱いは、進路先により異なる場合があります。
                 </p>
             </div>
 

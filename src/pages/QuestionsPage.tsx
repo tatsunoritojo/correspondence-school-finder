@@ -135,7 +135,7 @@ const QuestionsPage = () => {
           <div className="absolute top-0 right-0 w-32 h-32 bg-orange-100 rounded-bl-[4rem] -mr-8 -mt-8 opacity-50 pointer-events-none"></div>
 
           <span className="relative inline-block px-3 py-1 bg-orange-100 text-orange-700 text-[10px] font-bold tracking-wider rounded-full mb-6">
-            {currentQ.type === "knockout" ? "一番たいせつなこと" : `Q${currentIdx}`}
+            {currentQ.type === "knockout" ? "一番たいせつなこと" : `Q${currentIdx + 1}`}
           </span>
 
           <h2 className="relative text-xl md:text-2xl font-bold text-stone-700 mb-10 leading-relaxed">
