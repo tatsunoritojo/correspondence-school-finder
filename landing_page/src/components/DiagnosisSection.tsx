@@ -15,7 +15,7 @@ export default function DiagnosisSection() {
                 </div>
                 <div className="flex-1 w-full flex flex-col items-center pt-2 md:pt-0">
                     {/* セクション見出し */}
-                    <div className="border-b-2 border-accent pb-1 mb-3 md:border-2 md:border-accent md:rounded-md md:px-10 md:py-3 lg:px-14 lg:py-4 font-bold text-[17px] md:text-[24px] lg:text-[28px] tracking-wider md:mb-6 lg:mb-8">
+                    <div className="border-b-2 border-accent pb-1 mb-3 md:border-2 md:border-accent md:rounded-md md:px-10 md:py-3 lg:px-14 lg:py-4 font-bold text-[20px] md:text-[26px] lg:text-[30px] tracking-wider md:mb-6 lg:mb-8">
                         通信制高校診断
                     </div>
 
@@ -24,12 +24,12 @@ export default function DiagnosisSection() {
                         className="text-left md:text-center text-text-sub mb-3 md:mb-8"
                         style={{ lineHeight: 2.0 }}
                     >
-                        <p className="text-[15px] md:text-[19px] lg:text-[21px]">
+                        <p className="text-[14px] md:text-[16px] lg:text-[18px]">
                             10人に1人が通信制高校を選ぶ時代になった今。
                             <br className="hidden md:inline" />
                             私たちは子どもの選択肢をどう考えていけばいいのか。
                         </p>
-                        <p className="mt-2 md:mt-4 text-[15px] md:text-[19px] lg:text-[21px]">
+                        <p className="mt-2 md:mt-4 text-[14px] md:text-[16px] lg:text-[18px]">
                             できるだけ、わが子にあった学校が見つかればと願うのは当たり前のこと。
                             <br className="hidden md:inline" />
                             そんな願いを叶えるお手伝いをするための診断サイトです。

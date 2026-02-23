@@ -15,28 +15,28 @@ const items: FutoshokuItem[] = [
         id: "fulltime",
         title: "全日制高校",
         detail:
-            "できれば小規模で負担の軽い高校を選択したい。体調不良がそこまでひどくなく、朝から起きられる場合おすすめ。",
+            "朝から通える体調であれば、小規模で負担の少ない全日制高校という選択肢もあります。",
         color: "#6B8E6B",
     },
     {
         id: "parttime",
         title: "定時制高校",
         detail:
-            "朝起きられないかつ、自分で勉強するのがしんどいと感じる場合おすすめ",
+            "朝が難しく、自分だけで勉強を進めるのがつらいと感じるお子さまに向いている形です。",
         color: "#7B8FB2",
     },
     {
         id: "correspondence",
         title: "通信制高校",
         detail:
-            "体調面（心と体両方）の不安が大きい場合おすすめ。卒業率やサポート内容を事前に確認することをおすすめします（公立より私立の方が卒業率は高いという現状がある）。",
+            "心や体の不安が大きいときに、自分のペースで学べる環境です。卒業率やサポート体制は学校ごとに異なるため、事前の確認が大切です（私立の方が卒業率が高い傾向があります）。",
         color: "#B28B6B",
     },
     {
         id: "special",
         title: "特別支援学校",
         detail:
-            "今後もより充実した支援が必要である場合おすすめ。療育手帳が必須",
+            "より手厚い支援のもとで学びたい場合の選択肢です。入学には療育手帳が必要になります。",
         color: "#9B7BB2",
     },
 ];
@@ -69,78 +69,74 @@ export default function FutoshokuSection() {
                         <h3 className="font-bold text-[17px] md:text-[22px] lg:text-[26px] text-text tracking-wide">
                             不登校状態の場合の選び方のポイント
                         </h3>
-                        <p className="text-[13px] md:text-sm text-text-light mt-1 leading-relaxed">
-                            お子様の状態に合わせた進路選択のヒント
+                        <p className="text-[14px] md:text-[16px] lg:text-[18px] text-text-light mt-1 leading-relaxed">
+                            それぞれの学校の特徴を、ゆっくり見てみましょう
                         </p>
                     </div>
 
-                    {/* アコーディオンリスト（FAQ準拠ボーダー区切り型） */}
-                    {items.map((item, i) => {
-                        const isOpen = openId === item.id;
-                        return (
-                            <div
-                                key={item.id}
-                                className={
-                                    i < items.length - 1
-                                        ? "border-b border-border"
-                                        : ""
-                                }
-                            >
-                                <button
-                                    onClick={() => toggle(item.id)}
-                                    aria-expanded={isOpen}
-                                    className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between py-3 md:py-4 px-1 text-left gap-2 md:gap-4"
-                                    style={{
-                                        WebkitTapHighlightColor: "transparent",
-                                    }}
+                    {/* アコーディオンリスト（FAQカード型統一） */}
+                    <div className="space-y-3 md:space-y-4">
+                        {items.map((item) => {
+                            const isOpen = openId === item.id;
+                            return (
+                                <div
+                                    key={item.id}
+                                    className={`rounded-lg border transition-colors duration-200 ${
+                                        isOpen
+                                            ? "bg-white border-accent/30"
+                                            : "bg-white border-gray-200"
+                                    }`}
                                 >
-                                    <div className="flex items-center gap-2.5 md:gap-3 min-w-0">
-                                        <span
-                                            className="flex-shrink-0 w-2 h-2 rounded-full"
-                                            style={{
-                                                backgroundColor: item.color,
-                                            }}
-                                        />
-                                        <span className="font-semibold text-[15px] md:text-[19px] lg:text-[21px] text-text tracking-wide">
-                                            {item.title}
-                                        </span>
-                                    </div>
-
-                                    {/* 展開アイコン（FAQ統一 +/× 型） */}
-                                    <span
-                                        className="flex-shrink-0 w-[22px] h-[22px] md:w-[30px] md:h-[30px] flex items-center justify-center rounded-full border-[1.5px] border-border text-base md:text-xl text-text-light transition-transform duration-250"
+                                    <button
+                                        onClick={() => toggle(item.id)}
+                                        aria-expanded={isOpen}
+                                        className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between p-5 md:p-6 text-left gap-4"
                                         style={{
-                                            transform: isOpen
-                                                ? "rotate(45deg)"
-                                                : "rotate(0deg)",
+                                            WebkitTapHighlightColor: "transparent",
                                         }}
                                     >
-                                        +
-                                    </span>
-                                </button>
+                                        <div className="flex items-center gap-2.5 md:gap-3 min-w-0">
+                                            <span
+                                                className="flex-shrink-0 w-1.5 h-1.5 rounded-full opacity-50"
+                                                style={{
+                                                    backgroundColor: item.color,
+                                                }}
+                                            />
+                                            <span className="font-semibold text-[15px] md:text-[18px] lg:text-[20px] text-text tracking-wide leading-relaxed">
+                                                {item.title}
+                                            </span>
+                                        </div>
 
-                                {/* 展開コンテンツ */}
-                                <div
-                                    className="overflow-hidden transition-all duration-300"
-                                    style={{
-                                        maxHeight: isOpen ? "400px" : "0px",
-                                        opacity: isOpen ? 1 : 0,
-                                    }}
-                                >
-                                    <p
-                                        className="px-1 pb-3 md:pb-4 text-text-sub text-[14px] md:text-[17px] lg:text-[19px]"
-                                        style={{ lineHeight: 1.9 }}
+                                        {/* 展開アイコン（FAQ統一 ＋/− 型） */}
+                                        <span className="flex-shrink-0 w-[28px] h-[28px] md:w-[32px] md:h-[32px] flex items-center justify-center rounded-full border-2 border-accent/40 text-accent text-lg md:text-xl font-bold transition-all duration-200">
+                                            {isOpen ? "−" : "＋"}
+                                        </span>
+                                    </button>
+
+                                    {/* 展開コンテンツ */}
+                                    <div
+                                        className="overflow-hidden transition-all duration-300"
+                                        style={{
+                                            maxHeight: isOpen ? "400px" : "0px",
+                                            opacity: isOpen ? 1 : 0,
+                                        }}
                                     >
-                                        {item.detail}
-                                    </p>
+                                        <div className="px-5 pb-5 md:px-6 md:pb-6">
+                                            <div className="bg-[#fafafa] rounded-md border-t border-gray-200 pt-4 px-4 pb-4 md:px-5 md:pb-5">
+                                                <p className="text-[14px] md:text-[16px] lg:text-[18px] text-text-sub leading-relaxed">
+                                                    {item.detail}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
 
                     {/* フッターメッセージ */}
-                    <p className="text-center font-medium text-[14px] md:text-base lg:text-lg text-text mt-4 md:mt-6 leading-relaxed">
-                        我が子の学習の不安度・心の状態・生活リズムを整理してみましょう
+                    <p className="text-center font-medium text-[12px] md:text-[13px] text-text-sub mt-6 md:mt-8 leading-relaxed">
+                        お子さまの学習の不安度・心の状態・生活リズムを、ゆっくり振り返ってみましょう。
                     </p>
                 </div>
             </div>

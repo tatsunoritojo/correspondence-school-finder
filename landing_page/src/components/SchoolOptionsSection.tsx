@@ -49,15 +49,15 @@ export default function SchoolOptionsSection() {
             </div>
 
             {/* 語彙の整理 */}
-            <div className="mt-4 md:mt-6 bg-white/60 border border-border rounded-lg p-4 text-left text-[13.5px] md:text-[17px] lg:text-[18px] text-text-sub leading-relaxed">
+            <div className="mt-4 md:mt-6 bg-white/60 border border-border rounded-lg p-4 text-left text-[14px] md:text-[16px] lg:text-[18px] text-text-sub leading-relaxed">
                 <p className="font-bold mb-1">【語彙の整理】</p>
                 <p>
                     <span className="mr-1">•</span>
-                    高卒資格…学歴として高校卒業（高卒）となります。
+                    高卒資格…通信制高校を卒業すると、全日制高校と同じ「高等学校卒業資格」が得られます。学歴としては「高卒」となります。
                 </p>
                 <p>
                     <span className="mr-1">•</span>
-                    高卒扱い…
+                    高卒扱い…「高卒扱い」という言葉が使われることがありますが、通信制高校の卒業は正式な高校卒業資格です。制度上の違いはありません。
                 </p>
             </div>
 
