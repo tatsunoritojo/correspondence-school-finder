@@ -170,10 +170,16 @@ body {
    アクセシビリティモード スタイル
    ══════════════════════════════════════════════ */
 
-/* ── 共通: イラスト非表示 + コンテンツ横幅最大化 ── */
-html.a11y-active section > div > .flex-shrink-0,
-html.a11y-active .a11y-hero-image {
+/* ── 共通: イラスト非表示 + コンテンツ横幅最大化（Hero画像は維持） ── */
+html.a11y-active section > div > .flex-shrink-0 {
   display: none !important;
+}
+
+/* Hero画像: a11yモードでもモバイルサイズで表示を維持 */
+html.a11y-active .a11y-hero-image img {
+  max-width: 200px !important;
+  width: 200px !important;
+  height: auto !important;
 }
 
 /* 通信制高校診断: PC版のボックス装飾をモバイル版に統一 */
@@ -296,6 +302,28 @@ html.a11y-large-text .snap-section--scroll {
   scroll-snap-align: none !important;
   display: block !important;
   overflow: visible !important;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
+/* 拡大時のセクション区切り線（ScrollArrow が兄弟に挟まるため隣接セレクタ不可） */
+html.a11y-large-text .snap-section::before,
+html.a11y-large-text .snap-section--scroll::before {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 1px;
+  background: rgb(var(--color-border-rgb));
+  opacity: 0.6;
+  margin: 0 auto 0;
+  position: static;
+  transform: none;
+}
+
+/* 最初のセクション（Hero）は区切り線不要 */
+html.a11y-large-text .snap-container > .snap-section:first-child::before,
+html.a11y-large-text .snap-container > .snap-section--scroll:first-child::before {
+  display: none;
 }
 
 /* fixed要素の打消し（BackToTopなど小さいUI） */
