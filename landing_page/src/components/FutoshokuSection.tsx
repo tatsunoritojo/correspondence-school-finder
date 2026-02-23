@@ -54,7 +54,7 @@ export default function FutoshokuSection() {
                 {/* イラスト */}
                 <div className="flex-shrink-0">
                     <Image
-                        src="/images/selection_point.png"
+                        src="/images/selection_point.webp"
                         alt="「選び方のポイント」看板を持つ人物"
                         width={140}
                         height={190}

@@ -17,7 +17,7 @@ export default function SchoolOptionsSection() {
             <div className="flex flex-col items-center md:flex-row md:items-center gap-4 md:gap-10 lg:gap-16">
                 <div className="flex-shrink-0">
                     <Image
-                        src="/images/Selection.png"
+                        src="/images/Selection.webp"
                         alt="「選択肢一覧」看板を持つ人物"
                         width={140}
                         height={190}

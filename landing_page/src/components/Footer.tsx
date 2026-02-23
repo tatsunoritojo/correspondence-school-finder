@@ -55,9 +55,10 @@ export default function Footer() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Instagram"
-                        className="text-text opacity-60 hover:opacity-100 transition-opacity"
+                        className="inline-flex items-center gap-2 border border-gray-300 rounded-full px-5 py-2 text-text text-sm md:text-base font-medium no-underline transition-all duration-200 hover:bg-accent hover:text-white hover:border-accent"
                     >
-                        <FaInstagram size={24} className="md:w-8 md:h-8" />
+                        <FaInstagram size={20} className="md:w-6 md:h-6" />
+                        Instagram
                     </a>
                 </div>
             </div>

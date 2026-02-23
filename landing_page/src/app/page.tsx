@@ -10,6 +10,7 @@ import ScrollArrow from "@/components/ScrollArrow";
 import SectionWrapper from "@/components/SectionWrapper";
 import SnapSection from "@/components/SnapSection";
 import ScrollIndicator from "@/components/ScrollIndicator";
+import BackToTop from "@/components/BackToTop";
 
 export default function Home() {
     return (
@@ -84,6 +85,7 @@ export default function Home() {
                     <Footer />
                 </SectionWrapper>
             </SnapSection>
+            <BackToTop />
         </div>
     );
 }

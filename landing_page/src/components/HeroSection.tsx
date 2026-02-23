@@ -15,7 +15,7 @@ export default function HeroSection() {
                 <p className="font-hand text-base md:text-xl lg:text-2xl text-text-sub mb-2 md:mb-4">
                     義務教育のその先へ
                 </p>
-                <h1 className="font-black leading-tight tracking-wider m-0 text-[38px] md:text-[58px] lg:text-[74px]">
+                <h1 className="font-bold leading-tight tracking-wider m-0 text-[38px] md:text-[58px] lg:text-[74px]">
                     こどもの進路
                     <br />
                     案内所
@@ -44,7 +44,7 @@ export default function HeroSection() {
                         ご案内します
                     </span>
                     <Image
-                        src="/images/Introduction.png"
+                        src="/images/Introduction.webp"
                         alt="受付の女性イラスト"
                         width={280}
                         height={260}
