@@ -123,10 +123,10 @@ export default function FAQSection() {
                     {/* ⑥ CTA */}
                     <div className="mt-10 md:mt-12 text-center">
                         <p className="text-[14px] md:text-[16px] text-text-sub mb-4">
-                            不安を整理してから学校を探したい方へ
+                            不安を整理してから、通信制高校を探したい方へ
                         </p>
                         <a
-                            href="https://correspondence-school-finder.netlify.app/"
+                            href="https://shindan.kodomo-shinro.jp/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="cta-pulse inline-flex items-center justify-center gap-1.5 bg-accent text-white px-8 py-3.5 md:px-10 md:py-4 rounded-lg text-[16px] md:text-[20px] font-bold tracking-wider no-underline transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-[3px] active:shadow-none"

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shindan.kodomo-shinro.jp/sitemap.xml
