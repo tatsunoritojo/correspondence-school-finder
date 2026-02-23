@@ -95,6 +95,8 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
                 html.classList.toggle(classMap[key], settings[key]);
             }
         );
+        const anyEnabled = Object.values(settings).some(Boolean);
+        html.classList.toggle("a11y-active", anyEnabled);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     }, [settings, mounted]);
 

@@ -170,6 +170,20 @@ body {
    アクセシビリティモード スタイル
    ══════════════════════════════════════════════ */
 
+/* ── 共通: イラスト非表示 + コンテンツ横幅最大化 ── */
+html.a11y-active section > div > .flex-shrink-0 {
+  display: none !important;
+}
+
+/* 通信制高校診断: PC版のボックス装飾をモバイル版に統一 */
+html.a11y-active section[aria-label="通信制高校診断"] h2 {
+  border: none !important;
+  border-bottom: 2px solid rgb(var(--color-accent-rgb)) !important;
+  border-radius: 0 !important;
+  padding: 0 0 0.25rem 0 !important;
+  margin-bottom: 0.75rem !important;
+}
+
 /* ── ハイコントラスト ── */
 html.a11y-high-contrast {
   --color-bg-rgb: 0 0 0;
@@ -262,6 +276,22 @@ html.a11y-reduced-motion *::after {
 /* ── 文字拡大 ── */
 html.a11y-large-text {
   zoom: 1.5;
+}
+
+/* 文字拡大時はPCスナップスクロールを無効化 */
+html.a11y-large-text .snap-container {
+  height: auto !important;
+  overflow: visible !important;
+  scroll-snap-type: none !important;
+}
+
+html.a11y-large-text .snap-section,
+html.a11y-large-text .snap-section--scroll {
+  height: auto !important;
+  min-height: auto !important;
+  scroll-snap-align: none !important;
+  display: block !important;
+  overflow: visible !important;
 }
 
 /* fixed要素の打消し（BackToTopなど小さいUI） */
