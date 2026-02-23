@@ -126,7 +126,7 @@ export default function FAQSection() {
                             不安を整理してから、通信制高校を探したい方へ
                         </p>
                         <a
-                            href="https://shindan.kodomo-shinro.jp/"
+                            href="https://correspondence-school-finder.netlify.app/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="cta-pulse inline-flex items-center justify-center gap-1.5 bg-accent text-white px-8 py-3.5 md:px-10 md:py-4 rounded-lg text-[16px] md:text-[20px] font-bold tracking-wider no-underline transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-[3px] active:shadow-none"

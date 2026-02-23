@@ -228,7 +228,7 @@ fontFamily: {
 
 **CTAボタン仕様**:
 - テキスト: 「通信制高校診断をはじめる →」
-- リンク先: `https://shindan.kodomo-shinro.jp/`（外部遷移、`target="_blank"`）
+- リンク先: `https://correspondence-school-finder.netlify.app/`（外部遷移、`target="_blank"`）
 - デザイン: 枠囲みボタン、ホバー時に背景色反転
 
 **画像アセット**:
@@ -612,7 +612,7 @@ JSON-LDで `EducationalOrganization` を設定し、検索結果での表示を�
 **確定済み:**
 | 項目 | 値 |
 |------|-----|
-| 診断サイトURL | `https://shindan.kodomo-shinro.jp/` |
+| 診断サイトURL | `https://correspondence-school-finder.netlify.app/` |
 | One drop公式サイト | `https://onedrop2025.wixsite.com/my-site-1` |
 | MAPリンク | `https://maps.app.goo.gl/KF9t6frVCMa8K23J6` |
 | 画像アセット（6点） | 全点透過処理済み |

@@ -216,7 +216,7 @@ const ResultPage = () => {
     };
 
     const handleShareSite = async () => {
-        const siteUrl = "https://kodomo-shinro.jp/";
+        const siteUrl = "https://correspondence-school-finder.vercel.app/";
         const shareText = "こどもの進路案内所 — 中学校卒業後の進路選択を支援するサイトです。通信制高校診断もできます。";
 
         // モバイル: Web Share API を優先
