@@ -130,13 +130,8 @@ dist-ssr
 *.sln
 *.sw?
 
-# Old documentation (archived)
-backend-engineer-instructions.md
-data-engineer-instructions.md
-devops-infrastructure-engineer-instructions.md
-frontend-engineer-instructions.md
-qa-engineer-instructions.md
-setup-guide.md
+# PDF binaries (use .md versions instead)
+*.pdf
 
 # Local Netlify folder
 .netlify
