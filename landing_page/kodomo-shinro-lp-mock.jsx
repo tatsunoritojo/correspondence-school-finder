@@ -393,7 +393,7 @@ export default function KodomoShinroLP() {
               <p style={{ marginTop: "12px" }}>できるだけ、わが子にあった学校が見つかればと願うのは当たり前のこと。<br />そんな願いを叶えるお手伝いをするための診断サイトです。</p>
             </div>
             <div style={{ textAlign: "center" }}>
-              <a href="https://correspondence-school-finder.netlify.app/" className="cta-btn" target="_blank" rel="noopener noreferrer">
+              <a href="https://shindan.kodomo-shinro.jp/" className="cta-btn" target="_blank" rel="noopener noreferrer">
                 通信制高校診断をはじめる →
               </a>
             </div>

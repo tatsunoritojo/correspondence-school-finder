@@ -244,7 +244,7 @@ const PrintableReport: React.FC<PrintableReportProps> = ({
                     <span className="footer-brand-name">One drop 個別対話型サポート塾</span>
                 </div>
                 <span className="footer-url">
-                    https://correspondence-school-finder.netlify.app
+                    https://shindan.kodomo-shinro.jp
                 </span>
             </footer>
         </div>
