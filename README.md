@@ -4,8 +4,8 @@
 
 ### 中学校卒業後の進路選択を支援する Web サービス
 
-[![Diagnosis Site](https://img.shields.io/badge/診断サイト-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://correspondence-school-finder.netlify.app/)
-[![Landing Page](https://img.shields.io/badge/ランディングページ-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://correspondence-school-finder.vercel.app/)
+[![Diagnosis Site](https://img.shields.io/badge/診断サイト-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://shindan.kodomo-shinro.jp/)
+[![Landing Page](https://img.shields.io/badge/ランディングページ-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://kodomo-shinro.jp/)
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
 [![Next.js](https://img.shields.io/badge/Next.js-14-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -29,8 +29,8 @@ Supported by **[One drop](https://onedrop2025.wixsite.com/my-site-1)**（広島�
 
 | アプリ | 説明 | URL |
 |--------|------|-----|
-| **🎯 診断サイト** | 21問の質問で価値観・適性を可視化し、レーダーチャートとPDFレポートを生成 | [diagnosis](https://correspondence-school-finder.netlify.app/) |
-| **🏠 ランディングページ** | 保護者向け総合案内。診断への導線、進路選択肢の紹介、FAQ、相談窓口 | [LP](https://correspondence-school-finder.vercel.app/) |
+| **🎯 診断サイト** | 21問の質問で価値観・適性を可視化し、レーダーチャートとPDFレポートを生成 | [diagnosis](https://shindan.kodomo-shinro.jp/) |
+| **🏠 ランディングページ** | 保護者向け総合案内。診断への導線、進路選択肢の紹介、FAQ、相談窓口 | [LP](https://kodomo-shinro.jp/) |
 
 ---
 
@@ -220,8 +220,8 @@ graph LR
 
 | リンク | URL |
 |--------|-----|
-| 🎯 診断サイト | https://correspondence-school-finder.netlify.app/ |
-| 🏠 ランディングページ | https://correspondence-school-finder.vercel.app/ |
+| 🎯 診断サイト | https://shindan.kodomo-shinro.jp/ |
+| 🏠 ランディングページ | https://kodomo-shinro.jp/ |
 | 🏢 One drop ホームページ | https://onedrop2025.wixsite.com/my-site-1 |
 | 📷 One drop Instagram | https://www.instagram.com/onedrop.2025 |
 
