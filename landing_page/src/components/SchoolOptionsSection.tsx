@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import ParallaxImage from "./ParallaxImage";
+import FadeIn from "./FadeIn";
 import { schoolOptions } from "@/data/schoolOptions";
 import SchoolModal from "./SchoolModal";
 import { staggerContainer, staggerItem } from "@/lib/animations";
@@ -95,7 +96,7 @@ export default function SchoolOptionsSection() {
             </div>
 
             {/* 語彙の整理 */}
-            <div className="mt-4 md:mt-6 bg-white/60 border border-border rounded-lg p-4 text-left text-[14px] md:text-[16px] lg:text-[18px] text-text-sub leading-relaxed">
+            <FadeIn className="mt-4 md:mt-6 bg-white/60 border border-border rounded-lg p-4 text-left text-[14px] md:text-[16px] lg:text-[18px] text-text-sub leading-relaxed">
                 <p className="font-bold mb-1">【語彙の整理】</p>
                 <p>
                     <span className="mr-1">•</span>
@@ -105,7 +106,7 @@ export default function SchoolOptionsSection() {
                     <span className="mr-1">•</span>
                     高卒扱い…正式な「高卒資格」ではなく、高校卒業と同等として扱われることを意味します。学歴が「高卒」になるわけではありません。
                 </p>
-            </div>
+            </FadeIn>
 
             {modalOption && (
                 <SchoolModal

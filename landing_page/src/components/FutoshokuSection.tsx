@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import ParallaxImage from "./ParallaxImage";
+import FadeIn from "./FadeIn";
 
 type FutoshokuItem = {
     id: string;
@@ -73,84 +73,87 @@ export default function FutoshokuSection() {
                 {/* 右コンテンツ: タイトル + アコーディオン + メッセージ */}
                 <div className="flex-1 w-full pt-2 md:pt-0">
                     {/* セクションタイトル */}
-                    <div className="mb-3 md:mb-5">
+                    <FadeIn className="mb-3 md:mb-5">
                         <h2 className="font-bold text-[17px] md:text-[22px] lg:text-[26px] text-text tracking-wide">
                             不登校状態の場合の選び方のポイント
                         </h2>
                         <p className="text-[14px] md:text-[16px] lg:text-[18px] text-text-light mt-1 leading-relaxed">
                             それぞれの特徴をタップして確認してみましょう
                         </p>
-                    </div>
+                    </FadeIn>
 
                     {/* アコーディオンリスト（FAQカード型統一） */}
                     <div className="space-y-3 md:space-y-4">
-                        {items.map((item) => {
+                        {items.map((item, idx) => {
                             const isOpen = openId === item.id;
                             return (
-                                <div
-                                    key={item.id}
-                                    className={`rounded-lg border transition-colors duration-200 ${
-                                        isOpen
-                                            ? "bg-white border-accent/30"
-                                            : "bg-white border-gray-200"
-                                    }`}
-                                >
-                                    <button
-                                        id={`futoshoku-btn-${item.id}`}
-                                        onClick={() => toggle(item.id)}
-                                        aria-expanded={isOpen}
-                                        aria-controls={`futoshoku-panel-${item.id}`}
-                                        className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between p-5 md:p-6 text-left gap-4"
-                                        style={{
-                                            WebkitTapHighlightColor: "transparent",
-                                        }}
-                                    >
-                                        <div className="flex items-center gap-2.5 md:gap-3 min-w-0">
-                                            <span
-                                                className="flex-shrink-0 w-1.5 h-1.5 rounded-full opacity-50"
-                                                style={{
-                                                    backgroundColor: item.color,
-                                                }}
-                                            />
-                                            <span className="font-semibold text-[15px] md:text-[18px] lg:text-[20px] text-text tracking-wide leading-relaxed">
-                                                {item.title}
-                                            </span>
-                                        </div>
-
-                                        {/* 展開アイコン（FAQ統一 ＋/− 型） */}
-                                        <span className={`flex-shrink-0 w-[28px] h-[28px] md:w-[32px] md:h-[32px] flex items-center justify-center rounded-full border-2 border-accent/40 text-accent text-lg md:text-xl font-bold transition-all duration-200 ${!isOpen ? "icon-pulse" : ""}`}>
-                                            {isOpen ? "\u2212" : "\uff0b"}
-                                        </span>
-                                    </button>
-
-                                    {/* 展開コンテンツ */}
+                                <FadeIn key={item.id} delay={idx * 0.08}>
                                     <div
-                                        id={`futoshoku-panel-${item.id}`}
-                                        role="region"
-                                        aria-labelledby={`futoshoku-btn-${item.id}`}
-                                        className="overflow-hidden transition-all duration-300"
-                                        style={{
-                                            maxHeight: isOpen ? "400px" : "0px",
-                                            opacity: isOpen ? 1 : 0,
-                                        }}
+                                        className={`rounded-lg border transition-colors duration-200 ${
+                                            isOpen
+                                                ? "bg-white border-accent/30"
+                                                : "bg-white border-gray-200"
+                                        }`}
                                     >
-                                        <div className="px-5 pb-5 md:px-6 md:pb-6">
-                                            <div className="bg-[#fafafa] rounded-md border-t border-gray-200 pt-4 px-4 pb-4 md:px-5 md:pb-5">
-                                                <p className="text-[14px] md:text-[16px] lg:text-[18px] text-text-sub leading-relaxed">
-                                                    {item.detail}
-                                                </p>
+                                        <button
+                                            id={`futoshoku-btn-${item.id}`}
+                                            onClick={() => toggle(item.id)}
+                                            aria-expanded={isOpen}
+                                            aria-controls={`futoshoku-panel-${item.id}`}
+                                            className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between p-5 md:p-6 text-left gap-4"
+                                            style={{
+                                                WebkitTapHighlightColor: "transparent",
+                                            }}
+                                        >
+                                            <div className="flex items-center gap-2.5 md:gap-3 min-w-0">
+                                                <span
+                                                    className="flex-shrink-0 w-1.5 h-1.5 rounded-full opacity-50"
+                                                    style={{
+                                                        backgroundColor: item.color,
+                                                    }}
+                                                />
+                                                <span className="font-semibold text-[15px] md:text-[18px] lg:text-[20px] text-text tracking-wide leading-relaxed">
+                                                    {item.title}
+                                                </span>
+                                            </div>
+
+                                            {/* 展開アイコン（FAQ統一 ＋/− 型） */}
+                                            <span className={`flex-shrink-0 w-[28px] h-[28px] md:w-[32px] md:h-[32px] flex items-center justify-center rounded-full border-2 border-accent/40 text-accent text-lg md:text-xl font-bold transition-all duration-200 ${!isOpen ? "icon-pulse" : ""}`}>
+                                                {isOpen ? "\u2212" : "\uff0b"}
+                                            </span>
+                                        </button>
+
+                                        {/* 展開コンテンツ */}
+                                        <div
+                                            id={`futoshoku-panel-${item.id}`}
+                                            role="region"
+                                            aria-labelledby={`futoshoku-btn-${item.id}`}
+                                            className="overflow-hidden transition-all duration-300"
+                                            style={{
+                                                maxHeight: isOpen ? "400px" : "0px",
+                                                opacity: isOpen ? 1 : 0,
+                                            }}
+                                        >
+                                            <div className="px-5 pb-5 md:px-6 md:pb-6">
+                                                <div className="bg-[#fafafa] rounded-md border-t border-gray-200 pt-4 px-4 pb-4 md:px-5 md:pb-5">
+                                                    <p className="text-[14px] md:text-[16px] lg:text-[18px] text-text-sub leading-relaxed">
+                                                        {item.detail}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </FadeIn>
                             );
                         })}
                     </div>
 
                     {/* フッターメッセージ */}
-                    <p className="text-center font-medium text-[12px] md:text-[13px] text-text-sub mt-6 md:mt-8 leading-relaxed">
-                        お子さまの学習の不安度・心の状態・生活リズムを、ゆっくり振り返ってみましょう。
-                    </p>
+                    <FadeIn delay={0.3}>
+                        <p className="text-center font-medium text-[12px] md:text-[13px] text-text-sub mt-6 md:mt-8 leading-relaxed">
+                            お子さまの学習の不安度・心の状態・生活リズムを、ゆっくり振り返ってみましょう。
+                        </p>
+                    </FadeIn>
                 </div>
             </div>
         </section>
