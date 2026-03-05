@@ -12,6 +12,7 @@ import PrintableReport from "../components/PrintableReport";
 import NameInputDialog from "../components/NameInputDialog";
 import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, ChevronUp, ExternalLink, MapPin, X, ChevronRight, FileText } from "lucide-react";
 import { isMobileDevice } from "../lib/deviceDetection";
+import DataConsentForm from "../components/DataConsentForm";
 
 const ResultPage = () => {
     const [searchParams] = useSearchParams();
@@ -27,6 +28,11 @@ const ResultPage = () => {
     // Scroll Banner State
     const [showFloatBanner, setShowFloatBanner] = useState(false);
     const [bannerDismissed, setBannerDismissed] = useState(false);
+
+    // Data consent
+    const [consentDismissed, setConsentDismissed] = useState(
+        () => localStorage.getItem('csf-data-consent') === 'done'
+    );
 
     // PDF Download State
     const [showNameDialog, setShowNameDialog] = useState(false);
@@ -508,6 +514,19 @@ const ResultPage = () => {
                         Produced by One drop
                     </p>
                 </div>
+
+                {!consentDismissed && (
+                    <div className="mt-8">
+                        <DataConsentForm
+                            scores={finalDisplay.scores}
+                            role={role}
+                            onClose={() => {
+                                setConsentDismissed(true);
+                                localStorage.setItem('csf-data-consent', 'done');
+                            }}
+                        />
+                    </div>
+                )}
 
             </div>
 

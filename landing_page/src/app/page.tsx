@@ -4,6 +4,7 @@ import IntroSection from "@/components/IntroSection";
 import DiagnosisSection from "@/components/DiagnosisSection";
 import SchoolOptionsSection from "@/components/SchoolOptionsSection";
 import FutoshokuSection from "@/components/FutoshokuSection";
+import AboutSection from "@/components/AboutSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 import ScrollArrow from "@/components/ScrollArrow";
@@ -41,7 +42,7 @@ export default function Home() {
                 <ScrollArrow />
 
                 {/* ── セクション3: Diagnosis ── */}
-                <SnapSection>
+                <SnapSection allowScroll>
                     <SectionWrapper>
                         <DiagnosisSection />
                     </SectionWrapper>
@@ -67,7 +68,16 @@ export default function Home() {
 
                 <ScrollArrow />
 
-                {/* ── セクション6: FAQ（内容が長い可能性あり） ── */}
+                {/* ── セクション6: About ── */}
+                <SnapSection allowScroll>
+                    <SectionWrapper>
+                        <AboutSection />
+                    </SectionWrapper>
+                </SnapSection>
+
+                <ScrollArrow />
+
+                {/* ── セクション7: FAQ（内容が長い可能性あり） ── */}
                 <SnapSection allowScroll>
                     <SectionWrapper>
                         <FAQSection />
