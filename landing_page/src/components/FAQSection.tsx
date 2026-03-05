@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import ParallaxImage from "./ParallaxImage";
 import AnimatedHeading from "./AnimatedHeading";
 import { faqCategories } from "@/data/faqData";
 
@@ -21,14 +20,16 @@ export default function FAQSection() {
     return (
         <section className="py-10 md:py-0" aria-label="よくあるご質問">
             <div className="flex flex-col items-center md:flex-row md:items-start gap-6 md:gap-10 lg:gap-16">
-                {/* イラスト */}
-                <ParallaxImage
-                    src="/images/FAQ.webp"
-                    alt="「よくある質問」看板を持つ人物"
-                    width={140}
-                    height={190}
-                    className="object-contain w-[100px] md:w-[200px] md:h-auto lg:w-[260px]"
-                />
+                {/* イラスト — PCではstickyで追従 */}
+                <div className="flex-shrink-0 md:sticky md:top-[20vh] md:self-start">
+                    <Image
+                        src="/images/FAQ.webp"
+                        alt="「よくある質問」看板を持つ人物"
+                        width={140}
+                        height={190}
+                        className="object-contain w-[100px] md:w-[200px] md:h-auto lg:w-[260px]"
+                    />
+                </div>
 
                 {/* FAQ コンテンツ */}
                 <div className="flex-1 w-full pt-2 md:pt-0">
