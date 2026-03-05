@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import ParallaxImage from "./ParallaxImage";
 import { schoolOptions } from "@/data/schoolOptions";
 import SchoolModal from "./SchoolModal";
 import { staggerContainer, staggerItem } from "@/lib/animations";
@@ -57,15 +58,13 @@ export default function SchoolOptionsSection() {
             `}</style>
             <h2 className="sr-only">進路の選択肢</h2>
             <div className="flex flex-col items-center md:flex-row md:items-center gap-4 md:gap-10 lg:gap-16">
-                <div className="flex-shrink-0">
-                    <Image
-                        src="/images/Selection.webp"
-                        alt="「選択肢一覧」看板を持つ人物"
-                        width={140}
-                        height={190}
-                        className="object-contain w-[100px] md:w-[200px] md:h-auto lg:w-[260px]"
-                    />
-                </div>
+                <ParallaxImage
+                    src="/images/Selection.webp"
+                    alt="「選択肢一覧」看板を持つ人物"
+                    width={140}
+                    height={190}
+                    className="object-contain w-[100px] md:w-[200px] md:h-auto lg:w-[260px]"
+                />
 
                 <ContainerWrapper
                     className="flex-1 w-full pt-2 md:pt-0"

@@ -1,23 +1,23 @@
 import Image from "next/image";
+import ParallaxImage from "./ParallaxImage";
+import AnimatedHeading from "./AnimatedHeading";
 
 export default function DiagnosisSection() {
     return (
         <section className="py-4 md:py-0" aria-label="通信制高校診断">
             <div className="flex flex-col items-center md:flex-row md:items-center gap-3 md:gap-10 lg:gap-16 mb-5 md:mb-0">
-                <div className="flex-shrink-0">
-                    <Image
-                        src="/images/Recommend.webp"
-                        alt="「おすすめ」看板を持つ人物"
-                        width={140}
-                        height={190}
-                        className="object-contain w-[100px] md:w-[200px] md:h-auto lg:w-[260px]"
-                    />
-                </div>
+                <ParallaxImage
+                    src="/images/Recommend.webp"
+                    alt="「おすすめ」看板を持つ人物"
+                    width={140}
+                    height={190}
+                    className="object-contain w-[100px] md:w-[200px] md:h-auto lg:w-[260px]"
+                />
                 <div className="flex-1 w-full flex flex-col items-center pt-2 md:pt-0">
                     {/* セクション見出し */}
-                    <h2 className="border-b-2 border-accent pb-1 mb-3 font-bold text-[20px] md:text-[26px] lg:text-[30px] tracking-wider md:mb-6 lg:mb-8">
+                    <AnimatedHeading className="pb-1 mb-3 font-bold text-[20px] md:text-[26px] lg:text-[30px] tracking-wider md:mb-6 lg:mb-8">
                         通信制高校診断
-                    </h2>
+                    </AnimatedHeading>
 
                     {/* 説明文 */}
                     <div

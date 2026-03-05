@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import ParallaxImage from "./ParallaxImage";
 
 type FutoshokuItem = {
     id: string;
@@ -61,15 +62,13 @@ export default function FutoshokuSection() {
             `}</style>
             <div className="flex flex-col items-center md:flex-row md:items-center gap-3 md:gap-10 lg:gap-16">
                 {/* イラスト */}
-                <div className="flex-shrink-0">
-                    <Image
-                        src="/images/selection_point.webp"
-                        alt="「選び方のポイント」看板を持つ人物"
-                        width={140}
-                        height={190}
-                        className="object-contain w-[100px] md:w-[200px] md:h-auto lg:w-[260px]"
-                    />
-                </div>
+                <ParallaxImage
+                    src="/images/selection_point.webp"
+                    alt="「選び方のポイント」看板を持つ人物"
+                    width={140}
+                    height={190}
+                    className="object-contain w-[100px] md:w-[200px] md:h-auto lg:w-[260px]"
+                />
 
                 {/* 右コンテンツ: タイトル + アコーディオン + メッセージ */}
                 <div className="flex-1 w-full pt-2 md:pt-0">

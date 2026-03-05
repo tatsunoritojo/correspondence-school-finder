@@ -26,59 +26,37 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── PC スナップスクロール (md: 768px〜) ── */
+/* ── PC セクションレイアウト (md: 768px〜) ── */
 @media (min-width: 768px) {
-  html {
-    scroll-behavior: auto;
-    /* snap と smooth の競合を防止 */
-  }
-
   .snap-container {
-    height: 100vh;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory;
-    -webkit-overflow-scrolling: touch;
+    /* スナップ無し — 通常スクロール */
   }
 
   .snap-section {
-    scroll-snap-align: start;
-    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     position: relative;
-    overflow: hidden;
+    min-height: 80vh;
+    padding: 4rem 0;
   }
 
-  /* FAQ など内容が長いセクション用 */
   .snap-section--scroll {
-    scroll-snap-align: start;
-    min-height: 100vh;
-    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     position: relative;
+    padding: 4rem 0;
   }
 }
 
-/* ── モバイルではスナップ無効 ── */
+/* ── モバイルレイアウト ── */
 @media (max-width: 767px) {
-  .snap-container {
-    height: auto;
-    overflow: visible;
-    scroll-snap-type: none;
-  }
-
   .snap-section,
   .snap-section--scroll {
-    height: auto;
-    min-height: auto;
-    scroll-snap-align: none;
     display: block;
-    overflow: visible;
   }
 }
 
@@ -86,16 +64,28 @@ body {
 @media (min-width: 768px) {
 
   .snap-section+.snap-section::before,
-  .snap-section--scroll+.snap-section::before {
+  .snap-section+.snap-section--scroll::before,
+  .snap-section--scroll+.snap-section::before,
+  .snap-section--scroll+.snap-section--scroll::before {
     content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    display: block;
     width: 60px;
     height: 1px;
     background: #ccc;
     opacity: 0.5;
+    margin: 0 auto;
+    animation: drawLine 0.8s ease-out both;
+  }
+
+  @keyframes drawLine {
+    from {
+      width: 0;
+      opacity: 0;
+    }
+    to {
+      width: 60px;
+      opacity: 0.5;
+    }
   }
 }
 
@@ -148,6 +138,28 @@ body {
   .scroll-indicator svg {
     animation: bounceDown 2s ease-in-out infinite;
   }
+}
+
+/* ── 見出しアンダーライン描画アニメーション ── */
+.heading-underline {
+  position: relative;
+  display: inline-block;
+  border-bottom: none !important;
+}
+
+.heading-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: rgb(var(--color-accent-rgb));
+  transition: width 0.8s ease-out;
+}
+
+.heading-underline.in-view::after {
+  width: 100%;
 }
 
 /* ── CTAボタン パルスアニメーション ── */
@@ -280,7 +292,6 @@ html.a11y-reduced-motion *::after {
   animation-duration: 0.001ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.001ms !important;
-  scroll-behavior: auto !important;
 }
 
 /* ── 文字拡大 ── */
@@ -288,20 +299,11 @@ html.a11y-large-text {
   zoom: 1.5;
 }
 
-/* 文字拡大時はPCスナップスクロールを無効化 */
-html.a11y-large-text .snap-container {
-  height: auto !important;
-  overflow: visible !important;
-  scroll-snap-type: none !important;
-}
-
+/* 文字拡大時はセクション高さを自動に */
 html.a11y-large-text .snap-section,
 html.a11y-large-text .snap-section--scroll {
-  height: auto !important;
   min-height: auto !important;
-  scroll-snap-align: none !important;
   display: block !important;
-  overflow: visible !important;
   padding-top: 2.5rem;
   padding-bottom: 2.5rem;
 }

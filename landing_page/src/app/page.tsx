@@ -12,11 +12,13 @@ import SectionWrapper from "@/components/SectionWrapper";
 import SnapSection from "@/components/SnapSection";
 import ScrollIndicator from "@/components/ScrollIndicator";
 import BackToTop from "@/components/BackToTop";
+import ScrollProgressBar from "@/components/ScrollProgressBar";
 import AccessibilityToggle from "@/components/AccessibilityToggle";
 
 export default function Home() {
     return (
         <main id="main-content">
+            <ScrollProgressBar />
             <div className="snap-container">
                 {/* ── セクション1: Header + Hero ── */}
                 <SnapSection>

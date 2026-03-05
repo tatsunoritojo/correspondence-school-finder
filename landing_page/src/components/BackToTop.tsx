@@ -6,32 +6,15 @@ export default function BackToTop() {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        const container = document.querySelector(".snap-container");
-
         const handleScroll = () => {
-            const containerScroll = container ? container.scrollTop : 0;
-            const windowScroll = window.scrollY;
-            setVisible(containerScroll > 300 || windowScroll > 300);
+            setVisible(window.scrollY > 300);
         };
 
         window.addEventListener("scroll", handleScroll, { passive: true });
-        if (container) {
-            container.addEventListener("scroll", handleScroll, { passive: true });
-        }
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-            if (container) {
-                container.removeEventListener("scroll", handleScroll);
-            }
-        };
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     const scrollToTop = () => {
-        const container = document.querySelector(".snap-container");
-        if (container && container.scrollTop > 0) {
-            container.scrollTo({ top: 0, behavior: "smooth" });
-        }
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
