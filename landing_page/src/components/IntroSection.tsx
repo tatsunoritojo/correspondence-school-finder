@@ -36,10 +36,10 @@ export default function IntroSection() {
         <section className="text-left md:text-center py-4 md:py-0" style={{ lineHeight: 2.2 }} aria-label="サイトの紹介">
             <Wrapper
                 {...(reducedMotion ? {} : {
-                    initial: { opacity: 0, y: 20 },
-                    whileInView: { opacity: 1, y: 0 },
+                    initial: { opacity: 0, scale: 0.8 },
+                    whileInView: { opacity: 1, scale: 1 },
                     viewport: { once: true, margin: "-50px" },
-                    transition: { duration: 0.6, ease: "easeOut" },
+                    transition: { duration: 0.5, ease: [0.34, 1.56, 0.64, 1] },
                 })}
             >
                 <h2 className="font-bold text-[20px] md:text-[26px] lg:text-[30px] mb-6 md:mb-10 text-center">
