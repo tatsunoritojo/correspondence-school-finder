@@ -1,0 +1,274 @@
+import { useState } from "react";
+
+type Props = {
+    scores: Record<string, number>;
+    role: "child" | "parent";
+    onClose: () => void;
+};
+
+const PREFECTURES = [
+    "北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県",
+    "茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県",
+    "新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県",
+    "静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県",
+    "奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県",
+    "徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県",
+    "熊本県","大分県","宮崎県","鹿児島県","沖縄県",
+];
+
+const GENDERS = ["男性", "女性", "その他", "回答しない"];
+const AGE_RANGES = ["10代", "20代", "30代", "40代", "50代", "60代以上"];
+const SCHOOL_TYPES = ["小学校", "中学校", "高校", "その他"];
+const GRADES = ["1年生", "2年生", "3年生", "4年生", "5年生", "6年生"];
+const CHILD_STATUSES = ["通常登校", "別室登校", "自宅中心の生活", "フリースクール等に通学", "その他"];
+
+type Step = "ask" | "form" | "thanks";
+
+export default function DataConsentForm({ scores, role, onClose }: Props) {
+    const [step, setStep] = useState<Step>("ask");
+    const [sending, setSending] = useState(false);
+
+    // demographics
+    const [prefecture, setPrefecture] = useState("");
+    const [gender, setGender] = useState("");
+    const [ageRange, setAgeRange] = useState("");
+    const [childSchoolType, setChildSchoolType] = useState("");
+    const [childGrade, setChildGrade] = useState("");
+    const [childStatus, setChildStatus] = useState("");
+    const [satisfaction, setSatisfaction] = useState<number | null>(null);
+    const [freeText, setFreeText] = useState("");
+    const [email, setEmail] = useState("");
+
+    const handleSubmit = async () => {
+        setSending(true);
+        try {
+            await fetch("/.netlify/functions/collect-data", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    scores,
+                    role,
+                    demographics: {
+                        prefecture,
+                        gender,
+                        ageRange,
+                        childSchoolType,
+                        childGrade,
+                        childStatus,
+                    },
+                    satisfaction,
+                    freeText,
+                    email,
+                    timestamp: new Date().toISOString(),
+                }),
+            });
+        } catch (err) {
+            console.error("Data collection failed:", err);
+        }
+        setStep("thanks");
+        setSending(false);
+    };
+
+    if (step === "ask") {
+        return (
+            <div className="glass-card rounded-2xl p-6 text-center">
+                <p className="text-lg font-bold text-stone-700 mb-3">
+                    診断データの提供にご協力いただけますか？
+                </p>
+                <p className="text-sm text-stone-600 mb-4 leading-relaxed">
+                    みなさんのデータが、次の世代の高校選びを
+                    <br className="md:hidden" />
+                    より良くサポートする力になります。
+                </p>
+                <ul className="text-left text-sm text-stone-600 space-y-1.5 mb-6 max-w-xs mx-auto">
+                    <li className="flex items-start gap-2">
+                        <span className="text-orange-400 mt-0.5">&#8226;</span>
+                        匿名の統計データとして活用します
+                    </li>
+                    <li className="flex items-start gap-2">
+                        <span className="text-orange-400 mt-0.5">&#8226;</span>
+                        個人が特定されることはありません
+                    </li>
+                    <li className="flex items-start gap-2">
+                        <span className="text-orange-400 mt-0.5">&#8226;</span>
+                        ご協力いただいた方にお礼のご連絡をさせていただく場合があります（任意）
+                    </li>
+                </ul>
+                <button
+                    onClick={() => setStep("form")}
+                    className="bg-orange-500 hover:bg-orange-400 text-white py-3 px-6 rounded-xl font-bold transition-colors mb-3 w-full max-w-xs"
+                >
+                    協力する
+                </button>
+                <br />
+                <button
+                    onClick={onClose}
+                    className="text-stone-400 text-sm underline bg-transparent border-none cursor-pointer"
+                >
+                    今回は見送る
+                </button>
+            </div>
+        );
+    }
+
+    if (step === "thanks") {
+        return (
+            <div className="glass-card rounded-2xl p-6 text-center">
+                <p className="text-lg font-bold text-stone-700 mb-2">
+                    ご協力ありがとうございます！
+                </p>
+                <p className="text-sm text-stone-600 mb-4 leading-relaxed">
+                    いただいたデータは、より良い高校選びの
+                    <br className="md:hidden" />
+                    サポートに活用させていただきます。
+                </p>
+                <button
+                    onClick={onClose}
+                    className="bg-stone-200 hover:bg-stone-300 text-stone-700 py-2 px-6 rounded-xl font-bold text-sm transition-colors"
+                >
+                    閉じる
+                </button>
+            </div>
+        );
+    }
+
+    // step === "form"
+    return (
+        <div className="glass-card rounded-2xl p-6">
+            <p className="text-sm font-bold text-stone-700 mb-4 text-center">
+                以下の項目にご回答ください（すべて任意です）
+            </p>
+
+            <div className="space-y-5">
+                {/* Group: あなたについて */}
+                <GroupLabel label="あなたについて" />
+                <FormSelect label="お住まいの都道府県" value={prefecture} onChange={setPrefecture} options={PREFECTURES} />
+                <FormSelect label="性別" value={gender} onChange={setGender} options={GENDERS} />
+                <FormSelect label="年代" value={ageRange} onChange={setAgeRange} options={AGE_RANGES} />
+
+                {/* Group: お子さまについて */}
+                <GroupLabel label="お子さまについて" />
+                <FormSelect label="学校種" value={childSchoolType} onChange={setChildSchoolType} options={SCHOOL_TYPES} />
+                <FormSelect label="学年" value={childGrade} onChange={setChildGrade} options={GRADES} />
+                <FormSelect label="現在の状況" value={childStatus} onChange={setChildStatus} options={CHILD_STATUSES} />
+
+                {/* Group: 診断について */}
+                <GroupLabel label="診断について" />
+                <div>
+                    <label className="text-sm font-medium text-stone-600 block mb-2">
+                        この診断は役に立ちましたか？
+                    </label>
+                    <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                            <button
+                                key={n}
+                                type="button"
+                                onClick={() => setSatisfaction(n)}
+                                className={`w-7 h-7 text-xl leading-none bg-transparent border-none cursor-pointer transition-colors ${
+                                    satisfaction != null && n <= satisfaction
+                                        ? "text-orange-400"
+                                        : "text-stone-300"
+                                }`}
+                                aria-label={`${n}点`}
+                            >
+                                ★
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                <div>
+                    <label className="text-sm font-medium text-stone-600 block mb-2">
+                        ご意見・ご感想（自由記述）
+                    </label>
+                    <textarea
+                        rows={3}
+                        value={freeText}
+                        onChange={(e) => setFreeText(e.target.value)}
+                        placeholder="診断で分かりにくかった点、追加してほしい項目など"
+                        className="w-full p-3 rounded-lg border border-stone-200 bg-white text-stone-700 text-sm resize-none"
+                    />
+                </div>
+
+                {/* Group: ご連絡先 */}
+                <GroupLabel label="ご連絡先" />
+                <div>
+                    <p className="text-xs text-stone-500 mb-2 leading-relaxed">
+                        ご協力いただいた方にお礼のご連絡をさせていただく場合があります。
+                        <br />※ 連絡不要の方は空欄のままで構いません
+                    </p>
+                    <label className="text-sm font-medium text-stone-600 block mb-1">
+                        メールアドレス <span className="text-xs text-stone-400 ml-2">任意</span>
+                    </label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="example@email.com"
+                        className="w-full p-3 rounded-lg border border-stone-200 bg-white text-stone-700 text-sm"
+                    />
+                </div>
+            </div>
+
+            <div className="mt-6 text-center">
+                <button
+                    onClick={handleSubmit}
+                    disabled={sending}
+                    className="bg-orange-500 hover:bg-orange-400 text-white py-3 px-6 rounded-xl font-bold transition-colors w-full max-w-xs disabled:opacity-50 flex items-center justify-center gap-2 mx-auto"
+                >
+                    {sending && (
+                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    )}
+                    送信する
+                </button>
+                <button
+                    onClick={onClose}
+                    className="text-stone-400 text-sm underline bg-transparent border-none cursor-pointer mt-3"
+                >
+                    やめる
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function GroupLabel({ label }: { label: string }) {
+    return (
+        <div className="flex items-center gap-3 pt-2">
+            <div className="h-px bg-stone-200 flex-1" />
+            <span className="text-xs font-bold text-stone-400">{label}</span>
+            <div className="h-px bg-stone-200 flex-1" />
+        </div>
+    );
+}
+
+function FormSelect({
+    label,
+    value,
+    onChange,
+    options,
+}: {
+    label: string;
+    value: string;
+    onChange: (v: string) => void;
+    options: string[];
+}) {
+    return (
+        <div>
+            <label className="text-sm font-medium text-stone-600 block mb-1">
+                {label} <span className="text-xs text-stone-400 ml-2">任意</span>
+            </label>
+            <select
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className="w-full p-3 rounded-lg border border-stone-200 bg-white text-stone-700 text-sm"
+            >
+                <option value="">選択してください</option>
+                {options.map((opt) => (
+                    <option key={opt} value={opt}>
+                        {opt}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
+}

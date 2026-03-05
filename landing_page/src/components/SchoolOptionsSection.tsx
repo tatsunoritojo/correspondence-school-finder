@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { schoolOptions } from "@/data/schoolOptions";
@@ -13,6 +13,24 @@ export default function SchoolOptionsSection() {
         (typeof schoolOptions)[number] | null
     >(null);
     const { reducedMotion } = useAccessibility();
+    const sectionRef = useRef<HTMLElement>(null);
+    const [shouldPulse, setShouldPulse] = useState(false);
+
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setShouldPulse(true);
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.3 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
 
     const ContainerWrapper = reducedMotion ? "div" : motion.div;
     const ItemWrapper = reducedMotion ? "button" : motion.button;
@@ -27,7 +45,16 @@ export default function SchoolOptionsSection() {
           };
 
     return (
-        <section className="py-4 md:py-0" aria-label="進路の選択肢一覧">
+        <section ref={sectionRef} className="py-4 md:py-0" aria-label="進路の選択肢一覧">
+            <style jsx>{`
+                @keyframes pulse-btn {
+                    0%, 100% { transform: scale(1); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                    50% { transform: scale(1.03); box-shadow: 0 4px 12px rgba(var(--color-accent-rgb, 232,121,47), 0.3); }
+                }
+                .btn-pulse {
+                    animation: pulse-btn 1.5s ease-in-out 3;
+                }
+            `}</style>
             <h2 className="sr-only">進路の選択肢</h2>
             <div className="flex flex-col items-center md:flex-row md:items-center gap-4 md:gap-10 lg:gap-16">
                 <div className="flex-shrink-0">
@@ -44,8 +71,11 @@ export default function SchoolOptionsSection() {
                     className="flex-1 w-full pt-2 md:pt-0"
                     {...containerProps}
                 >
+                    <p className="text-[13px] md:text-[15px] text-accent font-medium text-center mb-3">
+                        気になる選択肢をタップしてみましょう
+                    </p>
                     <div className="grid grid-cols-3 gap-2 md:gap-4 lg:gap-5 mb-4">
-                        {schoolOptions.map((opt) => (
+                        {schoolOptions.map((opt, idx) => (
                             <ItemWrapper
                                 key={opt.id}
                                 {...(reducedMotion
@@ -53,9 +83,12 @@ export default function SchoolOptionsSection() {
                                     : { variants: staggerItem })}
                                 onClick={() => setModalOption(opt)}
                                 aria-label={`${opt.label.replace(/\n/g, "")}の説明を見る`}
-                                className="border-[1.5px] md:border-2 border-text-light/40 rounded-lg py-2.5 md:py-4 lg:py-5 px-1 md:px-2 text-sm md:text-lg lg:text-xl font-medium leading-snug text-center whitespace-pre-line min-h-[56px] md:min-h-[80px] lg:min-h-[96px] flex items-center justify-center transition-all duration-200 select-none bg-white shadow-sm hover:-translate-y-px hover:shadow-lg active:scale-[0.97]"
+                                className={`border-[1.5px] md:border-2 border-accent/30 rounded-lg py-2.5 md:py-4 lg:py-5 px-1 md:px-2 text-sm md:text-lg lg:text-xl font-medium leading-snug text-center whitespace-pre-line min-h-[56px] md:min-h-[80px] lg:min-h-[96px] flex flex-col items-center justify-center transition-all duration-200 select-none bg-accent/5 shadow-sm hover:-translate-y-px hover:shadow-lg active:scale-[0.97] ${
+                                    idx === 0 && shouldPulse ? "btn-pulse" : ""
+                                }`}
                             >
                                 {opt.label}
+                                <span className="text-[10px] md:text-[11px] text-accent mt-1">詳しく見る ▶</span>
                             </ItemWrapper>
                         ))}
                     </div>

@@ -34,6 +34,46 @@ export default function DiagnosisSection() {
                             <br className="hidden md:inline" />
                             そんな願いを叶えるお手伝いをするための診断サイトです。
                         </p>
+                        <p className="mt-3 md:mt-5 text-[12px] md:text-[14px] lg:text-[15px] text-text-light leading-relaxed">
+                            ※ 通信制高校を選びたい方だけでなく、高校選びの価値観を知りたい方にもおすすめです
+                        </p>
+                    </div>
+
+                    {/* 診断プレビュー */}
+                    <div className="mb-4 md:mb-6">
+                        <p className="text-[12px] md:text-[14px] text-text-sub font-medium text-center mb-3">
+                            こんな結果が見られます
+                        </p>
+                        <div className="flex justify-center gap-3 md:gap-5">
+                            {/* 質問画面モック */}
+                            <div className="max-w-[150px] md:max-w-[180px] rounded-[2rem] border-[3px] border-stone-700 shadow-xl overflow-hidden bg-white">
+                                <div className="w-16 h-1 bg-stone-300 rounded-full mx-auto mt-2" />
+                                <div className="relative mt-1">
+                                    <Image
+                                        src="/images/question-preview.png"
+                                        alt="診断の質問画面プレビュー"
+                                        width={360}
+                                        height={640}
+                                        className="w-full object-cover object-top h-[200px] md:h-[240px]"
+                                    />
+                                    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent" />
+                                </div>
+                            </div>
+                            {/* 結果画面モック */}
+                            <div className="max-w-[150px] md:max-w-[180px] rounded-[2rem] border-[3px] border-stone-700 shadow-xl overflow-hidden bg-white">
+                                <div className="w-16 h-1 bg-stone-300 rounded-full mx-auto mt-2" />
+                                <div className="relative mt-1">
+                                    <Image
+                                        src="/images/result-preview.png"
+                                        alt="診断の結果画面プレビュー"
+                                        width={360}
+                                        height={640}
+                                        className="w-full object-cover object-top h-[200px] md:h-[240px]"
+                                    />
+                                    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <p className="text-[12px] md:text-[13px] text-text-light mb-3 md:mb-4">

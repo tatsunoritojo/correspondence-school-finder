@@ -50,6 +50,15 @@ export default function FutoshokuSection() {
 
     return (
         <section className="py-4 md:py-0" aria-label="不登校の場合の選び方">
+            <style jsx>{`
+                @keyframes pulse-icon {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.15); }
+                }
+                .icon-pulse {
+                    animation: pulse-icon 2s ease-in-out 3;
+                }
+            `}</style>
             <div className="flex flex-col items-center md:flex-row md:items-center gap-3 md:gap-10 lg:gap-16">
                 {/* イラスト */}
                 <div className="flex-shrink-0">
@@ -70,7 +79,7 @@ export default function FutoshokuSection() {
                             不登校状態の場合の選び方のポイント
                         </h2>
                         <p className="text-[14px] md:text-[16px] lg:text-[18px] text-text-light mt-1 leading-relaxed">
-                            それぞれの学校の特徴を、ゆっくり見てみましょう
+                            それぞれの特徴をタップして確認してみましょう
                         </p>
                     </div>
 
@@ -110,8 +119,8 @@ export default function FutoshokuSection() {
                                         </div>
 
                                         {/* 展開アイコン（FAQ統一 ＋/− 型） */}
-                                        <span className="flex-shrink-0 w-[28px] h-[28px] md:w-[32px] md:h-[32px] flex items-center justify-center rounded-full border-2 border-accent/40 text-accent text-lg md:text-xl font-bold transition-all duration-200">
-                                            {isOpen ? "−" : "＋"}
+                                        <span className={`flex-shrink-0 w-[28px] h-[28px] md:w-[32px] md:h-[32px] flex items-center justify-center rounded-full border-2 border-accent/40 text-accent text-lg md:text-xl font-bold transition-all duration-200 ${!isOpen ? "icon-pulse" : ""}`}>
+                                            {isOpen ? "\u2212" : "\uff0b"}
                                         </span>
                                     </button>
 
