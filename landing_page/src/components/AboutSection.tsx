@@ -5,9 +5,7 @@ import { aboutItems } from "@/data/aboutData";
 import FadeIn from "./FadeIn";
 
 export default function AboutSection() {
-    const [openIds, setOpenIds] = useState<Set<string>>(
-        new Set(["how-to-use"])
-    );
+    const [openIds, setOpenIds] = useState<Set<string>>(new Set());
 
     const toggle = (id: string) => {
         setOpenIds((prev) => {
