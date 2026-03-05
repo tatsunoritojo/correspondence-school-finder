@@ -36,68 +36,49 @@ export default function Home() {
 
                 {/* ── セクション2: Intro ── */}
                 <SnapSection>
-                    <SectionWrapper>
-                        <IntroSection />
-                    </SectionWrapper>
+                    <IntroSection />
                 </SnapSection>
 
                 <ScrollArrow />
 
                 {/* ── セクション3: Diagnosis ── */}
                 <SnapSection allowScroll>
-                    <SectionWrapper>
-                        <DiagnosisSection />
-                    </SectionWrapper>
+                    <DiagnosisSection />
                 </SnapSection>
 
                 <ScrollArrow />
 
                 {/* ── セクション4: School Options ── */}
                 <SnapSection>
-                    <SectionWrapper>
-                        <SchoolOptionsSection />
-                    </SectionWrapper>
+                    <SchoolOptionsSection />
                 </SnapSection>
 
                 <ScrollArrow />
 
                 {/* ── セクション5: 不登校セクション ── */}
                 <SnapSection>
-                    <SectionWrapper>
-                        <FutoshokuSection />
-                    </SectionWrapper>
+                    <FutoshokuSection />
                 </SnapSection>
 
                 <ScrollArrow />
 
                 {/* ── セクション6: About ── */}
                 <SnapSection allowScroll>
-                    <SectionWrapper>
-                        <AboutSection />
-                    </SectionWrapper>
+                    <AboutSection />
                 </SnapSection>
 
                 <ScrollArrow />
 
                 {/* ── セクション7: FAQ（内容が長い可能性あり） ── */}
                 <SnapSection allowScroll>
-                    <SectionWrapper>
-                        <FAQSection />
-                    </SectionWrapper>
+                    <FAQSection />
                 </SnapSection>
 
                 <ScrollArrow />
 
-                {/* ── セクション7: Footer ── */}
+                {/* ── セクション8: Footer ── */}
                 <SnapSection>
-                    <SectionWrapper>
-                        <p className="text-center text-[15px] md:text-[17px] text-text font-bold font-hand py-2 pb-4 tracking-wider">
-                            誰かに話を聞いてほしいなら・・・
-                        </p>
-                    </SectionWrapper>
-                    <SectionWrapper delay={0.15}>
-                        <Footer />
-                    </SectionWrapper>
+                    <Footer />
                 </SnapSection>
                 <BackToTop />
             </div>
