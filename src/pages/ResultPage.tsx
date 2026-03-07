@@ -29,9 +29,9 @@ const ResultPage = () => {
     const [showFloatBanner, setShowFloatBanner] = useState(false);
     const [bannerDismissed, setBannerDismissed] = useState(false);
 
-    // Data consent
-    const [consentDismissed, setConsentDismissed] = useState(
-        () => localStorage.getItem('csf-data-consent') === 'done'
+    // Data consent: "none" | "dismissed" | "submitted"
+    const [formStatus, setFormStatus] = useState<"none" | "dismissed" | "submitted">(
+        () => (localStorage.getItem('csf-form-status') as "dismissed" | "submitted") || "none"
     );
     const [isRevision, setIsRevision] = useState(false);
 
@@ -517,19 +517,31 @@ const ResultPage = () => {
                 </div>
 
                 <div className="mt-8">
-                    {consentDismissed ? (
+                    {formStatus === "submitted" && !isRevision ? (
                         <div className="text-center py-4">
                             <p className="text-xs text-stone-400 mb-1">
                                 データ収集にご協力いただきました
                             </p>
                             <button
-                                onClick={() => {
-                                    setConsentDismissed(false);
-                                    setIsRevision(true);
-                                }}
+                                onClick={() => setIsRevision(true)}
                                 className="text-xs text-orange-400 underline bg-transparent border-none cursor-pointer"
                             >
                                 回答を修正・追加する
+                            </button>
+                        </div>
+                    ) : formStatus === "dismissed" && !isRevision ? (
+                        <div className="text-center py-4">
+                            <p className="text-xs text-stone-400 mb-1">
+                                データ収集を見送る設定になっています
+                            </p>
+                            <button
+                                onClick={() => {
+                                    setFormStatus("none");
+                                    localStorage.removeItem('csf-form-status');
+                                }}
+                                className="text-xs text-orange-400 underline bg-transparent border-none cursor-pointer"
+                            >
+                                やはり協力する
                             </button>
                         </div>
                     ) : (
@@ -537,10 +549,10 @@ const ResultPage = () => {
                             scores={finalDisplay.scores}
                             role={role}
                             isRevision={isRevision}
-                            onClose={() => {
-                                setConsentDismissed(true);
+                            onClose={(status) => {
+                                setFormStatus(status);
                                 setIsRevision(false);
-                                localStorage.setItem('csf-data-consent', 'done');
+                                localStorage.setItem('csf-form-status', status);
                             }}
                         />
                     )}

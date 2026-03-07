@@ -18,6 +18,7 @@ interface CollectDataBody {
     timestamp: string;
     submissionId: string;
     revision: number;
+    formVersion: number;
 }
 
 // Simple in-memory rate limiting (3 req/min/IP)
@@ -138,18 +139,19 @@ export const handler: Handler = async (event: HandlerEvent) => {
             demo.childGrade || "",
             demo.childStatus || "",
             body.satisfaction != null ? String(body.satisfaction) : "",
-            body.freeText || "",
-            body.email || "",
+            (body.freeText || "").trim().slice(0, 500),
+            (body.email || "").trim(),
             ...AXIS_IDS.map((id) =>
                 body.scores[id] != null ? String(body.scores[id]) : ""
             ),
             body.submissionId,
             String(body.revision ?? 0),
+            String(body.formVersion ?? 1),
         ];
 
         await client.spreadsheets.values.append({
             spreadsheetId: sheetId,
-            range: "data!A:U",
+            range: "data!A:V",
             valueInputOption: "RAW",
             requestBody: {
                 values: [row],

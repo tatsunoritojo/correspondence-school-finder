@@ -3,9 +3,12 @@ import { useState, useEffect, useRef } from "react";
 type Props = {
     scores: Record<string, number>;
     role: "child" | "parent";
-    onClose: () => void;
+    onClose: (status: "submitted" | "dismissed") => void;
     isRevision?: boolean;
 };
+
+const FORM_VERSION = 1;
+const FREE_TEXT_MAX = 500;
 
 const PREFECTURES = [
     "北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県",
@@ -23,7 +26,7 @@ const SCHOOL_TYPES = ["小学校", "中学校", "高校", "その他"];
 const GRADES = ["1年生", "2年生", "3年生", "4年生", "5年生", "6年生"];
 const CHILD_STATUSES = ["通常登校", "別室登校", "自宅中心の生活", "フリースクール等に通学", "その他"];
 
-type Step = "ask" | "form" | "thanks";
+type Step = "ask" | "form" | "thanks" | "error";
 
 function generateId(): string {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -63,11 +66,11 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
     const [email, setEmail] = useState("");
 
     const handleSubmit = async () => {
+        if (sending) return; // 二重送信防止
         setSending(true);
 
-        // submissionId: 初回は生成して保存、修正時は既存のものを使う
         let submissionId = localStorage.getItem('csf-submission-id') || "";
-        let revision = parseInt(localStorage.getItem('csf-revision') || "0", 10);
+        let revision = parseInt(localStorage.getItem('csf-revision') || "-1", 10);
 
         if (!submissionId) {
             submissionId = generateId();
@@ -76,8 +79,10 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
             revision += 1;
         }
 
+        const trimmedFreeText = freeText.trim().slice(0, FREE_TEXT_MAX);
+
         try {
-            await fetch("/.netlify/functions/collect-data", {
+            const res = await fetch("/.netlify/functions/collect-data", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -92,20 +97,28 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
                         childStatus,
                     },
                     satisfaction,
-                    freeText,
-                    email,
+                    freeText: trimmedFreeText,
+                    email: email.trim(),
                     timestamp: new Date().toISOString(),
                     submissionId,
                     revision,
+                    formVersion: FORM_VERSION,
                 }),
             });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+            // 成功時のみ localStorage を更新
             localStorage.setItem('csf-submission-id', submissionId);
             localStorage.setItem('csf-revision', String(revision));
+            localStorage.setItem('csf-form-version', String(FORM_VERSION));
+            setStep("thanks");
         } catch (err) {
             console.error("Data collection failed:", err);
+            setStep("error");
+        } finally {
+            setSending(false);
         }
-        setStep("thanks");
-        setSending(false);
     };
 
     if (step === "ask") {
@@ -146,7 +159,7 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
                 </button>
                 <br />
                 <button
-                    onClick={onClose}
+                    onClick={() => onClose("dismissed")}
                     className="text-stone-400 text-sm underline bg-transparent border-none cursor-pointer"
                 >
                     今回は見送る
@@ -167,7 +180,7 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
                     サポートに活用させていただきます。
                 </p>
                 <button
-                    onClick={onClose}
+                    onClick={() => onClose("submitted")}
                     className="bg-stone-200 hover:bg-stone-300 text-stone-700 py-2 px-6 rounded-xl font-bold text-sm transition-colors"
                 >
                     閉じる
@@ -176,12 +189,37 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
         );
     }
 
+    if (step === "error") {
+        return (
+            <div className="glass-card rounded-2xl p-6 text-center border-2 border-red-200">
+                <p className="text-base font-bold text-stone-700 mb-2">
+                    送信に失敗しました
+                </p>
+                <p className="text-sm text-stone-500 mb-4 leading-relaxed">
+                    通信環境をご確認の上、もう一度お試しください。
+                    <br />入力内容はそのまま保持されています。
+                </p>
+                <button
+                    onClick={() => setStep("form")}
+                    className="bg-orange-500 hover:bg-orange-400 text-white py-3 px-6 rounded-xl font-bold transition-colors w-full max-w-xs"
+                >
+                    フォームに戻る
+                </button>
+            </div>
+        );
+    }
+
     // step === "form"
     return (
         <div className="glass-card rounded-2xl p-6">
-            <p className="text-sm font-bold text-stone-700 mb-4 text-center">
+            <p className="text-sm font-bold text-stone-700 mb-1 text-center">
                 以下の項目にご回答ください（すべて任意です）
             </p>
+            {isRevision && (
+                <p className="text-xs text-stone-400 mb-3 text-center">
+                    最新の内容で上書き保存されます（過去の回答は記録として保持されます）
+                </p>
+            )}
 
             <div className="space-y-5">
                 {/* Group: あなたについて */}
@@ -227,10 +265,17 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
                     <textarea
                         rows={3}
                         value={freeText}
-                        onChange={(e) => setFreeText(e.target.value)}
+                        onChange={(e) => {
+                            if (e.target.value.length <= FREE_TEXT_MAX) {
+                                setFreeText(e.target.value);
+                            }
+                        }}
                         placeholder="診断で分かりにくかった点、追加してほしい項目など"
                         className="w-full p-3 rounded-lg border border-stone-200 bg-white text-stone-700 text-sm resize-none"
                     />
+                    <p className="text-xs text-stone-400 text-right mt-1">
+                        {freeText.length}/{FREE_TEXT_MAX}
+                    </p>
                 </div>
 
                 {/* Group: ご連絡先 */}
@@ -262,11 +307,12 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
                     {sending && (
                         <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     )}
-                    送信する
+                    {sending ? "送信中..." : "送信する"}
                 </button>
                 <button
-                    onClick={onClose}
-                    className="text-stone-400 text-sm underline bg-transparent border-none cursor-pointer mt-3"
+                    onClick={() => onClose("dismissed")}
+                    disabled={sending}
+                    className="text-stone-400 text-sm underline bg-transparent border-none cursor-pointer mt-3 disabled:opacity-30"
                 >
                     やめる
                 </button>
