@@ -8,6 +8,7 @@ type Props = {
 };
 
 const FORM_VERSION = 1;
+const DIAGNOSIS_VERSION = 1;
 const FREE_TEXT_MAX = 500;
 
 const PREFECTURES = [
@@ -103,14 +104,17 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
                     submissionId,
                     revision,
                     formVersion: FORM_VERSION,
+                    diagnosisVersion: DIAGNOSIS_VERSION,
                 }),
             });
 
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-            // 成功時のみ localStorage を更新
-            localStorage.setItem('csf-submission-id', submissionId);
-            localStorage.setItem('csf-revision', String(revision));
+            const resData = await res.json();
+
+            // 成功時のみ localStorage を更新（レスポンスの値で確認）
+            localStorage.setItem('csf-submission-id', resData.submissionId || submissionId);
+            localStorage.setItem('csf-revision', String(resData.revision ?? revision));
             localStorage.setItem('csf-form-version', String(FORM_VERSION));
             setStep("thanks");
         } catch (err) {

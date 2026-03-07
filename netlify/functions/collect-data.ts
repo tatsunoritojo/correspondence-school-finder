@@ -19,6 +19,7 @@ interface CollectDataBody {
     submissionId: string;
     revision: number;
     formVersion: number;
+    diagnosisVersion: number;
 }
 
 // Simple in-memory rate limiting (3 req/min/IP)
@@ -147,11 +148,12 @@ export const handler: Handler = async (event: HandlerEvent) => {
             body.submissionId,
             String(body.revision ?? 0),
             String(body.formVersion ?? 1),
+            String(body.diagnosisVersion ?? 1),
         ];
 
         await client.spreadsheets.values.append({
             spreadsheetId: sheetId,
-            range: "data!A:V",
+            range: "data!A:W",
             valueInputOption: "RAW",
             requestBody: {
                 values: [row],
@@ -161,7 +163,12 @@ export const handler: Handler = async (event: HandlerEvent) => {
         return {
             statusCode: 200,
             headers: corsHeaders,
-            body: JSON.stringify({ success: true }),
+            body: JSON.stringify({
+                ok: true,
+                submissionId: body.submissionId,
+                revision: body.revision ?? 0,
+                formVersion: body.formVersion ?? 1,
+            }),
         };
     } catch (error) {
         console.error("Sheets API error:", error);
