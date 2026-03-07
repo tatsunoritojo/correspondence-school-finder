@@ -33,6 +33,7 @@ const ResultPage = () => {
     const [consentDismissed, setConsentDismissed] = useState(
         () => localStorage.getItem('csf-data-consent') === 'done'
     );
+    const [isRevision, setIsRevision] = useState(false);
 
     // PDF Download State
     const [showNameDialog, setShowNameDialog] = useState(false);
@@ -524,7 +525,7 @@ const ResultPage = () => {
                             <button
                                 onClick={() => {
                                     setConsentDismissed(false);
-                                    localStorage.removeItem('csf-data-consent');
+                                    setIsRevision(true);
                                 }}
                                 className="text-xs text-orange-400 underline bg-transparent border-none cursor-pointer"
                             >
@@ -535,8 +536,10 @@ const ResultPage = () => {
                         <DataConsentForm
                             scores={finalDisplay.scores}
                             role={role}
+                            isRevision={isRevision}
                             onClose={() => {
                                 setConsentDismissed(true);
+                                setIsRevision(false);
                                 localStorage.setItem('csf-data-consent', 'done');
                             }}
                         />

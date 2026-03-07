@@ -16,6 +16,8 @@ interface CollectDataBody {
     freeText: string;
     email: string;
     timestamp: string;
+    submissionId: string;
+    revision: number;
 }
 
 // Simple in-memory rate limiting (3 req/min/IP)
@@ -106,11 +108,11 @@ export const handler: Handler = async (event: HandlerEvent) => {
         };
     }
 
-    if (!body.timestamp) {
+    if (!body.timestamp || !body.submissionId) {
         return {
             statusCode: 400,
             headers: corsHeaders,
-            body: JSON.stringify({ error: "Missing timestamp" }),
+            body: JSON.stringify({ error: "Missing timestamp or submissionId" }),
         };
     }
 
@@ -141,11 +143,13 @@ export const handler: Handler = async (event: HandlerEvent) => {
             ...AXIS_IDS.map((id) =>
                 body.scores[id] != null ? String(body.scores[id]) : ""
             ),
+            body.submissionId,
+            String(body.revision ?? 0),
         ];
 
         await client.spreadsheets.values.append({
             spreadsheetId: sheetId,
-            range: "data!A:S",
+            range: "data!A:U",
             valueInputOption: "RAW",
             requestBody: {
                 values: [row],

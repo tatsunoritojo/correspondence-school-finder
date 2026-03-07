@@ -4,6 +4,7 @@ type Props = {
     scores: Record<string, number>;
     role: "child" | "parent";
     onClose: () => void;
+    isRevision?: boolean;
 };
 
 const PREFECTURES = [
@@ -24,8 +25,12 @@ const CHILD_STATUSES = ["通常登校", "別室登校", "自宅中心の生活",
 
 type Step = "ask" | "form" | "thanks";
 
-export default function DataConsentForm({ scores, role, onClose }: Props) {
-    const [step, setStep] = useState<Step>("ask");
+function generateId(): string {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+export default function DataConsentForm({ scores, role, onClose, isRevision = false }: Props) {
+    const [step, setStep] = useState<Step>(isRevision ? "form" : "ask");
     const [sending, setSending] = useState(false);
     const [visible, setVisible] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -59,6 +64,18 @@ export default function DataConsentForm({ scores, role, onClose }: Props) {
 
     const handleSubmit = async () => {
         setSending(true);
+
+        // submissionId: 初回は生成して保存、修正時は既存のものを使う
+        let submissionId = localStorage.getItem('csf-submission-id') || "";
+        let revision = parseInt(localStorage.getItem('csf-revision') || "0", 10);
+
+        if (!submissionId) {
+            submissionId = generateId();
+            revision = 0;
+        } else {
+            revision += 1;
+        }
+
         try {
             await fetch("/.netlify/functions/collect-data", {
                 method: "POST",
@@ -78,8 +95,12 @@ export default function DataConsentForm({ scores, role, onClose }: Props) {
                     freeText,
                     email,
                     timestamp: new Date().toISOString(),
+                    submissionId,
+                    revision,
                 }),
             });
+            localStorage.setItem('csf-submission-id', submissionId);
+            localStorage.setItem('csf-revision', String(revision));
         } catch (err) {
             console.error("Data collection failed:", err);
         }
