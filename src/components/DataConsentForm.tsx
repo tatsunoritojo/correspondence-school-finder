@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Props = {
     scores: Record<string, number>;
@@ -27,6 +27,24 @@ type Step = "ask" | "form" | "thanks";
 export default function DataConsentForm({ scores, role, onClose }: Props) {
     const [step, setStep] = useState<Step>("ask");
     const [sending, setSending] = useState(false);
+    const [visible, setVisible] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setVisible(true);
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.2 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
 
     // demographics
     const [prefecture, setPrefecture] = useState("");
@@ -71,7 +89,12 @@ export default function DataConsentForm({ scores, role, onClose }: Props) {
 
     if (step === "ask") {
         return (
-            <div className="glass-card rounded-2xl p-6 text-center">
+            <div
+                ref={containerRef}
+                className={`glass-card rounded-2xl p-6 text-center border-2 border-orange-200 transition-all duration-700 ${
+                    visible ? "opacity-100 translate-y-0 shadow-lg shadow-orange-100" : "opacity-0 translate-y-4"
+                }`}
+            >
                 <p className="text-lg font-bold text-stone-700 mb-3">
                     診断データの提供にご協力いただけますか？
                 </p>

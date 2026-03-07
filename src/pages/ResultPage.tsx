@@ -515,8 +515,23 @@ const ResultPage = () => {
                     </p>
                 </div>
 
-                {!consentDismissed && (
-                    <div className="mt-8">
+                <div className="mt-8">
+                    {consentDismissed ? (
+                        <div className="text-center py-4">
+                            <p className="text-xs text-stone-400 mb-1">
+                                データ収集にご協力いただきました
+                            </p>
+                            <button
+                                onClick={() => {
+                                    setConsentDismissed(false);
+                                    localStorage.removeItem('csf-data-consent');
+                                }}
+                                className="text-xs text-orange-400 underline bg-transparent border-none cursor-pointer"
+                            >
+                                回答を修正・追加する
+                            </button>
+                        </div>
+                    ) : (
                         <DataConsentForm
                             scores={finalDisplay.scores}
                             role={role}
@@ -525,8 +540,8 @@ const ResultPage = () => {
                                 localStorage.setItem('csf-data-consent', 'done');
                             }}
                         />
-                    </div>
-                )}
+                    )}
+                </div>
 
             </div>
 
