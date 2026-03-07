@@ -144,8 +144,8 @@ export default function AccessibilityToggle() {
                     <path d="M8 11l4 1 4-1" />
                     <path d="M9 17l3-4 3 4" />
                 </svg>
-                <span className="text-[13px] font-bold tracking-wide">
-                    アクセシビリティ
+                <span className="text-[11px] sm:text-[13px] font-bold tracking-wide">
+                    設定
                 </span>
             </button>
 
@@ -156,8 +156,8 @@ export default function AccessibilityToggle() {
                     role="dialog"
                     aria-label="アクセシビリティ設定パネル"
                     aria-modal="true"
-                    className="absolute bottom-14 left-0 bg-white rounded-xl shadow-xl border border-border p-5"
-                    style={{ width: "calc((100vw - 3rem) / var(--a11y-target-zoom))" }}
+                    className="absolute bottom-14 left-0 bg-white rounded-xl shadow-xl border border-border p-4 sm:p-5 overflow-y-auto"
+                    style={{ width: "calc((100vw - 3rem) / var(--a11y-target-zoom))", maxHeight: "calc(100vh - 7rem)" }}
                 >
                     <h3 className="font-bold text-[15px] text-text tracking-wide mb-4">
                         アクセシビリティ設定

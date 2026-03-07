@@ -58,7 +58,7 @@ export default function DiagnosisSection() {
                                             alt="診断の質問画面プレビュー"
                                             width={360}
                                             height={640}
-                                            className="w-full object-cover object-top h-[200px] md:h-[240px]"
+                                            className="w-full object-cover object-top h-[270px] md:h-[320px]"
                                         />
                                         <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent" />
                                     </div>
@@ -74,7 +74,7 @@ export default function DiagnosisSection() {
                                             alt="診断の結果画面プレビュー"
                                             width={360}
                                             height={640}
-                                            className="w-full object-cover object-top h-[200px] md:h-[240px]"
+                                            className="w-full object-cover object-top h-[270px] md:h-[320px]"
                                         />
                                         <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent" />
                                     </div>
