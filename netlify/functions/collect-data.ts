@@ -145,7 +145,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
 
         await client.spreadsheets.values.append({
             spreadsheetId: sheetId,
-            range: "Sheet1!A:S",
+            range: "data!A:S",
             valueInputOption: "RAW",
             requestBody: {
                 values: [row],
