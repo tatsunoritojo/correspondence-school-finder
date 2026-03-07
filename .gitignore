@@ -133,6 +133,13 @@ dist-ssr
 # PDF binaries (use .md versions instead)
 *.pdf
 
+# Google Cloud service account keys
+*-*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.*.json
+
 # Local Netlify folder
 .netlify
 

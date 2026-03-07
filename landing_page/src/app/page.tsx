@@ -41,30 +41,30 @@ export default function Home() {
 
                 <ScrollArrow />
 
-                {/* ── セクション3: Diagnosis ── */}
+                {/* ── セクション3: About（使い方・想い・データ収集） ── */}
+                <SnapSection allowScroll>
+                    <AboutSection />
+                </SnapSection>
+
+                <ScrollArrow />
+
+                {/* ── セクション4: Diagnosis ── */}
                 <SnapSection allowScroll>
                     <DiagnosisSection />
                 </SnapSection>
 
                 <ScrollArrow />
 
-                {/* ── セクション4: School Options ── */}
+                {/* ── セクション5: School Options ── */}
                 <SnapSection>
                     <SchoolOptionsSection />
                 </SnapSection>
 
                 <ScrollArrow />
 
-                {/* ── セクション5: 不登校セクション ── */}
+                {/* ── セクション6: 不登校セクション ── */}
                 <SnapSection>
                     <FutoshokuSection />
-                </SnapSection>
-
-                <ScrollArrow />
-
-                {/* ── セクション6: About ── */}
-                <SnapSection allowScroll>
-                    <AboutSection />
                 </SnapSection>
 
                 <ScrollArrow />

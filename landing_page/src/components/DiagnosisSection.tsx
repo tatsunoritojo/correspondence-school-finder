@@ -50,7 +50,7 @@ export default function DiagnosisSection() {
                         <div className="flex justify-center gap-3 md:gap-5">
                             {/* 質問画面モック */}
                             <FadeIn delay={0.25} x={-20} y={20}>
-                                <div className="max-w-[150px] md:max-w-[180px] rounded-[2rem] border-[3px] border-stone-700 shadow-xl overflow-hidden bg-white">
+                                <div className="w-[140px] md:w-[170px] rounded-[2rem] border-[3px] border-stone-700 shadow-xl overflow-hidden bg-white">
                                     <div className="w-16 h-1 bg-stone-300 rounded-full mx-auto mt-2" />
                                     <div className="relative mt-1">
                                         <Image
@@ -66,7 +66,7 @@ export default function DiagnosisSection() {
                             </FadeIn>
                             {/* 結果画面モック */}
                             <FadeIn delay={0.35} x={20} y={20}>
-                                <div className="max-w-[150px] md:max-w-[180px] rounded-[2rem] border-[3px] border-stone-700 shadow-xl overflow-hidden bg-white">
+                                <div className="w-[140px] md:w-[170px] rounded-[2rem] border-[3px] border-stone-700 shadow-xl overflow-hidden bg-white">
                                     <div className="w-16 h-1 bg-stone-300 rounded-full mx-auto mt-2" />
                                     <div className="relative mt-1">
                                         <Image
@@ -95,7 +95,7 @@ export default function DiagnosisSection() {
                             href="https://shindan.kodomo-shinro.jp/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="cta-pulse inline-flex items-center justify-center gap-1.5 bg-accent text-white w-full py-3.5 md:w-auto md:px-10 md:py-4 lg:px-12 lg:py-5 rounded-lg text-[16px] md:text-[20px] lg:text-[22px] font-bold tracking-wider no-underline transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-[3px] active:shadow-none"
+                            className="cta-pulse inline-flex items-center justify-center gap-1.5 bg-accent text-white w-full px-6 py-3.5 md:w-auto md:px-10 md:py-4 lg:px-12 lg:py-5 rounded-lg text-[16px] md:text-[20px] lg:text-[22px] font-bold tracking-wider no-underline transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-[3px] active:shadow-none"
                         >
                             診断をはじめる
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="ml-0.5 md:w-5 md:h-5 lg:w-6 lg:h-6">

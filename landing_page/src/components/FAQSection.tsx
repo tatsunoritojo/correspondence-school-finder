@@ -19,7 +19,7 @@ export default function FAQSection() {
     };
 
     return (
-        <section className="py-10 md:py-0" aria-label="よくあるご質問">
+        <section className="py-4 md:py-0" aria-label="よくあるご質問">
             <div className="flex flex-col items-center md:flex-row md:items-start gap-6 md:gap-10 lg:gap-16">
                 {/* イラスト — PCではstickyで追従 */}
                 <div className="flex-shrink-0 md:sticky md:top-[20vh] md:self-start">
@@ -134,10 +134,10 @@ export default function FAQSection() {
                             href="https://shindan.kodomo-shinro.jp/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="cta-pulse inline-flex items-center justify-center gap-1.5 bg-accent text-white px-8 py-3.5 md:px-10 md:py-4 rounded-lg text-[16px] md:text-[20px] font-bold tracking-wider no-underline transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-[3px] active:shadow-none"
+                            className="cta-pulse inline-flex items-center justify-center gap-1.5 bg-accent text-white px-8 py-3.5 md:px-10 md:py-4 lg:px-12 lg:py-5 rounded-lg text-[16px] md:text-[20px] lg:text-[22px] font-bold tracking-wider no-underline transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-[3px] active:shadow-none"
                         >
                             診断をはじめる
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="ml-0.5 md:w-5 md:h-5">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="ml-0.5 md:w-5 md:h-5 lg:w-6 lg:h-6">
                                 <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </a>
