@@ -1,5 +1,5 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
-import { sheets } from "@googleapis/sheets";
+import { sheets_v4, auth as googleAuth } from "@googleapis/sheets";
 
 interface CollectDataBody {
     scores: Record<string, number>;
@@ -115,7 +115,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
     }
 
     try {
-        const auth = new sheets.auth.GoogleAuth({
+        const authClient = new googleAuth.GoogleAuth({
             credentials: {
                 client_email: serviceEmail,
                 private_key: privateKey.replace(/\\n/g, "\n"),
@@ -123,7 +123,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
             scopes: ["https://www.googleapis.com/auth/spreadsheets"],
         });
 
-        const client = sheets({ version: "v4", auth: await auth.getClient() as any });
+        const client = new sheets_v4.Sheets({ auth: await authClient.getClient() as any });
 
         const demo = body.demographics || {} as CollectDataBody["demographics"];
         const row = [
