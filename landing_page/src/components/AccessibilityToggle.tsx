@@ -157,7 +157,7 @@ export default function AccessibilityToggle() {
                     aria-label="アクセシビリティ設定パネル"
                     aria-modal="true"
                     className="fixed bottom-20 left-6 bg-white rounded-xl shadow-xl border border-border p-5 overflow-y-auto"
-                    style={{ width: "calc((100vw - 3rem) / var(--a11y-target-zoom))", maxHeight: "80vh" }}
+                    style={{ width: "calc((100vw - 3rem) / var(--a11y-target-zoom))", maxHeight: "50vh" }}
                 >
                     <h3 className="font-bold text-[15px] text-text tracking-wide mb-4">
                         アクセシビリティ設定
