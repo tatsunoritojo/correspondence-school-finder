@@ -1,11 +1,14 @@
 import React from 'react';
-import { X, FileText } from 'lucide-react';
+import { X, FileText, Image } from 'lucide-react';
+import { isMobileDevice } from '../lib/deviceDetection';
+
+export type SaveFormat = 'image' | 'pdf';
 
 interface NameInputDialogProps {
     isOpen: boolean;
     name: string;
     onNameChange: (name: string) => void;
-    onConfirm: () => void;
+    onConfirm: (format: SaveFormat) => void;
     onCancel: () => void;
     isLoading?: boolean;
 }
@@ -18,11 +21,15 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
     onCancel,
     isLoading = false,
 }) => {
+    const [format, setFormat] = React.useState<SaveFormat>(
+        isMobileDevice() ? 'image' : 'pdf'
+    );
+
     if (!isOpen) return null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onConfirm();
+        onConfirm(format);
     };
 
     return (
@@ -44,7 +51,7 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
 
                 {/* タイトル */}
                 <h2 className="text-xl font-bold text-stone-700 text-center mb-2">
-                    レポートをダウンロード
+                    診断結果を保存
                 </h2>
                 <p className="text-sm text-stone-500 text-center mb-6">
                     レポートに表示するお名前を入力してください
@@ -61,6 +68,41 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
                         autoFocus
                         disabled={isLoading}
                     />
+
+                    {/* 形式選択 */}
+                    <div className="flex gap-2 mb-4">
+                        <button
+                            type="button"
+                            onClick={() => setFormat('image')}
+                            disabled={isLoading}
+                            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 font-bold text-sm transition-all ${
+                                format === 'image'
+                                    ? 'border-orange-400 bg-orange-50 text-orange-600'
+                                    : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
+                            }`}
+                        >
+                            <Image size={16} />
+                            画像
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setFormat('pdf')}
+                            disabled={isLoading}
+                            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 font-bold text-sm transition-all ${
+                                format === 'pdf'
+                                    ? 'border-orange-400 bg-orange-50 text-orange-600'
+                                    : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
+                            }`}
+                        >
+                            <FileText size={16} />
+                            PDF
+                        </button>
+                    </div>
+                    <p className="text-xs text-stone-400 text-center mb-4">
+                        {format === 'image'
+                            ? 'PNG画像として保存します（カメラロール / ダウンロード）'
+                            : 'PDF文書として保存します'}
+                    </p>
 
                     <div className="flex gap-3">
                         <button
@@ -82,7 +124,7 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
                                     生成中...
                                 </span>
                             ) : (
-                                'ダウンロード'
+                                '保存する'
                             )}
                         </button>
                     </div>

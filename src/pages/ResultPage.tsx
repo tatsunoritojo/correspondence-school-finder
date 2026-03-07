@@ -9,7 +9,7 @@ import { Axis, ParentChildData } from "../types";
 import RadarChart from "../components/RadarChart";
 import ResultCard from "../components/ResultCard";
 import PrintableReport from "../components/PrintableReport";
-import NameInputDialog from "../components/NameInputDialog";
+import NameInputDialog, { SaveFormat } from "../components/NameInputDialog";
 import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, ChevronUp, ExternalLink, MapPin, X, ChevronRight, FileText } from "lucide-react";
 import { isMobileDevice } from "../lib/deviceDetection";
 import DataConsentForm from "../components/DataConsentForm";
@@ -119,7 +119,7 @@ const ResultPage = () => {
         setShowNameDialog(true);
     };
 
-    const handlePdfDownloadConfirm = async () => {
+    const handleSaveConfirm = async (format: SaveFormat) => {
         if (!respondentName.trim()) {
             return;
         }
@@ -145,7 +145,6 @@ const ResultPage = () => {
                     useCORS: true,
                     logging: false,
                     onclone: (clonedDoc) => {
-                        // Fix backdrop-filter issues in html2canvas
                         const glassCards = clonedDoc.querySelectorAll('.glass-card');
                         glassCards.forEach((el) => {
                             (el as HTMLElement).style.backdropFilter = 'none';
@@ -154,36 +153,14 @@ const ResultPage = () => {
                     }
                 });
 
-                // Mobile: Image save/share
-                if (isMobileDevice()) {
-                    const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
-                    if (!blob) throw new Error('Blob creation failed');
-
-                    const fileName = `診断結果レポート_${respondentName}.png`;
-                    const file = new File([blob], fileName, { type: 'image/png' });
-
-                    // Try Web Share API first (Mobile)
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                files: [file],
-                                title: '通信制高校診断結果',
-                                text: `${respondentName}さんの診断結果レポートです。`,
-                            });
-                            printableRef.current.style.display = 'none';
-                            return; // Share succeeded
-                        } catch (e) {
-                            console.log('Share API canceled or failed, falling back to download', e);
-                        }
-                    }
-
-                    // Fallback: Download image
+                if (format === 'image') {
+                    // 画像保存（モバイル・PC共通）
                     const link = document.createElement('a');
-                    link.download = fileName;
+                    link.download = `診断結果レポート_${respondentName}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                 } else {
-                    // PC: PDF generation
+                    // PDF生成
                     const pdf = new jsPDF({
                         orientation: 'portrait',
                         unit: 'mm',
@@ -194,7 +171,6 @@ const ResultPage = () => {
                     const pdfWidth = 210;
                     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-                    // If content is taller than A4, scale it down
                     if (pdfHeight > 297) {
                         const scaledWidth = (297 * canvas.width) / canvas.height;
                         const xOffset = (210 - scaledWidth) / 2;
@@ -211,7 +187,7 @@ const ResultPage = () => {
             }
         } catch (error) {
             console.error('Report generation failed:', error);
-            alert(isMobileDevice() ? '画像の保存に失敗しました。' : 'PDFの生成に失敗しました。もう一度お試しください。');
+            alert('保存に失敗しました。もう一度お試しください。');
         } finally {
             setIsGeneratingPdf(false);
         }
@@ -576,7 +552,7 @@ const ResultPage = () => {
                         ) : (
                             <>
                                 <FileText size={16} />
-                                <span className="hidden md:inline">{isMobileDevice() ? 'レポートを保存・共有' : 'レポートをPDFでダウンロード'}</span>
+                                <span className="hidden md:inline">レポートを保存</span>
                                 <span className="md:hidden">レポート保存</span>
                             </>
                         )}
@@ -588,7 +564,7 @@ const ResultPage = () => {
                     >
                         <Share2 size={16} />
                         <span className="hidden md:inline">サイトを共有する</span>
-                        <span className="md:hidden">共有</span>
+                        <span className="md:hidden">サイト共有</span>
                     </button>
 
                     <button
@@ -660,7 +636,7 @@ const ResultPage = () => {
                 isOpen={showNameDialog}
                 name={respondentName}
                 onNameChange={setRespondentName}
-                onConfirm={handlePdfDownloadConfirm}
+                onConfirm={handleSaveConfirm}
                 onCancel={handlePdfDownloadCancel}
                 isLoading={isGeneratingPdf}
             />
