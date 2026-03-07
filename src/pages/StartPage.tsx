@@ -2,8 +2,15 @@
 import { useNavigate } from "react-router-dom";
 import { User, Users, ExternalLink } from "lucide-react";
 
+const isDev = import.meta.env.DEV;
+
 const StartPage = () => {
   const navigate = useNavigate();
+
+  const devNav = async (role: "child" | "parent" | "both") => {
+    const { seedDevData } = await import("../lib/devSeed");
+    navigate(seedDevData(role));
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
@@ -74,6 +81,21 @@ const StartPage = () => {
           <ExternalLink size={12} className="opacity-50" />
         </a>
       </footer>
+
+      {isDev && (
+        <div className="fixed bottom-4 left-4 z-50 bg-black/80 text-white text-xs rounded-xl p-3 space-y-2 backdrop-blur-sm">
+          <p className="font-bold text-yellow-300">DEV shortcuts</p>
+          <button onClick={() => devNav("child")} className="block w-full text-left px-2 py-1 rounded hover:bg-white/20 bg-transparent border-none text-white cursor-pointer text-xs">
+            → Result（生徒）
+          </button>
+          <button onClick={() => devNav("parent")} className="block w-full text-left px-2 py-1 rounded hover:bg-white/20 bg-transparent border-none text-white cursor-pointer text-xs">
+            → Result（保護者）
+          </button>
+          <button onClick={() => devNav("both")} className="block w-full text-left px-2 py-1 rounded hover:bg-white/20 bg-transparent border-none text-white cursor-pointer text-xs">
+            → Result（親子マッチング）
+          </button>
+        </div>
+      )}
 
       <style>{`
         @keyframes blob {

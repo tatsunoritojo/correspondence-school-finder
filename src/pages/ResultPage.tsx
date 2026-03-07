@@ -7,11 +7,13 @@ import { getPersonalizedAdvice, AIAdvice } from "../lib/gemini";
 import { AXES, COMMUTING_LABELS, EXAM_LABELS, TRANSPORTATION_LABELS, SCHEDULE_LABELS } from "../data/constants";
 import { Axis, ParentChildData } from "../types";
 import RadarChart from "../components/RadarChart";
-import ResultCard from "../components/ResultCard";
+
 import PrintableReport from "../components/PrintableReport";
 import NameInputDialog, { SaveFormat } from "../components/NameInputDialog";
-import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, ChevronUp, ExternalLink, MapPin, X, ChevronRight, FileText } from "lucide-react";
+import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, BarChart3, ThumbsUp, Lightbulb } from "lucide-react";
 import { isMobileDevice } from "../lib/deviceDetection";
+import { trackEvent } from "../lib/analytics";
+import { useTrackView } from "../hooks/useTrackView";
 import DataConsentForm from "../components/DataConsentForm";
 
 const ResultPage = () => {
@@ -23,17 +25,16 @@ const ResultPage = () => {
     const [data, setData] = useState<ParentChildData | null>(null);
     const [aiAdvice, setAiAdvice] = useState<AIAdvice | null>(null);
     const [loadingAdvice, setLoadingAdvice] = useState(false);
-    const [showAllAxes, setShowAllAxes] = useState(false);
-
-    // Scroll Banner State
-    const [showFloatBanner, setShowFloatBanner] = useState(false);
-    const [bannerDismissed, setBannerDismissed] = useState(false);
+    const [showConditions, setShowConditions] = useState(false);
+    const [openAxisIds, setOpenAxisIds] = useState<Set<string>>(new Set());
 
     // Data consent: "none" | "dismissed" | "submitted"
     const [formStatus, setFormStatus] = useState<"none" | "dismissed" | "submitted">(
         () => (localStorage.getItem('csf-form-status') as "dismissed" | "submitted") || "none"
     );
     const [isRevision, setIsRevision] = useState(false);
+    const [consentAccepted, setConsentAccepted] = useState(false);
+    const formRef = useRef<HTMLDivElement>(null);
 
     // PDF Download State
     const [showNameDialog, setShowNameDialog] = useState(false);
@@ -42,6 +43,21 @@ const ResultPage = () => {
 
     const resultRef = useRef<HTMLDivElement>(null);
     const printableRef = useRef<HTMLDivElement>(null);
+    const chartRef = useRef<HTMLDivElement>(null);
+    const ctaSectionRef = useRef<HTMLDivElement>(null);
+    const detailCardsRef = useRef<HTMLDivElement>(null);
+    const oneDropRef = useRef<HTMLDivElement>(null);
+
+    // GA4 viewport tracking
+    useTrackView(chartRef, "chart_view");
+    useTrackView(ctaSectionRef, "cta_section_view");
+    useTrackView(detailCardsRef, "detail_cards_view");
+    useTrackView(oneDropRef, "one_drop_banner_view");
+
+    // GA4 page view
+    useEffect(() => {
+        trackEvent("result_page_view", { role });
+    }, [role]);
 
     useEffect(() => {
         if (childId) {
@@ -55,6 +71,7 @@ const ResultPage = () => {
                     try {
                         const advice = await getPersonalizedAdvice(myResult.scores, role);
                         setAiAdvice(advice);
+                        trackEvent("ai_advice_loaded");
                     } finally {
                         setLoadingAdvice(false);
                     }
@@ -63,23 +80,12 @@ const ResultPage = () => {
         }
     }, [childId, role]);
 
-    // Scroll Listener for Floating Banner
     // Scroll Listener
     const [showScrollIndicator, setShowScrollIndicator] = useState(true);
 
     useEffect(() => {
         const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-
-            // Show banner after scrolling 400px
-            if (currentScrollY > 400) {
-                setShowFloatBanner(true);
-            } else {
-                setShowFloatBanner(false);
-            }
-
-            // Hide scroll indicator after scrolling 50px
-            if (currentScrollY > 50) {
+            if (window.scrollY > 50) {
                 setShowScrollIndicator(false);
             } else {
                 setShowScrollIndicator(true);
@@ -104,15 +110,12 @@ const ResultPage = () => {
     const childScores = data.child?.scores;
     const parentScores = data.parent?.scores;
 
-    // Sorting and Filtering Logic
+    // Sorting and relative grouping
     const currentScores = finalDisplay.scores;
     const sortedAxes = [...AXES].sort((a, b) => currentScores[b.id] - currentScores[a.id]);
-
-    const THRESHOLD = 3.5;
-    const highScoringAxes = sortedAxes.filter(axis => currentScores[axis.id] >= THRESHOLD);
-    const visibleAxes = highScoringAxes.length > 0 ? highScoringAxes : sortedAxes.slice(0, 3);
-    const hiddenAxes = sortedAxes.filter(axis => !visibleAxes.includes(axis));
-
+    const avgScore = AXES.reduce((sum, ax) => sum + currentScores[ax.id], 0) / AXES.length;
+    const highAxes = sortedAxes.filter(ax => currentScores[ax.id] >= avgScore);
+    const lowAxes = sortedAxes.filter(ax => currentScores[ax.id] < avgScore);
 
     // PDF Download Handler
     const handlePdfDownloadClick = () => {
@@ -228,20 +231,17 @@ const ResultPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-orange-50/30 pb-28 relative">
+        <div className="min-h-screen bg-orange-50/30 pb-8 relative">
             <div className="max-w-3xl mx-auto p-6" ref={resultRef}>
 
                 {/* Header */}
-                <div className="text-center mb-8 mt-4">
-                    <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold mb-3 tracking-wider">
-                        診断レポート
-                    </span>
-                    <h1 className="text-2xl md:text-3xl font-bold text-stone-700">
+                <div className="text-center mb-6 mt-4">
+                    <h1 className="text-xl md:text-2xl font-bold text-stone-700">
                         {role === "child" ? "あなたの学校選びの軸" : "お子様との価値観診断"}
                     </h1>
                     {data.parent && data.child && (
-                        <p className="text-teal-600 font-bold mt-2 flex items-center justify-center gap-1 text-sm bg-teal-50 py-1 px-3 rounded-full inline-flex mx-auto mt-3">
-                            <MessageCircle size={14} /> 親子マッチング完了
+                        <p className="text-teal-600 font-bold mt-2 flex items-center justify-center gap-1 text-xs bg-teal-50 py-1 px-3 rounded-full inline-flex mx-auto">
+                            <MessageCircle size={12} /> 親子マッチング完了
                         </p>
                     )}
 
@@ -254,49 +254,8 @@ const ResultPage = () => {
                     </div>
                 </div>
 
-                {/* AI Advisor Section */}
-                {loadingAdvice && (
-                    <div className="glass-card p-6 md:p-8 rounded-3xl mb-8 border-t-4 border-orange-200 shadow-sm animate-pulse">
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-400">
-                                <Sparkles size={18} />
-                            </div>
-                            <h2 className="font-bold text-lg text-stone-400">AI アドバイザー</h2>
-                        </div>
-                        <div className="space-y-3">
-                            <div className="h-4 bg-stone-200 rounded w-3/4"></div>
-                            <div className="h-4 bg-stone-200 rounded w-full"></div>
-                            <div className="h-4 bg-stone-200 rounded w-2/3"></div>
-                        </div>
-                        <p className="text-xs text-stone-400 mt-4 text-center">AI がアドバイスを作成しています...</p>
-                    </div>
-                )}
-                {aiAdvice && (
-                    <div className="glass-card p-6 md:p-8 rounded-3xl mb-8 border-t-4 border-orange-300 shadow-lg animate-fade-in-up">
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-500">
-                                <Sparkles size={18} />
-                            </div>
-                            <h2 className="font-bold text-lg text-stone-700">AI アドバイザー</h2>
-                        </div>
-                        <p className="text-stone-700 leading-relaxed mb-6 font-medium">
-                            {aiAdvice.summary}
-                        </p>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div className="bg-orange-50/80 p-4 rounded-xl border border-orange-100">
-                                <span className="text-xs font-bold text-orange-600 block mb-1">あなたの強み</span>
-                                <p className="text-sm text-stone-700">{aiAdvice.strengthComment}</p>
-                            </div>
-                            <div className="bg-stone-100/50 p-4 rounded-xl">
-                                <span className="text-xs font-bold text-stone-500 block mb-1">アドバイス</span>
-                                <p className="text-sm text-stone-700">{aiAdvice.weaknessComment}</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {/* Chart Section */}
-                <div className="glass-card p-6 rounded-3xl mb-8 relative overflow-hidden shadow-sm">
+                <div ref={chartRef} className="glass-card p-6 rounded-2xl mb-6 relative overflow-hidden shadow-lg">
                     <h2 className="text-lg font-bold text-center mb-4 text-stone-600">バランスチャート</h2>
                     <RadarChart
                         axes={AXES}
@@ -314,185 +273,259 @@ const ResultPage = () => {
                     )}
                 </div>
 
-                {/* New Answers Display Section */}
-                <div className="mt-8 space-y-6">
-                    <h2 className="text-xl font-bold text-stone-700 ml-2 flex items-center gap-2">
-                        <FileText size={20} className="text-orange-400" />
-                        通学条件・入試項目の希望
-                    </h2>
-                    <div className="glass-card p-6 rounded-2xl space-y-4">
-                        {/* Commuting Distance */}
-                        <div>
-                            <h3 className="text-sm font-bold text-stone-500 mb-2">通学時間</h3>
-                            <p className="text-base text-stone-700 font-medium">
-                                {finalDisplay.answers["Q9-1"]
-                                    ? COMMUTING_LABELS[finalDisplay.answers["Q9-1"] as string] || "未回答"
-                                    : "未回答"}
-                            </p>
+                {/* AI Advisor Section */}
+                {loadingAdvice && (
+                    <div className="glass-card p-6 md:p-8 rounded-2xl mb-6 shadow-xl animate-pulse">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-400">
+                                <Sparkles size={18} />
+                            </div>
+                            <h2 className="font-bold text-lg text-stone-400">AI アドバイザー</h2>
                         </div>
-                        {/* Transportation Method */}
-                        <div>
-                            <h3 className="text-sm font-bold text-stone-500 mb-2">通学方法の許容範囲</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {Array.isArray(finalDisplay.answers["Q11-1"]) && (finalDisplay.answers["Q11-1"] as string[]).length > 0 ? (
-                                    (finalDisplay.answers["Q11-1"] as string[]).map((val) => (
-                                        <span
-                                            key={val}
-                                            className="px-3 py-1 bg-teal-100 text-teal-700 text-sm font-medium rounded-full"
-                                        >
-                                            {TRANSPORTATION_LABELS[val] || val}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <p className="text-base text-stone-700 font-medium">未回答</p>
-                                )}
+                        <div className="space-y-3">
+                            <div className="h-4 bg-stone-200 rounded w-3/4"></div>
+                            <div className="h-4 bg-stone-200 rounded w-full"></div>
+                            <div className="h-4 bg-stone-200 rounded w-2/3"></div>
+                        </div>
+                        <p className="text-xs text-stone-400 mt-4 text-center">AI がアドバイスを作成しています...</p>
+                    </div>
+                )}
+                {aiAdvice && (
+                    <div className="glass-card p-6 md:p-8 rounded-2xl mb-6 shadow-xl animate-fade-in-up">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-500">
+                                <Sparkles size={18} />
+                            </div>
+                            <h2 className="font-bold text-lg text-stone-700">AI アドバイザー</h2>
+                        </div>
+                        <p className="text-stone-700 leading-relaxed mb-6 font-medium">
+                            {aiAdvice.summary}
+                        </p>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div className="bg-orange-50/80 p-4 rounded-xl border border-orange-100">
+                                <span className="text-xs font-bold text-orange-600 mb-1 flex items-center gap-1">
+                                    <ThumbsUp size={12} />
+                                    あなたの強み
+                                </span>
+                                <p className="text-sm text-stone-700 mt-1">{aiAdvice.strengthComment}</p>
+                            </div>
+                            <div className="bg-stone-100/50 p-4 rounded-xl">
+                                <span className="text-xs font-bold text-stone-500 mb-1 flex items-center gap-1">
+                                    <Lightbulb size={12} />
+                                    アドバイス
+                                </span>
+                                <p className="text-sm text-stone-700 mt-1">{aiAdvice.weaknessComment}</p>
                             </div>
                         </div>
-                        {/* Schedule Flexibility */}
-                        <div>
-                            <h3 className="text-sm font-bold text-stone-500 mb-2">登校時間の許容範囲</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {Array.isArray(finalDisplay.answers["Q12-1"]) && (finalDisplay.answers["Q12-1"] as string[]).length > 0 ? (
-                                    (finalDisplay.answers["Q12-1"] as string[]).map((val) => (
-                                        <span
-                                            key={val}
-                                            className="px-3 py-1 bg-teal-100 text-teal-700 text-sm font-medium rounded-full"
-                                        >
-                                            {SCHEDULE_LABELS[val] || val}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <p className="text-base text-stone-700 font-medium">未回答</p>
-                                )}
+                    </div>
+                )}
+
+                {/* Commuting / Exam Preferences (Accordion) */}
+                <div className="my-6 border-t border-stone-200/60" />
+                <div ref={ctaSectionRef}>
+                    <button
+                        onClick={() => setShowConditions(prev => !prev)}
+                        className="w-full glass-card p-4 rounded-2xl flex items-center justify-between bg-transparent border-none cursor-pointer text-left transition-colors hover:bg-white/60"
+                    >
+                        <span className="flex items-center gap-2 text-base font-bold text-stone-700">
+                            <FileText size={18} className="text-orange-400" />
+                            通学条件・入試項目の希望
+                        </span>
+                        <ChevronDown className={`w-5 h-5 text-stone-400 transition-transform duration-300 ${showConditions ? 'rotate-180' : ''}`} />
+                    </button>
+                    <div
+                        className="overflow-hidden transition-all duration-300"
+                        style={{ maxHeight: showConditions ? '600px' : '0px', opacity: showConditions ? 1 : 0 }}
+                    >
+                        <div className="glass-card p-6 rounded-2xl space-y-4 mt-2">
+                            <div>
+                                <h3 className="text-sm font-bold text-stone-500 mb-2">通学時間</h3>
+                                <p className="text-base text-stone-700 font-medium">
+                                    {finalDisplay.answers["Q9-1"]
+                                        ? COMMUTING_LABELS[finalDisplay.answers["Q9-1"] as string] || "未回答"
+                                        : "未回答"}
+                                </p>
                             </div>
-                        </div>
-                        {/* Entrance Exam */}
-                        <div>
-                            <h3 className="text-sm font-bold text-stone-500 mb-2">希望する入試方法</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {Array.isArray(finalDisplay.answers["Q10-1"]) && (finalDisplay.answers["Q10-1"] as string[]).length > 0 ? (
-                                    (finalDisplay.answers["Q10-1"] as string[]).map((val) => (
-                                        <span
-                                            key={val}
-                                            className="px-3 py-1 bg-orange-100 text-orange-700 text-sm font-medium rounded-full"
-                                        >
-                                            {EXAM_LABELS[val] || val}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <p className="text-base text-stone-700 font-medium">未回答</p>
-                                )}
+                            <div>
+                                <h3 className="text-sm font-bold text-stone-500 mb-2">通学方法の許容範囲</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {Array.isArray(finalDisplay.answers["Q11-1"]) && (finalDisplay.answers["Q11-1"] as string[]).length > 0 ? (
+                                        (finalDisplay.answers["Q11-1"] as string[]).map((val) => (
+                                            <span key={val} className="px-3 py-1 bg-teal-100 text-teal-700 text-sm font-medium rounded-full">
+                                                {TRANSPORTATION_LABELS[val] || val}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <p className="text-base text-stone-700 font-medium">未回答</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-bold text-stone-500 mb-2">登校時間の許容範囲</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {Array.isArray(finalDisplay.answers["Q12-1"]) && (finalDisplay.answers["Q12-1"] as string[]).length > 0 ? (
+                                        (finalDisplay.answers["Q12-1"] as string[]).map((val) => (
+                                            <span key={val} className="px-3 py-1 bg-teal-100 text-teal-700 text-sm font-medium rounded-full">
+                                                {SCHEDULE_LABELS[val] || val}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <p className="text-base text-stone-700 font-medium">未回答</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-bold text-stone-500 mb-2">希望する入試方法</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {Array.isArray(finalDisplay.answers["Q10-1"]) && (finalDisplay.answers["Q10-1"] as string[]).length > 0 ? (
+                                        (finalDisplay.answers["Q10-1"] as string[]).map((val) => (
+                                            <span key={val} className="px-3 py-1 bg-orange-100 text-orange-700 text-sm font-medium rounded-full">
+                                                {EXAM_LABELS[val] || val}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <p className="text-base text-stone-700 font-medium">未回答</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Details Cards Section */}
-                <div className="space-y-6">
-                    <h2 className="text-xl font-bold text-stone-700 ml-2 flex items-center gap-2">
-                        <AlertCircle size={20} className="text-orange-400" />
-                        {role === "child" ? "あなたが重視しているポイント" : "診断詳細"}
-                    </h2>
-
-                    {/* High Priority (Visible) Items */}
-                    <div className="space-y-6">
-                        {visibleAxes.map((axis: Axis) => (
-                            <ResultCard
-                                key={axis.id}
-                                axis={axis}
-                                score={finalDisplay.scores[axis.id]}
-                                role={role}
-                            />
-                        ))}
+                {/* Details Accordion Section */}
+                <div className="my-6 border-t border-stone-200/60" />
+                <div ref={detailCardsRef} className="space-y-6">
+                    {/* High group */}
+                    <div>
+                        <h2 className="text-base font-bold text-stone-700 ml-2 mb-3 flex items-center gap-2">
+                            <AlertCircle size={18} className="text-orange-400" />
+                            {role === "child" ? "あなたが重視しているポイント" : "重視度が高いポイント"}
+                        </h2>
+                        <div className="glass-card rounded-2xl overflow-hidden divide-y divide-stone-100">
+                            {highAxes.map((axis: Axis) => (
+                                <AxisAccordionItem key={axis.id} axis={axis} score={currentScores[axis.id]} role={role} isAboveAvg={true} isOpen={openAxisIds.has(axis.id)} onToggle={() => setOpenAxisIds(prev => {
+                                    const next = new Set(prev);
+                                    if (next.has(axis.id)) next.delete(axis.id); else next.add(axis.id);
+                                    return next;
+                                })} />
+                            ))}
+                        </div>
                     </div>
 
-                    {/* Hidden / Low Priority Items */}
-                    {hiddenAxes.length > 0 && (
-                        <div className="mt-8">
-                            {!showAllAxes ? (
-                                <button
-                                    onClick={() => setShowAllAxes(true)}
-                                    className="w-full py-4 bg-white/50 hover:bg-white rounded-2xl border-2 border-dashed border-stone-300 text-stone-500 font-bold flex items-center justify-center gap-2 transition-all group"
-                                >
-                                    他の項目も確認する
-                                    <ChevronDown className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
-                                </button>
-                            ) : (
-                                <div className="animate-fade-in-up space-y-6">
-                                    <div className="flex items-center gap-4 py-2">
-                                        <div className="h-px bg-stone-300 flex-1"></div>
-                                        <span className="text-xs font-bold text-stone-400">その他の項目</span>
-                                        <div className="h-px bg-stone-300 flex-1"></div>
-                                    </div>
-
-                                    {hiddenAxes.map((axis: Axis) => (
-                                        <ResultCard
-                                            key={axis.id}
-                                            axis={axis}
-                                            score={finalDisplay.scores[axis.id]}
-                                            role={role}
-                                        />
-                                    ))}
-
-                                    <button
-                                        onClick={() => setShowAllAxes(false)}
-                                        className="w-full py-3 text-stone-400 hover:text-stone-600 font-medium text-sm flex items-center justify-center gap-1 transition-colors"
-                                    >
-                                        <ChevronUp className="w-4 h-4" />
-                                        閉じる
-                                    </button>
-                                </div>
-                            )}
+                    {/* Low group */}
+                    {lowAxes.length > 0 && (
+                        <div>
+                            <h2 className="text-base font-bold text-stone-500 ml-2 mb-3 flex items-center gap-2">
+                                <AlertCircle size={18} className="text-stone-400" />
+                                {role === "child" ? "比較的こだわりが少ないポイント" : "重視度が低めのポイント"}
+                            </h2>
+                            <div className="glass-card rounded-2xl overflow-hidden divide-y divide-stone-100">
+                                {lowAxes.map((axis: Axis) => (
+                                    <AxisAccordionItem key={axis.id} axis={axis} score={currentScores[axis.id]} role={role} isAboveAvg={false} isOpen={openAxisIds.has(axis.id)} onToggle={() => setOpenAxisIds(prev => {
+                                        const next = new Set(prev);
+                                        if (next.has(axis.id)) next.delete(axis.id); else next.add(axis.id);
+                                        return next;
+                                    })} />
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
 
-                {/* One Drop Partner Banner */}
-                <div className="mt-12 pt-8 border-t border-stone-200/50">
-                    <div className="bg-gradient-to-br from-white to-orange-50 rounded-2xl p-6 shadow-sm border border-orange-100 relative overflow-hidden group">
-                        {/* Decorative circle */}
-                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange-100 rounded-full opacity-50 group-hover:scale-110 transition-transform duration-500" />
-
-                        <div className="relative z-10">
-                            <div className="flex items-center gap-2 mb-2 text-orange-600 font-bold text-xs tracking-wider">
-                                <MapPin size={12} />
-                                東広島の学習塾
-                            </div>
-                            <h3 className="text-lg font-bold text-stone-700 mb-2">
-                                通信制高校選びや<br className="md:hidden" />学習のサポートなら
-                            </h3>
-                            <p className="text-sm text-stone-600 mb-4 leading-relaxed">
-                                メンタル面の不安や、学校のレポート課題に寄り添う「One drop」にご相談ください。
-                            </p>
-
-                            <div className="flex flex-wrap gap-3">
-                                <a
-                                    href="https://onedrop2025.wixsite.com/my-site-1"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="bg-stone-700 hover:bg-stone-600 text-white text-xs font-bold px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors shadow-md"
-                                >
-                                    公式サイトを見る
-                                    <ExternalLink size={12} />
-                                </a>
-                                <a
-                                    href="https://www.instagram.com/onedrop.2025/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="bg-white hover:bg-pink-50 text-stone-700 hover:text-pink-600 border border-stone-200 text-xs font-bold px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors"
-                                >
-                                    Instagram
-                                    <ExternalLink size={12} />
-                                </a>
-                            </div>
-                        </div>
+                {/* Action Section */}
+                <div className="my-6 border-t border-stone-200/60" />
+                <div className="glass-card rounded-2xl p-5 space-y-4">
+                    <div className="text-center">
+                        <p className="text-sm font-bold text-stone-700 mb-1">
+                            診断結果をレポートで保存できます
+                        </p>
+                        <p className="text-xs text-stone-500">
+                            画像またはPDF形式でダウンロードして、見返したり共有に使えます
+                        </p>
                     </div>
-                    <p className="text-[10px] text-center text-stone-400 mt-4">
-                        Produced by One drop
-                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                            onClick={handlePdfDownloadClick}
+                            disabled={isGeneratingPdf}
+                            className="flex-1 bg-stone-700 hover:bg-stone-600 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
+                        >
+                            {isGeneratingPdf ? (
+                                <>
+                                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    生成中...
+                                </>
+                            ) : (
+                                <>
+                                    <FileText size={16} />
+                                    レポートを保存
+                                </>
+                            )}
+                        </button>
+                        <button
+                            onClick={handleShareSite}
+                            className="flex-1 bg-orange-500 hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
+                        >
+                            <Share2 size={16} />
+                            サイトを共有する
+                        </button>
+                    </div>
+                    <div className="text-center">
+                        <button
+                            onClick={() => {
+                                if (confirm("診断をやり直しますか？")) navigate("/");
+                            }}
+                            className="text-xs text-stone-400 underline bg-transparent border-none cursor-pointer hover:text-stone-600 transition-colors"
+                        >
+                            <RefreshCw size={12} className="inline mr-1" />
+                            診断をやり直す
+                        </button>
+                    </div>
                 </div>
 
-                <div className="mt-8">
+                {/* Consent Notice Banner */}
+                {formStatus === "none" && !consentAccepted && (
+                    <div
+                        className="glass-card p-4 md:p-5 rounded-2xl mb-4 mt-6 text-center"
+                        role="region"
+                        aria-label="データ収集のご協力のお願い"
+                    >
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                            <BarChart3 size={16} className="text-orange-500" />
+                            <p className="text-sm font-bold text-stone-700">
+                                診断データの活用にご協力ください
+                            </p>
+                        </div>
+                        <p className="text-sm text-stone-600 mb-4 leading-relaxed">
+                            みなさんのデータが次の世代の高校選びの
+                            <br className="md:hidden" />
+                            サポートになります
+                        </p>
+                        <button
+                            onClick={() => {
+                                trackEvent("consent_banner_accept");
+                                setConsentAccepted(true);
+                            }}
+                            className="bg-orange-500 hover:bg-orange-400 text-white py-2 px-5 rounded-lg text-sm font-bold transition-colors"
+                            aria-label="データ収集に協力する"
+                        >
+                            協力する
+                        </button>
+                        <div className="mt-2">
+                            <button
+                                onClick={() => {
+                                    trackEvent("consent_banner_dismiss");
+                                    setFormStatus("dismissed");
+                                    localStorage.setItem('csf-form-status', 'dismissed');
+                                }}
+                                className="text-xs text-stone-400 underline bg-transparent border-none cursor-pointer"
+                            >
+                                今回は見送る
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                <div ref={formRef} id="data-consent-form" tabIndex={-1}>
                     {formStatus === "submitted" && !isRevision ? (
                         <div className="text-center py-4">
                             <p className="text-xs text-stone-400 mb-1">
@@ -513,6 +546,7 @@ const ResultPage = () => {
                             <button
                                 onClick={() => {
                                     setFormStatus("none");
+                                    setConsentAccepted(false);
                                     localStorage.removeItem('csf-form-status');
                                 }}
                                 className="text-xs text-orange-400 underline bg-transparent border-none cursor-pointer"
@@ -520,116 +554,80 @@ const ResultPage = () => {
                                 やはり協力する
                             </button>
                         </div>
-                    ) : (
+                    ) : consentAccepted || (formStatus === "none" && isRevision) ? (
                         <DataConsentForm
                             scores={finalDisplay.scores}
                             role={role}
                             isRevision={isRevision}
+                            skipAsk={consentAccepted}
                             onClose={(status) => {
                                 setFormStatus(status);
                                 setIsRevision(false);
+                                setConsentAccepted(false);
                                 localStorage.setItem('csf-form-status', status);
                             }}
                         />
-                    )}
+                    ) : null}
                 </div>
 
-            </div>
+                {/* One Drop Partner Banner */}
+                <div ref={oneDropRef} className="mt-12 pt-8 border-t border-stone-200/50 text-center">
+                    <p className="text-sm font-bold text-stone-700 mb-4 tracking-wider">
+                        誰かに話を聞いてほしいなら・・・
+                    </p>
 
-            {/* Floating Action Bar */}
-            <div className="fixed bottom-6 left-0 w-full px-4 z-50 pointer-events-none">
-                <div className="max-w-2xl mx-auto glass-card-dark p-3 rounded-2xl shadow-2xl flex justify-between items-center gap-3 pointer-events-auto backdrop-blur-xl bg-stone-800/90 border border-stone-700">
-                    <button
-                        onClick={handlePdfDownloadClick}
-                        disabled={isGeneratingPdf}
-                        className="flex-1 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white py-3 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-1.5 transition disabled:opacity-50"
+                    <a
+                        href="https://onedrop2025.wixsite.com/my-site-1"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block border-2 border-orange-500 rounded-lg px-6 py-2 font-bold text-base tracking-widest mb-4 text-stone-700 no-underline transition-all duration-200 hover:bg-orange-500 hover:text-white"
                     >
-                        {isGeneratingPdf ? (
-                            <>
-                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                生成中...
-                            </>
-                        ) : (
-                            <>
-                                <FileText size={16} />
-                                <span className="hidden md:inline">レポートを保存</span>
-                                <span className="md:hidden">レポート保存</span>
-                            </>
-                        )}
-                    </button>
+                        One drop
+                    </a>
 
-                    <button
-                        onClick={handleShareSite}
-                        className="flex-1 bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-white py-3 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-1.5 transition shadow-lg shadow-orange-500/30"
+                    <p className="text-sm text-stone-600 mb-1">
+                        広島県東広島市西条町下見303-1
+                    </p>
+                    <a
+                        href="https://maps.app.goo.gl/KF9t6frVCMa8K23J6"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block bg-stone-700 text-white rounded px-7 py-1.5 text-xs font-medium no-underline tracking-wider transition-all duration-200 hover:opacity-80 mb-4"
                     >
-                        <Share2 size={16} />
-                        <span className="hidden md:inline">サイトを共有する</span>
-                        <span className="md:hidden">サイト共有</span>
-                    </button>
+                        MAP
+                    </a>
 
-                    <button
-                        onClick={() => {
-                            if (confirm("診断をやり直しますか？")) navigate("/");
-                        }}
-                        className="w-12 h-12 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center text-white transition"
-                        title="最初に戻る"
-                    >
-                        <RefreshCw size={18} />
-                    </button>
-                </div>
-            </div>
-
-            {/* Slide-in Notification Banner (One Drop) */}
-            <div className={`fixed bottom-24 right-4 z-40 transition-all duration-500 transform ${showFloatBanner && !bannerDismissed ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
-                <div className="bg-white/95 backdrop-blur-md border border-orange-200 p-4 rounded-2xl shadow-xl max-w-[300px] relative animate-fade-in-up">
-                    <button
-                        onClick={() => setBannerDismissed(true)}
-                        className="absolute -top-2 -left-2 bg-stone-400 text-white rounded-full p-1 hover:bg-stone-500 shadow-sm"
-                        aria-label="閉じる"
-                    >
-                        <X size={12} />
-                    </button>
-                    <div className="flex items-start gap-3">
-                        <div className="bg-orange-100 p-2 rounded-full text-orange-600 shrink-0 mt-1">
-                            <MessageCircle size={20} />
-                        </div>
-                        <div>
-                            <p className="text-xs font-bold text-stone-600 mb-1">お困りなら相談してみませんか？</p>
-                            <p className="text-[10px] text-stone-500 mb-2 leading-tight">
-                                東広島の学習塾「One drop」が、メンタル・学習の悩みをサポートします。
-                            </p>
-                            <a
-                                href="https://onedrop2025.wixsite.com/my-site-1"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-orange-600 font-bold flex items-center gap-1 hover:underline"
-                            >
-                                詳細を見る <ChevronRight size={12} />
-                            </a>
-                        </div>
+                    <div className="text-xs text-stone-500 mb-3 leading-relaxed">
+                        <p className="font-medium">営業時間</p>
+                        <p>月・火・木・金　15:00〜21:00</p>
+                        <p>土　10:00〜18:00</p>
+                        <p>水・日・祝　休</p>
                     </div>
+
+                    <p className="text-xs text-stone-500 mb-3">
+                        お困りごとがあれば、ご相談ください。
+                    </p>
+
+                    <a
+                        href="https://www.instagram.com/onedrop.2025/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 border border-stone-300 rounded-full px-5 py-2 text-stone-700 text-xs font-medium no-underline transition-all duration-200 hover:bg-orange-500 hover:text-white hover:border-orange-500"
+                    >
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                        </svg>
+                        Instagram
+                    </a>
+
+                    <p className="text-[10px] text-stone-400 mt-6">
+                        © 2025 One drop. All rights reserved.
+                    </p>
                 </div>
+
             </div>
 
-            <style>{`
-        .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-        }
-        .glass-card-dark {
-            background: rgba(41, 37, 36, 0.9); /* stone-800 */
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-up {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-      `}</style>
+
 
             {/* Name Input Dialog */}
             <NameInputDialog
@@ -655,5 +653,63 @@ const ResultPage = () => {
         </div>
     );
 };
+
+function AxisAccordionItem({ axis, score, role, isAboveAvg, isOpen, onToggle }: {
+    axis: Axis; score: number; role: "child" | "parent"; isAboveAvg: boolean; isOpen: boolean; onToggle: () => void;
+}) {
+    return (
+        <div>
+            <button
+                onClick={onToggle}
+                className="w-full flex items-center gap-3 px-4 py-3.5 bg-transparent border-none cursor-pointer text-left transition-colors hover:bg-white/60"
+            >
+                <div className="flex-1 min-w-0">
+                    <span className="text-sm font-bold text-stone-700 block truncate">
+                        {axis.shortDescription}
+                    </span>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="flex gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className={`w-2.5 h-2.5 rounded-full ${i < Math.round(score) ? (isAboveAvg ? 'bg-amber-400' : 'bg-stone-400') : 'bg-stone-200'}`}
+                            />
+                        ))}
+                    </div>
+                    <span className="text-xs font-bold text-stone-500 w-6 text-right">{score.toFixed(1)}</span>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-stone-400 transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <div
+                className="overflow-hidden transition-all duration-300"
+                style={{ maxHeight: isOpen ? '500px' : '0px', opacity: isOpen ? 1 : 0 }}
+            >
+                <div className="px-4 pb-4 space-y-3">
+                    <p className="text-sm text-stone-600 leading-relaxed">
+                        {role === 'child'
+                            ? isAboveAvg ? `「${axis.shortDescription}」をとても大切に考えています。` : `「${axis.shortDescription}」へのこだわりは比較的落ち着いています。`
+                            : isAboveAvg ? `お子様の学校選びにおいて、${axis.shortDescription}を強く希望されています。` : `それほど${axis.shortDescription}を最優先には考えていないようです。`
+                        }
+                    </p>
+                    <p className="text-xs text-stone-400">{axis.definition}</p>
+                    <div className="bg-orange-50/60 rounded-xl p-3 border border-orange-100/50">
+                        <h4 className="text-xs font-bold text-orange-700 mb-2 flex items-center gap-1 tracking-wide">
+                            オープンスクールで聞くべきこと
+                        </h4>
+                        <ul className="space-y-1.5">
+                            {axis.osChecklist.map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2 text-xs text-stone-700">
+                                    <span className="w-1.5 h-1.5 bg-orange-400 rounded-full mt-1 flex-shrink-0" />
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default ResultPage;

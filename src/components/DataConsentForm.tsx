@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from "react";
+import { trackEvent } from "../lib/analytics";
 
 type Props = {
     scores: Record<string, number>;
     role: "child" | "parent";
     onClose: (status: "submitted" | "dismissed") => void;
     isRevision?: boolean;
+    skipAsk?: boolean;
 };
 
 const FORM_VERSION = 1;
@@ -33,8 +35,8 @@ function generateId(): string {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-export default function DataConsentForm({ scores, role, onClose, isRevision = false }: Props) {
-    const [step, setStep] = useState<Step>(isRevision ? "form" : "ask");
+export default function DataConsentForm({ scores, role, onClose, isRevision = false, skipAsk = false }: Props) {
+    const [step, setStep] = useState<Step>(isRevision || skipAsk ? "form" : "ask");
     const [sending, setSending] = useState(false);
     const [visible, setVisible] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -116,6 +118,11 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
             localStorage.setItem('csf-submission-id', resData.submissionId || submissionId);
             localStorage.setItem('csf-revision', String(resData.revision ?? revision));
             localStorage.setItem('csf-form-version', String(FORM_VERSION));
+            trackEvent("consent_form_submit", {
+                has_email: email.trim().length > 0,
+                has_freetext: trimmedFreeText.length > 0,
+                satisfaction: satisfaction ?? 0,
+            });
             setStep("thanks");
         } catch (err) {
             console.error("Data collection failed:", err);
@@ -314,7 +321,7 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
                     {sending ? "送信中..." : "送信する"}
                 </button>
                 <button
-                    onClick={() => onClose("dismissed")}
+                    onClick={() => { trackEvent("consent_form_cancel"); onClose("dismissed"); }}
                     disabled={sending}
                     className="text-stone-400 text-sm underline bg-transparent border-none cursor-pointer mt-3 disabled:opacity-30"
                 >
