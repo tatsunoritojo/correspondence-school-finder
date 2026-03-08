@@ -157,11 +157,37 @@ const ResultPage = () => {
                 });
 
                 if (format === 'image') {
-                    // 画像保存（モバイル・PC共通）
-                    const link = document.createElement('a');
-                    link.download = `診断結果レポート_${respondentName}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
+                    const blob = await new Promise<Blob>((resolve) =>
+                        canvas.toBlob((b) => resolve(b!), 'image/png')
+                    );
+                    const file = new File(
+                        [blob],
+                        `診断結果レポート_${respondentName}.png`,
+                        { type: 'image/png' }
+                    );
+
+                    // モバイル: Web Share API でカメラロール保存を可能にする
+                    if (isMobileDevice() && navigator.share && navigator.canShare?.({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: '診断結果レポート',
+                            });
+                        } catch (e) {
+                            // ユーザーがキャンセルした場合は何もしない
+                            if ((e as DOMException).name !== 'AbortError') {
+                                console.error('Share failed:', e);
+                            }
+                        }
+                    } else {
+                        // PC / フォールバック: ダウンロード
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.download = file.name;
+                        link.href = url;
+                        link.click();
+                        URL.revokeObjectURL(url);
+                    }
                 } else {
                     // PDF生成
                     const pdf = new jsPDF({
