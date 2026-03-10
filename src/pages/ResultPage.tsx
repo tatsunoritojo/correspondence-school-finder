@@ -10,8 +10,9 @@ import RadarChart from "../components/RadarChart";
 
 import PrintableReport from "../components/PrintableReport";
 import NameInputDialog, { SaveFormat } from "../components/NameInputDialog";
+import ReportOverlay from "../components/ReportOverlay";
 import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, BarChart3, ThumbsUp, Lightbulb } from "lucide-react";
-import { isMobileDevice } from "../lib/deviceDetection";
+import { isMobileDevice, canShareFiles, canOpenNewTab } from "../lib/deviceDetection";
 import { trackEvent } from "../lib/analytics";
 import { useTrackView } from "../hooks/useTrackView";
 import DataConsentForm from "../components/DataConsentForm";
@@ -40,6 +41,10 @@ const ResultPage = () => {
     const [showNameDialog, setShowNameDialog] = useState(false);
     const [respondentName, setRespondentName] = useState("");
     const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+    // Report Overlay State (mobile fallback)
+    const [showReportOverlay, setShowReportOverlay] = useState(false);
+    const [reportImageDataUrl, setReportImageDataUrl] = useState<string | null>(null);
 
     const resultRef = useRef<HTMLDivElement>(null);
     const printableRef = useRef<HTMLDivElement>(null);
@@ -122,71 +127,143 @@ const ResultPage = () => {
         setShowNameDialog(true);
     };
 
-    const handleSaveConfirm = async (format: SaveFormat) => {
-        if (!respondentName.trim()) {
-            return;
+    /**
+     * Canvas を生成する共通処理
+     */
+    const generateCanvas = async (): Promise<HTMLCanvasElement | null> => {
+        if (!printableRef.current) return null;
+
+        printableRef.current.style.position = 'absolute';
+        printableRef.current.style.left = '-9999px';
+        printableRef.current.style.display = 'block';
+
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        const canvas = await html2canvas(printableRef.current, {
+            scale: 2,
+            backgroundColor: '#fff7ed',
+            useCORS: true,
+            logging: false,
+            onclone: (clonedDoc) => {
+                const glassCards = clonedDoc.querySelectorAll('.glass-card');
+                glassCards.forEach((el) => {
+                    (el as HTMLElement).style.backdropFilter = 'none';
+                    (el as HTMLElement).style.background = '#fff7ed';
+                });
+            }
+        });
+
+        printableRef.current.style.display = 'none';
+        return canvas;
+    };
+
+    /**
+     * Canvas → Blob 変換
+     */
+    const canvasToBlob = (canvas: HTMLCanvasElement, type = 'image/png'): Promise<Blob> => {
+        return new Promise((resolve, reject) => {
+            canvas.toBlob(
+                (blob) => blob ? resolve(blob) : reject(new Error('Blob conversion failed')),
+                type
+            );
+        });
+    };
+
+    /**
+     * デスクトップ用: 従来の直接ダウンロード
+     */
+    const saveDesktop = async (canvas: HTMLCanvasElement, format: SaveFormat) => {
+        if (format === 'image') {
+            const link = document.createElement('a');
+            link.download = `診断結果レポート_${respondentName}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } else {
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4',
+            });
+            const imgData = canvas.toDataURL('image/png');
+            const pdfWidth = 210;
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            if (pdfHeight > 297) {
+                const scaledWidth = (297 * canvas.width) / canvas.height;
+                const xOffset = (210 - scaledWidth) / 2;
+                pdf.addImage(imgData, 'PNG', xOffset, 0, scaledWidth, 297);
+            } else {
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            }
+            pdf.save(`診断結果レポート_${respondentName}.pdf`);
         }
+    };
+
+    /**
+     * モバイル用: 能力ベースフォールバック連鎖
+     * 1. Web Share API（ファイル共有） → 最優先
+     * 2. 新規タブで画像表示 → 次善
+     * 3. 同一タブオーバーレイ表示 → 最終手段
+     */
+    const saveMobile = async (canvas: HTMLCanvasElement) => {
+        const dataUrl = canvas.toDataURL('image/png');
+        // Blob は複数のフォールバックで使い回す（生成は1回のみ）
+        let blob: Blob | null = null;
+        try {
+            blob = await canvasToBlob(canvas);
+        } catch {
+            // Blob 変換失敗時はオーバーレイへ直行
+        }
+
+        // 1) Web Share API でファイル共有を試みる
+        if (blob && canShareFiles()) {
+            try {
+                const file = new File([blob], `診断結果レポート_${respondentName}.png`, { type: 'image/png' });
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: '診断結果レポート',
+                    });
+                    return; // 成功
+                }
+            } catch (e) {
+                if ((e as DOMException).name === 'AbortError') return; // ユーザーキャンセル
+                // 失敗 → 次のフォールバックへ
+            }
+        }
+
+        // 2) 新規タブで画像表示を試みる
+        if (blob && canOpenNewTab()) {
+            try {
+                const blobUrl = URL.createObjectURL(blob);
+                const newTab = window.open(blobUrl, '_blank');
+                if (newTab) return; // 成功（タブが閉じられるまで URL が必要なため revoke しない）
+                URL.revokeObjectURL(blobUrl);
+            } catch {
+                // 失敗 → 次のフォールバックへ
+            }
+        }
+
+        // 3) 同一タブオーバーレイで表示（最終手段、常に成功）
+        setReportImageDataUrl(dataUrl);
+        setShowReportOverlay(true);
+    };
+
+    const handleSaveConfirm = async (format: SaveFormat) => {
+        if (!respondentName.trim()) return;
 
         setIsGeneratingPdf(true);
         setShowNameDialog(false);
 
-        // Wait for PrintableReport to render
         await new Promise(resolve => setTimeout(resolve, 100));
 
         try {
-            if (printableRef.current) {
-                // Temporarily show the printable element
-                printableRef.current.style.position = 'absolute';
-                printableRef.current.style.left = '-9999px';
-                printableRef.current.style.display = 'block';
+            const canvas = await generateCanvas();
+            if (!canvas) return;
 
-                await new Promise(resolve => setTimeout(resolve, 200));
-
-                const canvas = await html2canvas(printableRef.current, {
-                    scale: 2,
-                    backgroundColor: '#fff7ed',
-                    useCORS: true,
-                    logging: false,
-                    onclone: (clonedDoc) => {
-                        const glassCards = clonedDoc.querySelectorAll('.glass-card');
-                        glassCards.forEach((el) => {
-                            (el as HTMLElement).style.backdropFilter = 'none';
-                            (el as HTMLElement).style.background = '#fff7ed';
-                        });
-                    }
-                });
-
-                if (format === 'image') {
-                    // 画像保存（モバイル・PC共通）
-                    const link = document.createElement('a');
-                    link.download = `診断結果レポート_${respondentName}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                } else {
-                    // PDF生成
-                    const pdf = new jsPDF({
-                        orientation: 'portrait',
-                        unit: 'mm',
-                        format: 'a4',
-                    });
-
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdfWidth = 210;
-                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-                    if (pdfHeight > 297) {
-                        const scaledWidth = (297 * canvas.width) / canvas.height;
-                        const xOffset = (210 - scaledWidth) / 2;
-                        pdf.addImage(imgData, 'PNG', xOffset, 0, scaledWidth, 297);
-                    } else {
-                        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                    }
-
-                    pdf.save(`診断結果レポート_${respondentName}.pdf`);
-                }
-
-                // Hide the printable element again
-                printableRef.current.style.display = 'none';
+            if (isMobileDevice()) {
+                await saveMobile(canvas);
+            } else {
+                await saveDesktop(canvas, format);
             }
         } catch (error) {
             console.error('Report generation failed:', error);
@@ -440,7 +517,9 @@ const ResultPage = () => {
                             診断結果をレポートで保存できます
                         </p>
                         <p className="text-xs text-stone-500">
-                            画像またはPDF形式でダウンロードして、見返したり共有に使えます
+                            {isMobileDevice()
+                                ? 'レポートを表示して、保存やスクショができます'
+                                : '画像またはPDF形式でダウンロードして、見返したり共有に使えます'}
                         </p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3">
@@ -457,7 +536,7 @@ const ResultPage = () => {
                             ) : (
                                 <>
                                     <FileText size={16} />
-                                    レポートを保存
+                                    {isMobileDevice() ? 'レポートを表示' : 'レポートを保存'}
                                 </>
                             )}
                         </button>
@@ -628,6 +707,16 @@ const ResultPage = () => {
             </div>
 
 
+
+            {/* Report Overlay (mobile fallback) */}
+            <ReportOverlay
+                isOpen={showReportOverlay}
+                imageDataUrl={reportImageDataUrl}
+                onClose={() => {
+                    setShowReportOverlay(false);
+                    setReportImageDataUrl(null);
+                }}
+            />
 
             {/* Name Input Dialog */}
             <NameInputDialog

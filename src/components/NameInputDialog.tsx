@@ -1,6 +1,9 @@
 import React from 'react';
 import { X, FileText, Image } from 'lucide-react';
-import { isMobileDevice } from '../lib/deviceDetection';
+import { isMobileDevice, isInAppWebView } from '../lib/deviceDetection';
+
+// UA判定はセッション中に変わらないのでモジュールスコープで1回だけ評価
+const webView = isInAppWebView();
 
 export type SaveFormat = 'image' | 'pdf';
 
@@ -21,8 +24,11 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
     onCancel,
     isLoading = false,
 }) => {
+    const mobile = isMobileDevice();
+
+    // モバイル・WebView では画像固定、デスクトップはPDFデフォルト
     const [format, setFormat] = React.useState<SaveFormat>(
-        isMobileDevice() ? 'image' : 'pdf'
+        (mobile || webView) ? 'image' : 'pdf'
     );
 
     if (!isOpen) return null;
@@ -31,6 +37,9 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
         e.preventDefault();
         onConfirm(format);
     };
+
+    // WebView ではフォーマット選択を非表示にし画像固定
+    const showFormatToggle = !webView;
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
@@ -51,7 +60,7 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
 
                 {/* タイトル */}
                 <h2 className="text-xl font-bold text-stone-700 text-center mb-2">
-                    診断結果を保存
+                    {(mobile || webView) ? '診断結果レポートを表示' : '診断結果を保存'}
                 </h2>
                 <p className="text-sm text-stone-500 text-center mb-6">
                     レポートに表示するお名前を入力してください
@@ -69,40 +78,51 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
                         disabled={isLoading}
                     />
 
-                    {/* 形式選択 */}
-                    <div className="flex gap-2 mb-4">
-                        <button
-                            type="button"
-                            onClick={() => setFormat('image')}
-                            disabled={isLoading}
-                            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 font-bold text-sm transition-all ${
-                                format === 'image'
-                                    ? 'border-orange-400 bg-orange-50 text-orange-600'
-                                    : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
-                            }`}
-                        >
-                            <Image size={16} />
-                            画像
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFormat('pdf')}
-                            disabled={isLoading}
-                            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 font-bold text-sm transition-all ${
-                                format === 'pdf'
-                                    ? 'border-orange-400 bg-orange-50 text-orange-600'
-                                    : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
-                            }`}
-                        >
-                            <FileText size={16} />
-                            PDF
-                        </button>
-                    </div>
-                    <p className="text-xs text-stone-400 text-center mb-4">
-                        {format === 'image'
-                            ? 'PNG画像として保存します（カメラロール / ダウンロード）'
-                            : 'PDF文書として保存します'}
-                    </p>
+                    {/* 形式選択（WebView以外で表示） */}
+                    {showFormatToggle && (
+                        <>
+                            <div className="flex gap-2 mb-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setFormat('image')}
+                                    disabled={isLoading}
+                                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 font-bold text-sm transition-all ${
+                                        format === 'image'
+                                            ? 'border-orange-400 bg-orange-50 text-orange-600'
+                                            : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
+                                    }`}
+                                >
+                                    <Image size={16} />
+                                    画像
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setFormat('pdf')}
+                                    disabled={isLoading}
+                                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 font-bold text-sm transition-all ${
+                                        format === 'pdf'
+                                            ? 'border-orange-400 bg-orange-50 text-orange-600'
+                                            : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
+                                    }`}
+                                >
+                                    <FileText size={16} />
+                                    PDF
+                                </button>
+                            </div>
+                            <p className="text-xs text-stone-400 text-center mb-4">
+                                {format === 'image'
+                                    ? 'PNG画像として保存します（カメラロール / ダウンロード）'
+                                    : 'PDF文書として保存します'}
+                            </p>
+                        </>
+                    )}
+
+                    {/* WebView時のヒント */}
+                    {webView && (
+                        <p className="text-xs text-stone-400 text-center mb-4">
+                            レポート画像を表示します。長押しまたはスクショで保存できます。
+                        </p>
+                    )}
 
                     <div className="flex gap-3">
                         <button
@@ -123,6 +143,8 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
                                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                     生成中...
                                 </span>
+                            ) : (mobile || webView) ? (
+                                'レポートを表示'
                             ) : (
                                 '保存する'
                             )}
