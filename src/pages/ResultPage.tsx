@@ -691,12 +691,10 @@ const ResultPage = () => {
 
 
             {/* TODO: デバッグ用 UA 表示（検証後に削除） */}
-            {process.env.NODE_ENV !== 'production' || location.search.includes('debug=1') ? (
-                <div className="fixed bottom-0 left-0 right-0 bg-black/80 text-green-400 text-[10px] p-2 z-[9999] font-mono break-all">
-                    UA: {navigator.userAgent}<br />
-                    innerWidth: {window.innerWidth} | mobile: {String(isMobileDevice())} | webview: {String(isInAppWebView())}
-                </div>
-            ) : null}
+            <div className="fixed bottom-0 left-0 right-0 bg-black/80 text-green-400 text-[10px] p-2 z-[9999] font-mono break-all">
+                UA: {navigator.userAgent}<br />
+                W: {window.innerWidth} | mobile: {String(isMobileDevice())} | webview: {String(isInAppWebView())}
+            </div>
 
             {/* Report Overlay (mobile fallback) */}
             <ReportOverlay
