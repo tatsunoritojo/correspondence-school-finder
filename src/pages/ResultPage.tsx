@@ -12,7 +12,7 @@ import PrintableReport from "../components/PrintableReport";
 import NameInputDialog, { SaveFormat } from "../components/NameInputDialog";
 import ReportOverlay from "../components/ReportOverlay";
 import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, BarChart3, ThumbsUp, Lightbulb } from "lucide-react";
-import { isMobileDevice, isInAppWebView, canShareFiles, canOpenNewTab } from "../lib/deviceDetection";
+import { isMobileDevice, isInAppWebView } from "../lib/deviceDetection";
 import { executeSaveStrategy } from "../lib/saveStrategy";
 import { trackEvent } from "../lib/analytics";
 import { useTrackView } from "../hooks/useTrackView";
@@ -171,76 +171,10 @@ const ResultPage = () => {
     };
 
     /**
-     * デスクトップ用: 従来の直接ダウンロード
+     * 全環境統一の保存フロー
+     * UA 判定ではなく、実際に各手段を試行してフォールバックする。
+     * ロジックは saveStrategy.ts に抽出済み。
      */
-    const saveDesktop = async (canvas: HTMLCanvasElement, format: SaveFormat) => {
-        if (format === 'image') {
-            const link = document.createElement('a');
-            link.download = `診断結果レポート_${respondentName}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        } else {
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4',
-            });
-            const imgData = canvas.toDataURL('image/png');
-            const pdfWidth = 210;
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            if (pdfHeight > 297) {
-                const scaledWidth = (297 * canvas.width) / canvas.height;
-                const xOffset = (210 - scaledWidth) / 2;
-                pdf.addImage(imgData, 'PNG', xOffset, 0, scaledWidth, 297);
-            } else {
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            }
-            pdf.save(`診断結果レポート_${respondentName}.pdf`);
-        }
-    };
-
-    /**
-     * モバイル用: 能力ベースフォールバック連鎖
-     * ロジックは saveStrategy.ts に抽出済み
-     */
-    const saveMobile = async (canvas: HTMLCanvasElement) => {
-        const dataUrl = canvas.toDataURL('image/png');
-        let blob: Blob | null = null;
-        try {
-            blob = await canvasToBlob(canvas);
-        } catch {
-            // Blob 変換失敗時はオーバーレイへ直行
-        }
-
-        await executeSaveStrategy(blob, dataUrl, {
-            canShareFiles: canShareFiles(),
-            canOpenNewTab: canOpenNewTab(),
-        }, {
-            tryWebShare: async (b) => {
-                try {
-                    const file = new File([b], `診断結果レポート_${respondentName}.png`, { type: 'image/png' });
-                    if (!navigator.canShare({ files: [file] })) return 'failed';
-                    await navigator.share({ files: [file], title: '診断結果レポート' });
-                    return 'success';
-                } catch (e) {
-                    if ((e as DOMException).name === 'AbortError') return 'cancelled';
-                    return 'failed';
-                }
-            },
-            tryNewTab: (b) => {
-                const blobUrl = URL.createObjectURL(b);
-                const newTab = window.open(blobUrl, '_blank');
-                if (newTab) return true;
-                URL.revokeObjectURL(blobUrl);
-                return false;
-            },
-            showOverlay: (url) => {
-                setReportImageDataUrl(url);
-                setShowReportOverlay(true);
-            },
-        });
-    };
-
     const handleSaveConfirm = async (format: SaveFormat) => {
         if (!respondentName.trim()) return;
 
@@ -253,11 +187,66 @@ const ResultPage = () => {
             const canvas = await generateCanvas();
             if (!canvas) return;
 
-            if (isMobileDevice() || isInAppWebView()) {
-                await saveMobile(canvas);
-            } else {
-                await saveDesktop(canvas, format);
+            const dataUrl = canvas.toDataURL('image/png');
+            let blob: Blob | null = null;
+            try {
+                blob = await canvasToBlob(canvas);
+            } catch {
+                // Blob 変換失敗時はオーバーレイへ直行
             }
+
+            const fileName = `診断結果レポート_${respondentName}`;
+
+            await executeSaveStrategy(blob, dataUrl, {
+                tryDirectDownload: (b) => {
+                    try {
+                        const url = URL.createObjectURL(b);
+                        const link = document.createElement('a');
+                        link.download = format === 'pdf'
+                            ? `${fileName}.pdf`
+                            : `${fileName}.png`;
+                        link.href = url;
+                        link.click();
+                        // a.download が実際に効いたかは検知不能だが、
+                        // 5秒後に revoke してメモリリークを防ぐ
+                        setTimeout(() => URL.revokeObjectURL(url), 5000);
+                        // デスクトップブラウザでは成功する前提で true を返す
+                        // WebView 等で失敗した場合はユーザーが再試行 → overlay へ
+                        return !isMobileDevice() && !isInAppWebView();
+                    } catch {
+                        return false;
+                    }
+                },
+                tryWebShare: async (b) => {
+                    if (typeof navigator.share !== 'function' || typeof navigator.canShare !== 'function') {
+                        return 'failed';
+                    }
+                    try {
+                        const file = new File([b], `${fileName}.png`, { type: 'image/png' });
+                        if (!navigator.canShare({ files: [file] })) return 'failed';
+                        await navigator.share({ files: [file], title: '診断結果レポート' });
+                        return 'success';
+                    } catch (e) {
+                        if ((e as DOMException).name === 'AbortError') return 'cancelled';
+                        return 'failed';
+                    }
+                },
+                tryNewTab: (b) => {
+                    try {
+                        const blobUrl = URL.createObjectURL(b);
+                        const newTab = window.open(blobUrl, '_blank');
+                        if (newTab) return true;
+                        URL.revokeObjectURL(blobUrl);
+                        return false;
+                    } catch {
+                        return false;
+                    }
+                },
+                showOverlay: (url) => {
+                    setReportImageDataUrl(url);
+                    setShowReportOverlay(true);
+                },
+            });
         } catch (error) {
             console.error('Report generation failed:', error);
             alert('保存に失敗しました。もう一度お試しください。');
@@ -700,6 +689,14 @@ const ResultPage = () => {
             </div>
 
 
+
+            {/* TODO: デバッグ用 UA 表示（検証後に削除） */}
+            {process.env.NODE_ENV !== 'production' || location.search.includes('debug=1') ? (
+                <div className="fixed bottom-0 left-0 right-0 bg-black/80 text-green-400 text-[10px] p-2 z-[9999] font-mono break-all">
+                    UA: {navigator.userAgent}<br />
+                    innerWidth: {window.innerWidth} | mobile: {String(isMobileDevice())} | webview: {String(isInAppWebView())}
+                </div>
+            ) : null}
 
             {/* Report Overlay (mobile fallback) */}
             <ReportOverlay
