@@ -12,7 +12,7 @@ import PrintableReport from "../components/PrintableReport";
 import NameInputDialog, { SaveFormat } from "../components/NameInputDialog";
 import ReportOverlay from "../components/ReportOverlay";
 import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, BarChart3, ThumbsUp, Lightbulb } from "lucide-react";
-import { isMobileDevice, canShareFiles, canOpenNewTab } from "../lib/deviceDetection";
+import { isMobileDevice, isInAppWebView, canShareFiles, canOpenNewTab } from "../lib/deviceDetection";
 import { executeSaveStrategy } from "../lib/saveStrategy";
 import { trackEvent } from "../lib/analytics";
 import { useTrackView } from "../hooks/useTrackView";
@@ -253,7 +253,7 @@ const ResultPage = () => {
             const canvas = await generateCanvas();
             if (!canvas) return;
 
-            if (isMobileDevice()) {
+            if (isMobileDevice() || isInAppWebView()) {
                 await saveMobile(canvas);
             } else {
                 await saveDesktop(canvas, format);
@@ -510,7 +510,7 @@ const ResultPage = () => {
                             診断結果をレポートで保存できます
                         </p>
                         <p className="text-xs text-stone-500">
-                            {isMobileDevice()
+                            {(isMobileDevice() || isInAppWebView())
                                 ? 'レポートを表示して、保存やスクショができます'
                                 : '画像またはPDF形式でダウンロードして、見返したり共有に使えます'}
                         </p>
@@ -529,7 +529,7 @@ const ResultPage = () => {
                             ) : (
                                 <>
                                     <FileText size={16} />
-                                    {isMobileDevice() ? 'レポートを表示' : 'レポートを保存'}
+                                    {(isMobileDevice() || isInAppWebView()) ? 'レポートを表示' : 'レポートを保存'}
                                 </>
                             )}
                         </button>
