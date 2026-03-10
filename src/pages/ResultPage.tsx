@@ -13,6 +13,7 @@ import NameInputDialog, { SaveFormat } from "../components/NameInputDialog";
 import ReportOverlay from "../components/ReportOverlay";
 import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, BarChart3, ThumbsUp, Lightbulb } from "lucide-react";
 import { isMobileDevice, canShareFiles, canOpenNewTab } from "../lib/deviceDetection";
+import { executeSaveStrategy } from "../lib/saveStrategy";
 import { trackEvent } from "../lib/analytics";
 import { useTrackView } from "../hooks/useTrackView";
 import DataConsentForm from "../components/DataConsentForm";
@@ -200,13 +201,10 @@ const ResultPage = () => {
 
     /**
      * モバイル用: 能力ベースフォールバック連鎖
-     * 1. Web Share API（ファイル共有） → 最優先
-     * 2. 新規タブで画像表示 → 次善
-     * 3. 同一タブオーバーレイ表示 → 最終手段
+     * ロジックは saveStrategy.ts に抽出済み
      */
     const saveMobile = async (canvas: HTMLCanvasElement) => {
         const dataUrl = canvas.toDataURL('image/png');
-        // Blob は複数のフォールバックで使い回す（生成は1回のみ）
         let blob: Blob | null = null;
         try {
             blob = await canvasToBlob(canvas);
@@ -214,38 +212,33 @@ const ResultPage = () => {
             // Blob 変換失敗時はオーバーレイへ直行
         }
 
-        // 1) Web Share API でファイル共有を試みる
-        if (blob && canShareFiles()) {
-            try {
-                const file = new File([blob], `診断結果レポート_${respondentName}.png`, { type: 'image/png' });
-                if (navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: '診断結果レポート',
-                    });
-                    return; // 成功
+        await executeSaveStrategy(blob, dataUrl, {
+            canShareFiles: canShareFiles(),
+            canOpenNewTab: canOpenNewTab(),
+        }, {
+            tryWebShare: async (b) => {
+                try {
+                    const file = new File([b], `診断結果レポート_${respondentName}.png`, { type: 'image/png' });
+                    if (!navigator.canShare({ files: [file] })) return 'failed';
+                    await navigator.share({ files: [file], title: '診断結果レポート' });
+                    return 'success';
+                } catch (e) {
+                    if ((e as DOMException).name === 'AbortError') return 'cancelled';
+                    return 'failed';
                 }
-            } catch (e) {
-                if ((e as DOMException).name === 'AbortError') return; // ユーザーキャンセル
-                // 失敗 → 次のフォールバックへ
-            }
-        }
-
-        // 2) 新規タブで画像表示を試みる
-        if (blob && canOpenNewTab()) {
-            try {
-                const blobUrl = URL.createObjectURL(blob);
+            },
+            tryNewTab: (b) => {
+                const blobUrl = URL.createObjectURL(b);
                 const newTab = window.open(blobUrl, '_blank');
-                if (newTab) return; // 成功（タブが閉じられるまで URL が必要なため revoke しない）
+                if (newTab) return true;
                 URL.revokeObjectURL(blobUrl);
-            } catch {
-                // 失敗 → 次のフォールバックへ
-            }
-        }
-
-        // 3) 同一タブオーバーレイで表示（最終手段、常に成功）
-        setReportImageDataUrl(dataUrl);
-        setShowReportOverlay(true);
+                return false;
+            },
+            showOverlay: (url) => {
+                setReportImageDataUrl(url);
+                setShowReportOverlay(true);
+            },
+        });
     };
 
     const handleSaveConfirm = async (format: SaveFormat) => {
