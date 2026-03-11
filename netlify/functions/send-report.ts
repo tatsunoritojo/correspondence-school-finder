@@ -3,8 +3,8 @@ import type { Handler, HandlerEvent } from "@netlify/functions";
 interface SendReportBody {
     email: string;
     name: string;
-    imageBase64: string; // data:image/png;base64,... の base64 部分
-    resultUrl: string;   // 結果ページの URL（協力フォームへの導線）
+    pdfBase64: string; // PDF の base64 エンコード文字列
+    resultUrl: string; // 結果ページの URL（協力フォームへの導線）
 }
 
 // Simple in-memory rate limiting (3 req/min/IP)
@@ -48,7 +48,7 @@ const handler: Handler = async (event: HandlerEvent) => {
         return { statusCode: 400, body: JSON.stringify({ error: "不正なリクエストです" }) };
     }
 
-    if (!body.email || !body.name || !body.imageBase64) {
+    if (!body.email || !body.name || !body.pdfBase64) {
         return { statusCode: 400, body: JSON.stringify({ error: "必須項目が不足しています" }) };
     }
 
@@ -57,9 +57,9 @@ const handler: Handler = async (event: HandlerEvent) => {
         return { statusCode: 400, body: JSON.stringify({ error: "メールアドレスの形式が正しくありません" }) };
     }
 
-    // base64 サイズ制限（約 5MB）
-    if (body.imageBase64.length > 10_000_000) {
-        return { statusCode: 400, body: JSON.stringify({ error: "画像サイズが大きすぎます" }) };
+    // base64 サイズ制限（約 7.5MB）
+    if (body.pdfBase64.length > 10_000_000) {
+        return { statusCode: 400, body: JSON.stringify({ error: "ファイルサイズが大きすぎます" }) };
     }
 
     try {
@@ -76,9 +76,9 @@ const handler: Handler = async (event: HandlerEvent) => {
                 html: buildEmailHtml(body.name, body.resultUrl),
                 attachments: [
                     {
-                        filename: `診断結果レポート_${body.name}.png`,
-                        content: body.imageBase64,
-                        type: "image/png",
+                        filename: `診断結果レポート_${body.name}.pdf`,
+                        content: body.pdfBase64,
+                        type: "application/pdf",
                     },
                 ],
             }),
@@ -116,11 +116,11 @@ function buildEmailHtml(name: string, resultUrl: string): string {
     <div style="background:#fff; border-radius:16px; padding:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
       <p style="font-size:15px; color:#44403c; line-height:1.7; margin:0 0 16px;">
         ${name}さん、診断おつかれさまでした。<br>
-        レポートを添付ファイルとしてお送りします。
+        レポートをPDFファイルとして添付しています。
       </p>
 
       <p style="font-size:13px; color:#78716c; line-height:1.6; margin:0 0 8px;">
-        添付の画像ファイルを保存してご活用ください。
+        添付のPDFを保存してご活用ください。
       </p>
     </div>
 

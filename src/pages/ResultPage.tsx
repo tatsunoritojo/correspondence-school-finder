@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 import { LocalStorageRepository } from "../lib/storage";
 import { getPersonalizedAdvice, AIAdvice } from "../lib/gemini";
 import { AXES, COMMUTING_LABELS, EXAM_LABELS, TRANSPORTATION_LABELS, SCHEDULE_LABELS } from "../data/constants";
@@ -157,13 +158,33 @@ const ResultPage = () => {
     };
 
     /**
-     * メールでレポートを送信する
+     * Canvas → PDF base64 を生成する
+     */
+    const canvasToPdfBase64 = (canvas: HTMLCanvasElement): string => {
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+
+        // A4幅に合わせてスケーリング
+        const pdfWidth = 210; // mm
+        const pdfHeight = (imgHeight / imgWidth) * pdfWidth;
+
+        const pdf = new jsPDF({
+            orientation: pdfHeight > pdfWidth ? 'portrait' : 'landscape',
+            unit: 'mm',
+            format: [pdfWidth, pdfHeight],
+        });
+
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        // data:application/pdf;base64,... から base64 部分のみ返す
+        return pdf.output('datauristring').split(',')[1];
+    };
+
+    /**
+     * メールでレポートを送信する（PDF添付）
      */
     const sendReportByEmail = async (canvas: HTMLCanvasElement, email: string) => {
-        const dataUrl = canvas.toDataURL('image/png');
-        // data:image/png;base64,... から base64 部分のみ抽出
-        const base64 = dataUrl.split(',')[1];
-
+        const pdfBase64 = canvasToPdfBase64(canvas);
         const resultUrl = window.location.href;
 
         const res = await fetch('/api/send-report', {
@@ -172,7 +193,7 @@ const ResultPage = () => {
             body: JSON.stringify({
                 email,
                 name: respondentName,
-                imageBase64: base64,
+                pdfBase64,
                 resultUrl,
             }),
         });
