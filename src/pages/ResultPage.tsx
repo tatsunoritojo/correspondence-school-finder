@@ -8,11 +8,10 @@ import { Axis, ParentChildData } from "../types";
 import RadarChart from "../components/RadarChart";
 
 import PrintableReport from "../components/PrintableReport";
-import NameInputDialog, { SaveFormat } from "../components/NameInputDialog";
+import NameInputDialog, { SaveFormat, SaveMode } from "../components/NameInputDialog";
 import ReportOverlay from "../components/ReportOverlay";
-import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, BarChart3, ThumbsUp, Lightbulb } from "lucide-react";
-import { isMobileDevice, isInAppWebView } from "../lib/deviceDetection";
-import { executeSaveStrategy } from "../lib/saveStrategy";
+import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, Mail, BarChart3, ThumbsUp, Lightbulb } from "lucide-react";
+import { isMobileDevice } from "../lib/deviceDetection";
 import { trackEvent } from "../lib/analytics";
 import { useTrackView } from "../hooks/useTrackView";
 import DataConsentForm from "../components/DataConsentForm";
@@ -158,23 +157,48 @@ const ResultPage = () => {
     };
 
     /**
-     * Canvas → Blob 変換
+     * メールでレポートを送信する
      */
-    const canvasToBlob = (canvas: HTMLCanvasElement, type = 'image/png'): Promise<Blob> => {
-        return new Promise((resolve, reject) => {
-            canvas.toBlob(
-                (blob) => blob ? resolve(blob) : reject(new Error('Blob conversion failed')),
-                type
-            );
+    const sendReportByEmail = async (canvas: HTMLCanvasElement, email: string) => {
+        const dataUrl = canvas.toDataURL('image/png');
+        // data:image/png;base64,... から base64 部分のみ抽出
+        const base64 = dataUrl.split(',')[1];
+
+        const resultUrl = window.location.href;
+
+        const res = await fetch('/api/send-report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email,
+                name: respondentName,
+                imageBase64: base64,
+                resultUrl,
+            }),
         });
+
+        if (!res.ok) {
+            const data = await res.json().catch(() => ({ error: '送信に失敗しました' }));
+            throw new Error(data.error || '送信に失敗しました');
+        }
     };
 
     /**
-     * 全環境統一の保存フロー
-     * UA 判定ではなく、実際に各手段を試行してフォールバックする。
-     * ロジックは saveStrategy.ts に抽出済み。
+     * デスクトップ用: 直接ダウンロード
      */
-    const handleSaveConfirm = async (format: SaveFormat) => {
+    const downloadReport = (canvas: HTMLCanvasElement, format: SaveFormat) => {
+        const fileName = `診断結果レポート_${respondentName}`;
+        const url = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = format === 'pdf' ? `${fileName}.pdf` : `${fileName}.png`;
+        link.href = url;
+        link.click();
+    };
+
+    /**
+     * 保存フロー: メール送信 or ダウンロード
+     */
+    const handleSaveConfirm = async (format: SaveFormat, mode: SaveMode, email?: string) => {
         if (!respondentName.trim()) return;
 
         setIsGeneratingPdf(true);
@@ -186,67 +210,17 @@ const ResultPage = () => {
             const canvas = await generateCanvas();
             if (!canvas) return;
 
-            const dataUrl = canvas.toDataURL('image/png');
-            let blob: Blob | null = null;
-            try {
-                blob = await canvasToBlob(canvas);
-            } catch {
-                // Blob 変換失敗時はオーバーレイへ直行
+            if (mode === 'email' && email) {
+                await sendReportByEmail(canvas, email);
+                trackEvent('report_sent_email');
+                alert('メールを送信しました。受信箱をご確認ください。');
+            } else {
+                downloadReport(canvas, format);
+                trackEvent('report_downloaded');
             }
-
-            const fileName = `診断結果レポート_${respondentName}`;
-
-            await executeSaveStrategy(blob, dataUrl, {
-                tryDirectDownload: (b) => {
-                    // モバイル・WebView では a.download が効かないので試行自体をスキップ
-                    if (isMobileDevice() || isInAppWebView()) return false;
-                    try {
-                        const url = URL.createObjectURL(b);
-                        const link = document.createElement('a');
-                        link.download = format === 'pdf'
-                            ? `${fileName}.pdf`
-                            : `${fileName}.png`;
-                        link.href = url;
-                        link.click();
-                        setTimeout(() => URL.revokeObjectURL(url), 5000);
-                        return true;
-                    } catch {
-                        return false;
-                    }
-                },
-                tryWebShare: async (b) => {
-                    if (typeof navigator.share !== 'function' || typeof navigator.canShare !== 'function') {
-                        return 'failed';
-                    }
-                    try {
-                        const file = new File([b], `${fileName}.png`, { type: 'image/png' });
-                        if (!navigator.canShare({ files: [file] })) return 'failed';
-                        await navigator.share({ files: [file], title: '診断結果レポート' });
-                        return 'success';
-                    } catch (e) {
-                        if ((e as DOMException).name === 'AbortError') return 'cancelled';
-                        return 'failed';
-                    }
-                },
-                tryNewTab: (b) => {
-                    try {
-                        const blobUrl = URL.createObjectURL(b);
-                        const newTab = window.open(blobUrl, '_blank');
-                        if (newTab) return true;
-                        URL.revokeObjectURL(blobUrl);
-                        return false;
-                    } catch {
-                        return false;
-                    }
-                },
-                showOverlay: (url) => {
-                    setReportImageDataUrl(url);
-                    setShowReportOverlay(true);
-                },
-            });
         } catch (error) {
-            console.error('Report generation failed:', error);
-            alert('保存に失敗しました。もう一度お試しください。');
+            console.error('Report save failed:', error);
+            alert(error instanceof Error ? error.message : '保存に失敗しました。もう一度お試しください。');
         } finally {
             setIsGeneratingPdf(false);
         }
@@ -496,9 +470,9 @@ const ResultPage = () => {
                             診断結果をレポートで保存できます
                         </p>
                         <p className="text-xs text-stone-500">
-                            {(isMobileDevice() || isInAppWebView())
-                                ? 'レポートを表示して、保存やスクショができます'
-                                : '画像またはPDF形式でダウンロードして、見返したり共有に使えます'}
+                            {isMobileDevice()
+                                ? 'メールでレポートを受け取れます'
+                                : '画像またはPDF形式でダウンロード、またはメールで受け取れます'}
                         </p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3">
@@ -510,12 +484,12 @@ const ResultPage = () => {
                             {isGeneratingPdf ? (
                                 <>
                                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    生成中...
+                                    {isMobileDevice() ? '送信中...' : '生成中...'}
                                 </>
                             ) : (
                                 <>
-                                    <FileText size={16} />
-                                    {(isMobileDevice() || isInAppWebView()) ? 'レポートを表示' : 'レポートを保存'}
+                                    {isMobileDevice() ? <Mail size={16} /> : <FileText size={16} />}
+                                    {isMobileDevice() ? 'レポートをメールで受け取る' : 'レポートを保存'}
                                 </>
                             )}
                         </button>
@@ -687,13 +661,7 @@ const ResultPage = () => {
 
 
 
-            {/* TODO: デバッグ用 UA 表示（検証後に削除） */}
-            <div className="fixed bottom-0 left-0 right-0 bg-black/80 text-green-400 text-[10px] p-2 z-[9999] font-mono break-all">
-                UA: {navigator.userAgent}<br />
-                W: {window.innerWidth} | mobile: {String(isMobileDevice())} | webview: {String(isInAppWebView())}
-            </div>
-
-            {/* Report Overlay (mobile fallback) */}
+            {/* Report Overlay (desktop fallback) */}
             <ReportOverlay
                 isOpen={showReportOverlay}
                 imageDataUrl={reportImageDataUrl}
