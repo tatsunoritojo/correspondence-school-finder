@@ -198,6 +198,8 @@ const ResultPage = () => {
 
             await executeSaveStrategy(blob, dataUrl, {
                 tryDirectDownload: (b) => {
+                    // モバイル・WebView では a.download が効かないので試行自体をスキップ
+                    if (isMobileDevice() || isInAppWebView()) return false;
                     try {
                         const url = URL.createObjectURL(b);
                         const link = document.createElement('a');
@@ -206,12 +208,8 @@ const ResultPage = () => {
                             : `${fileName}.png`;
                         link.href = url;
                         link.click();
-                        // a.download が実際に効いたかは検知不能だが、
-                        // 5秒後に revoke してメモリリークを防ぐ
                         setTimeout(() => URL.revokeObjectURL(url), 5000);
-                        // デスクトップブラウザでは成功する前提で true を返す
-                        // WebView 等で失敗した場合はユーザーが再試行 → overlay へ
-                        return !isMobileDevice() && !isInAppWebView();
+                        return true;
                     } catch {
                         return false;
                     }
