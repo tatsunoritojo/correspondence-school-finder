@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 import { LocalStorageRepository } from "../lib/storage";
 import { getPersonalizedAdvice, AIAdvice } from "../lib/gemini";
 import { AXES, COMMUTING_LABELS, EXAM_LABELS, TRANSPORTATION_LABELS, SCHEDULE_LABELS } from "../data/constants";

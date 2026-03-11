@@ -62,7 +62,7 @@ describe('executeSaveStrategy', () => {
         it('download 失敗 → 次のフォールバックへ', async () => {
             const actions = createMockActions({
                 tryDirectDownload: vi.fn(() => false),
-                tryWebShare: vi.fn(async () => 'success'),
+                tryWebShare: vi.fn(async () => 'success' as const),
             });
 
             const result = await executeSaveStrategy(createBlob(), DUMMY_DATA_URL, actions);
@@ -77,7 +77,7 @@ describe('executeSaveStrategy', () => {
 
     describe('Web Share API（優先度2）', () => {
         it('share 成功 → webShare で終了', async () => {
-            const actions = createMockActions({ tryWebShare: vi.fn(async () => 'success') });
+            const actions = createMockActions({ tryWebShare: vi.fn(async () => 'success' as const) });
 
             const result = await executeSaveStrategy(createBlob(), DUMMY_DATA_URL, actions);
 
@@ -87,7 +87,7 @@ describe('executeSaveStrategy', () => {
         });
 
         it('ユーザーキャンセル → webShare で終了（success: false）', async () => {
-            const actions = createMockActions({ tryWebShare: vi.fn(async () => 'cancelled') });
+            const actions = createMockActions({ tryWebShare: vi.fn(async () => 'cancelled' as const) });
 
             const result = await executeSaveStrategy(createBlob(), DUMMY_DATA_URL, actions);
 
@@ -97,7 +97,7 @@ describe('executeSaveStrategy', () => {
 
         it('share 失敗 → 次のフォールバックへ', async () => {
             const actions = createMockActions({
-                tryWebShare: vi.fn(async () => 'failed'),
+                tryWebShare: vi.fn(async () => 'failed' as const),
                 tryNewTab: vi.fn(() => true),
             });
 
@@ -144,7 +144,7 @@ describe('executeSaveStrategy', () => {
         it('blob が null → 全手段スキップして overlay', async () => {
             const actions = createMockActions({
                 tryDirectDownload: vi.fn(() => true),
-                tryWebShare: vi.fn(async () => 'success'),
+                tryWebShare: vi.fn(async () => 'success' as const),
                 tryNewTab: vi.fn(() => true),
             });
 
@@ -186,7 +186,7 @@ describe('executeSaveStrategy', () => {
         it('iOS Safari: download 失敗 → share 成功', async () => {
             const actions = createMockActions({
                 tryDirectDownload: vi.fn(() => false),
-                tryWebShare: vi.fn(async () => 'success'),
+                tryWebShare: vi.fn(async () => 'success' as const),
             });
             const result = await executeSaveStrategy(createBlob(), DUMMY_DATA_URL, actions);
             expect(result.method).toBe('webShare');
@@ -201,7 +201,7 @@ describe('executeSaveStrategy', () => {
         it('Android Chrome: download 失敗 → share 失敗 → newTab 成功', async () => {
             const actions = createMockActions({
                 tryDirectDownload: vi.fn(() => false),
-                tryWebShare: vi.fn(async () => 'failed'),
+                tryWebShare: vi.fn(async () => 'failed' as const),
                 tryNewTab: vi.fn(() => true),
             });
             const result = await executeSaveStrategy(createBlob(), DUMMY_DATA_URL, actions);
