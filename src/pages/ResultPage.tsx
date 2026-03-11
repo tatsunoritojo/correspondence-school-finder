@@ -139,7 +139,7 @@ const ResultPage = () => {
         await new Promise(resolve => setTimeout(resolve, 200));
 
         const canvas = await html2canvas(printableRef.current, {
-            scale: 2,
+            scale: 3,
             backgroundColor: '#fff7ed',
             useCORS: true,
             logging: false,

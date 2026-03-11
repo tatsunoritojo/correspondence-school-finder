@@ -58,7 +58,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     }
 
     // base64 サイズ制限（約 5MB）
-    if (body.imageBase64.length > 7_000_000) {
+    if (body.imageBase64.length > 10_000_000) {
         return { statusCode: 400, body: JSON.stringify({ error: "画像サイズが大きすぎます" }) };
     }
 
