@@ -39,6 +39,7 @@ const ResultPage = () => {
 
     // PDF Download State
     const [showNameDialog, setShowNameDialog] = useState(false);
+    const [dialogMode, setDialogMode] = useState<SaveMode>('email');
     const [respondentName, setRespondentName] = useState("");
     const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
@@ -122,8 +123,14 @@ const ResultPage = () => {
     const highAxes = sortedAxes.filter(ax => currentScores[ax.id] >= avgScore);
     const lowAxes = sortedAxes.filter(ax => currentScores[ax.id] < avgScore);
 
-    // PDF Download Handler
-    const handlePdfDownloadClick = () => {
+    // Report Save Handlers
+    const handleEmailClick = () => {
+        setDialogMode('email');
+        setShowNameDialog(true);
+    };
+
+    const handleDownloadClick = () => {
+        setDialogMode('download');
         setShowNameDialog(true);
     };
 
@@ -491,33 +498,47 @@ const ResultPage = () => {
                         <p className="text-sm font-bold text-stone-700 mb-1">
                             診断結果をレポートで保存できます
                         </p>
-                        <p className="text-xs text-stone-500">
-                            {isMobileDevice()
-                                ? 'メールでレポートを受け取れます'
-                                : '画像またはPDF形式でダウンロード、またはメールで受け取れます'}
-                        </p>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex flex-col gap-3">
                         <button
-                            onClick={handlePdfDownloadClick}
+                            onClick={handleEmailClick}
                             disabled={isGeneratingPdf}
-                            className="flex-1 bg-stone-700 hover:bg-stone-600 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
+                            className="bg-stone-700 hover:bg-stone-600 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
                         >
-                            {isGeneratingPdf ? (
+                            {isGeneratingPdf && dialogMode === 'email' ? (
                                 <>
                                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    {isMobileDevice() ? '送信中...' : '生成中...'}
+                                    送信中...
                                 </>
                             ) : (
                                 <>
-                                    {isMobileDevice() ? <Mail size={16} /> : <FileText size={16} />}
-                                    {isMobileDevice() ? 'レポートをメールで受け取る' : 'レポートを保存'}
+                                    <Mail size={16} />
+                                    レポートをメールで受け取る
                                 </>
                             )}
                         </button>
+                        {!isMobileDevice() && (
+                            <button
+                                onClick={handleDownloadClick}
+                                disabled={isGeneratingPdf}
+                                className="text-stone-500 hover:text-stone-700 text-sm font-medium flex items-center justify-center gap-1.5 py-2 transition disabled:opacity-50"
+                            >
+                                {isGeneratingPdf && dialogMode === 'download' ? (
+                                    <>
+                                        <span className="w-3.5 h-3.5 border-2 border-stone-400/30 border-t-stone-500 rounded-full animate-spin" />
+                                        生成中...
+                                    </>
+                                ) : (
+                                    <>
+                                        <FileText size={14} />
+                                        ダウンロードする
+                                    </>
+                                )}
+                            </button>
+                        )}
                         <button
                             onClick={handleShareSite}
-                            className="flex-1 bg-orange-500 hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
+                            className="bg-orange-500 hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
                         >
                             <Share2 size={16} />
                             サイトを共有する
@@ -696,6 +717,7 @@ const ResultPage = () => {
             {/* Name Input Dialog */}
             <NameInputDialog
                 isOpen={showNameDialog}
+                mode={dialogMode}
                 name={respondentName}
                 onNameChange={setRespondentName}
                 onConfirm={handleSaveConfirm}
