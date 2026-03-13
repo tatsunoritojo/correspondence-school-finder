@@ -9,7 +9,7 @@ interface NameInputDialogProps {
     isOpen: boolean;
     name: string;
     onNameChange: (name: string) => void;
-    onConfirm: (format: SaveFormat, mode: SaveMode, email?: string) => void;
+    onConfirm: (format: SaveFormat, mode: SaveMode, email?: string, newsletterOptIn?: boolean) => void;
     onCancel: () => void;
     isLoading?: boolean;
 }
@@ -27,16 +27,28 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
     const [format, setFormat] = React.useState<SaveFormat>(mobile ? 'image' : 'pdf');
     const [mode, setMode] = React.useState<SaveMode>(mobile ? 'email' : 'download');
     const [email, setEmail] = React.useState('');
+    const [newsletterOptIn, setNewsletterOptIn] = React.useState(false);
+
+    React.useEffect(() => {
+        if (isOpen) {
+            setEmail('');
+            setNewsletterOptIn(false);
+            setFormat(mobile ? 'image' : 'pdf');
+            setMode(mobile ? 'email' : 'download');
+        }
+    }, [isOpen, mobile]);
 
     if (!isOpen) return null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onConfirm(format, mode, mode === 'email' ? email : undefined);
+        onConfirm(format, mode, mode === 'email' ? email : undefined, mode === 'email' ? newsletterOptIn : undefined);
     };
 
+    const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
     const canSubmit = name.trim()
-        && (mode === 'download' || (mode === 'email' && email.trim()));
+        && (mode === 'download' || (mode === 'email' && isValidEmail(email)));
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
@@ -83,14 +95,28 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
 
                     {/* メールアドレス（email モード時） */}
                     {mode === 'email' && (
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="メールアドレス"
-                            className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl mb-3 focus:border-orange-400 focus:outline-none transition-colors text-stone-700 placeholder:text-stone-300"
-                            disabled={isLoading}
-                        />
+                        <>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="メールアドレス"
+                                className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl mb-3 focus:border-orange-400 focus:outline-none transition-colors text-stone-700 placeholder:text-stone-300"
+                                disabled={isLoading}
+                            />
+                            <label className="flex items-start gap-2 mb-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={newsletterOptIn}
+                                    onChange={(e) => setNewsletterOptIn(e.target.checked)}
+                                    disabled={isLoading}
+                                    className="mt-0.5 accent-orange-500"
+                                />
+                                <span className="text-xs text-stone-600 leading-relaxed">
+                                    進路に関する案内をメールで受け取る
+                                </span>
+                            </label>
+                        </>
                     )}
 
                     {/* 保存方式切り替え */}
@@ -193,7 +219,7 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
 
                 <p className="text-xs text-stone-400 text-center mt-4">
                     {mode === 'email'
-                        ? '※ メールアドレスはレポート送信のみに使用されます'
+                        ? '※ 案内配信を希望された方のみ、今後のご案内先として保存します'
                         : '※ お名前はレポートにのみ使用されます'}
                 </p>
             </div>

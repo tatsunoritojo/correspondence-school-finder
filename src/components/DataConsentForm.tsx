@@ -293,8 +293,7 @@ export default function DataConsentForm({ scores, role, onClose, isRevision = fa
                 <GroupLabel label="ご連絡先" />
                 <div>
                     <p className="text-xs text-stone-500 mb-2 leading-relaxed">
-                        ご協力いただいた方にお礼のご連絡をさせていただく場合があります。
-                        <br />※ 連絡不要の方は空欄のままで構いません
+                        不定期発行の進路に関するメルマガの配信を希望される方はご入力ください。
                     </p>
                     <label className="text-sm font-medium text-stone-600 block mb-1">
                         メールアドレス <span className="text-xs text-stone-400 ml-2">任意</span>

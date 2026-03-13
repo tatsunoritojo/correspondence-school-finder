@@ -183,7 +183,7 @@ const ResultPage = () => {
     /**
      * メールでレポートを送信する（PDF添付）
      */
-    const sendReportByEmail = async (canvas: HTMLCanvasElement, email: string) => {
+    const sendReportByEmail = async (canvas: HTMLCanvasElement, email: string, newsletterOptIn?: boolean) => {
         const pdfBase64 = canvasToPdfBase64(canvas);
         const resultUrl = window.location.href;
 
@@ -195,6 +195,7 @@ const ResultPage = () => {
                 name: respondentName,
                 pdfBase64,
                 resultUrl,
+                newsletterOptIn: newsletterOptIn ?? false,
             }),
         });
 
@@ -219,7 +220,7 @@ const ResultPage = () => {
     /**
      * 保存フロー: メール送信 or ダウンロード
      */
-    const handleSaveConfirm = async (format: SaveFormat, mode: SaveMode, email?: string) => {
+    const handleSaveConfirm = async (format: SaveFormat, mode: SaveMode, email?: string, newsletterOptIn?: boolean) => {
         if (!respondentName.trim()) return;
 
         setIsGeneratingPdf(true);
@@ -232,7 +233,7 @@ const ResultPage = () => {
             if (!canvas) return;
 
             if (mode === 'email' && email) {
-                await sendReportByEmail(canvas, email);
+                await sendReportByEmail(canvas, email, newsletterOptIn);
                 trackEvent('report_sent_email');
                 alert('メールを送信しました。受信箱をご確認ください。');
             } else {

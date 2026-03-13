@@ -1,10 +1,12 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
+import { sheets_v4, auth as googleAuth } from "@googleapis/sheets";
 
 interface SendReportBody {
     email: string;
     name: string;
     pdfBase64: string; // PDF の base64 エンコード文字列
     resultUrl: string; // 結果ページの URL（協力フォームへの導線）
+    newsletterOptIn?: boolean;
 }
 
 // Simple in-memory rate limiting (3 req/min/IP)
@@ -20,6 +22,67 @@ function isRateLimited(ip: string): boolean {
     recent.push(now);
     rateLimitMap.set(ip, recent);
     return false;
+}
+
+async function saveNewsletterSubscriber(name: string, email: string, source: string): Promise<void> {
+    const sheetId = process.env.GOOGLE_SHEET_ID;
+    const serviceEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    const privateKey = process.env.GOOGLE_PRIVATE_KEY;
+
+    if (!sheetId || !serviceEmail || !privateKey) {
+        console.error("Google Sheets not configured — skipping newsletter save");
+        return;
+    }
+
+    const authClient = new googleAuth.GoogleAuth({
+        credentials: {
+            client_email: serviceEmail,
+            private_key: privateKey.replace(/\\n/g, "\n"),
+        },
+        scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    });
+
+    const client = new sheets_v4.Sheets({ auth: await authClient.getClient() as any });
+    const normalizedEmail = email.trim().toLowerCase();
+    const now = new Date().toISOString();
+
+    // 既存の email を検索して upsert
+    const existing = await client.spreadsheets.values.get({
+        spreadsheetId: sheetId,
+        range: "newsletter!D:D",
+    });
+
+    const rows = existing.data.values || [];
+    let existingRowIndex = -1;
+    for (let i = 0; i < rows.length; i++) {
+        if (rows[i][0]?.trim().toLowerCase() === normalizedEmail) {
+            existingRowIndex = i;
+            break;
+        }
+    }
+
+    if (existingRowIndex >= 0) {
+        // 既存行を更新（updated_at, name, source, status を更新）
+        const rowNum = existingRowIndex + 1; // 1-indexed
+        await client.spreadsheets.values.update({
+            spreadsheetId: sheetId,
+            range: `newsletter!B${rowNum}:F${rowNum}`,
+            valueInputOption: "RAW",
+            requestBody: {
+                values: [[now, name, normalizedEmail, source, "active"]],
+            },
+        });
+    } else {
+        // 新規行を追加
+        await client.spreadsheets.values.append({
+            spreadsheetId: sheetId,
+            range: "newsletter!A:F",
+            valueInputOption: "RAW",
+            requestBody: {
+                values: [[now, now, name, normalizedEmail, source, "active"]],
+            },
+        });
+    }
 }
 
 const handler: Handler = async (event: HandlerEvent) => {
@@ -63,6 +126,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     }
 
     try {
+        // 1. メール送信
         const res = await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: {
@@ -88,6 +152,16 @@ const handler: Handler = async (event: HandlerEvent) => {
             const errorText = await res.text();
             console.error("Resend API error:", res.status, errorText);
             return { statusCode: 502, body: JSON.stringify({ error: "メール送信に失敗しました" }) };
+        }
+
+        // 2. メール送信成功後、newsletterOptIn === true の場合のみ保存
+        if (body.newsletterOptIn) {
+            try {
+                await saveNewsletterSubscriber(body.name, body.email, "report_email");
+            } catch (sheetErr) {
+                // newsletter 保存失敗はメール送信の成功を阻害しない
+                console.error("Newsletter save failed (non-blocking):", sheetErr);
+            }
         }
 
         return {
