@@ -11,7 +11,7 @@ import RadarChart from "../components/RadarChart";
 import PrintableReport from "../components/PrintableReport";
 import NameInputDialog, { SaveFormat, SaveMode } from "../components/NameInputDialog";
 import ReportOverlay from "../components/ReportOverlay";
-import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, Mail, BarChart3, ThumbsUp, Lightbulb } from "lucide-react";
+import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, Mail, Camera, BarChart3, ThumbsUp, Lightbulb } from "lucide-react";
 import { isMobileDevice } from "../lib/deviceDetection";
 import { trackEvent } from "../lib/analytics";
 import { useTrackView } from "../hooks/useTrackView";
@@ -132,6 +132,26 @@ const ResultPage = () => {
     const handleDownloadClick = () => {
         setDialogMode('download');
         setShowNameDialog(true);
+    };
+
+    const handleScreenshotClick = async () => {
+        if (!respondentName.trim()) {
+            const name = window.prompt('レポートに表示するお名前を入力してください');
+            if (!name?.trim()) return;
+            setRespondentName(name.trim());
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        setIsGeneratingPdf(true);
+        try {
+            const canvas = await generateCanvas();
+            if (!canvas) return;
+            setReportImageDataUrl(canvas.toDataURL('image/png'));
+            setShowReportOverlay(true);
+        } catch (error) {
+            console.error('Screenshot view failed:', error);
+        } finally {
+            setIsGeneratingPdf(false);
+        }
     };
 
     /**
@@ -516,6 +536,14 @@ const ResultPage = () => {
                                     レポートをメールで受け取る
                                 </>
                             )}
+                        </button>
+                        <button
+                            onClick={handleScreenshotClick}
+                            disabled={isGeneratingPdf}
+                            className="text-stone-500 hover:text-stone-700 text-sm font-medium flex items-center justify-center gap-1.5 py-2 transition disabled:opacity-50"
+                        >
+                            <Camera size={14} />
+                            スクリーンショットで保存する
                         </button>
                         {!isMobileDevice() && (
                             <button
