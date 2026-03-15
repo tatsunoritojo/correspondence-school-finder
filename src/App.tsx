@@ -11,6 +11,7 @@ const App = () => {
         <Route path="/" element={<StartPage />} />
         <Route path="/questions" element={<QuestionsPage />} />
         <Route path="/result" element={<ResultPage />} />
+        <Route path="/r/:token" element={<ResultPage />} />
         {/* Alias for parent entry */}
         <Route path="/diagnose" element={<QuestionsPage />} /> 
       </Routes>

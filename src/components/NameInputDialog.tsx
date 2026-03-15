@@ -2,7 +2,7 @@ import React from 'react';
 import { X, FileText, Image, Mail } from 'lucide-react';
 
 export type SaveFormat = 'image' | 'pdf';
-export type SaveMode = 'download' | 'email';
+export type SaveMode = 'download' | 'email' | 'email-url';
 
 interface NameInputDialogProps {
     isOpen: boolean;
@@ -37,7 +37,7 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
 
     if (!isOpen) return null;
 
-    const isEmailMode = mode === 'email';
+    const isEmailMode = mode === 'email' || mode === 'email-url';
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -46,8 +46,9 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
 
     const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
-    const canSubmit = name.trim().length >= 2
-        && (mode === 'download' || (isEmailMode && isValidEmail(email)));
+    const canSubmit = mode === 'email-url'
+        ? (name.trim().length >= 1 && isValidEmail(email))
+        : (name.trim().length >= 2 && (mode === 'download' || (isEmailMode && isValidEmail(email))));
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
@@ -72,10 +73,12 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
 
                 {/* タイトル */}
                 <h2 className="text-xl font-bold text-stone-700 text-center mb-1">
-                    {isEmailMode ? 'レポートをメールで受け取る' : 'レポートをダウンロード'}
+                    {mode === 'email-url' ? 'メールで結果を受け取る' : isEmailMode ? 'レポートをメールで受け取る' : 'レポートをダウンロード'}
                 </h2>
                 <p className="text-sm text-stone-500 text-center mb-6">
-                    {isEmailMode
+                    {mode === 'email-url'
+                        ? 'お名前とメールアドレスを入力してください'
+                        : isEmailMode
                         ? 'お名前とメールアドレスを入力してください'
                         : 'レポートに表示するお名前を入力してください'}
                 </p>
@@ -187,6 +190,8 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
                                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                     {isEmailMode ? '送信中...' : '生成中...'}
                                 </span>
+                            ) : mode === 'email-url' ? (
+                                '結果URLを送信する'
                             ) : isEmailMode ? (
                                 '送信する'
                             ) : (

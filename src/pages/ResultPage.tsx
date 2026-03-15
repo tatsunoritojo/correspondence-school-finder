@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { LocalStorageRepository } from "../lib/storage";
+import { getResultFromServer } from "../lib/resultApi";
 import { getPersonalizedAdvice, AIAdvice } from "../lib/gemini";
 import { AXES, COMMUTING_LABELS, EXAM_LABELS, TRANSPORTATION_LABELS, SCHEDULE_LABELS } from "../data/constants";
 import { Axis, ParentChildData } from "../types";
@@ -11,7 +12,7 @@ import RadarChart from "../components/RadarChart";
 import PrintableReport from "../components/PrintableReport";
 import NameInputDialog, { SaveFormat, SaveMode } from "../components/NameInputDialog";
 import ReportOverlay from "../components/ReportOverlay";
-import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, Mail, Camera, BarChart3, ThumbsUp, Lightbulb } from "lucide-react";
+import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, Mail, BarChart3, ThumbsUp, Lightbulb, Check as CheckIcon } from "lucide-react";
 import { isMobileDevice } from "../lib/deviceDetection";
 import { trackEvent } from "../lib/analytics";
 import { useTrackView } from "../hooks/useTrackView";
@@ -19,15 +20,18 @@ import DataConsentForm from "../components/DataConsentForm";
 
 const ResultPage = () => {
     const [searchParams] = useSearchParams();
+    const { token: routeToken } = useParams<{ token?: string }>();
     const navigate = useNavigate();
     const childId = searchParams.get("child_id");
     const role = (searchParams.get("role") as "child" | "parent") || "child";
+    const shareToken = routeToken || searchParams.get("token") || null;
 
     const [data, setData] = useState<ParentChildData | null>(null);
     const [aiAdvice, setAiAdvice] = useState<AIAdvice | null>(null);
     const [loadingAdvice, setLoadingAdvice] = useState(false);
     const [showConditions, setShowConditions] = useState(false);
     const [openAxisIds, setOpenAxisIds] = useState<Set<string>>(new Set());
+    const [copied, setCopied] = useState(false);
 
     // Data consent: "none" | "dismissed" | "submitted"
     const [formStatus, setFormStatus] = useState<"none" | "dismissed" | "submitted">(
@@ -66,25 +70,60 @@ const ResultPage = () => {
     }, [role]);
 
     useEffect(() => {
-        if (childId) {
-            LocalStorageRepository.loadData(childId).then(async (loadedData) => {
-                setData(loadedData as any);
+        const loadData = async () => {
+            let loadedData: ParentChildData | null = null;
 
-                // Generate AI Advice if viewing own result
-                const myResult = role === "child" ? loadedData.child : loadedData.parent;
-                if (myResult && !aiAdvice && !loadingAdvice) {
-                    setLoadingAdvice(true);
-                    try {
-                        const advice = await getPersonalizedAdvice(myResult.scores, role);
-                        setAiAdvice(advice);
-                        trackEvent("ai_advice_loaded");
-                    } finally {
-                        setLoadingAdvice(false);
+            // 1. Try loading from server if we have a share token
+            if (shareToken) {
+                try {
+                    const serverResult = await getResultFromServer(shareToken);
+                    if (serverResult) {
+                        loadedData = { child: null, parent: null };
+                        if (serverResult.role === "child") {
+                            loadedData.child = serverResult;
+                        } else {
+                            loadedData.parent = serverResult;
+                        }
+                        // Cache in localStorage for future visits
+                        if (childId) {
+                            await LocalStorageRepository.saveResult(childId, serverResult);
+                        }
                     }
+                } catch (e) {
+                    console.error("Failed to load from server:", e);
                 }
-            });
+            }
+
+            // 2. Fallback to localStorage
+            if (!loadedData && childId) {
+                loadedData = await LocalStorageRepository.loadData(childId);
+            }
+
+            if (!loadedData) {
+                setData({ child: null, parent: null });
+                return;
+            }
+
+            setData(loadedData);
+
+            // Generate AI Advice
+            const myResult = role === "child" ? loadedData.child : loadedData.parent;
+            if (myResult && !aiAdvice && !loadingAdvice) {
+                setLoadingAdvice(true);
+                try {
+                    const advice = await getPersonalizedAdvice(myResult.scores, role);
+                    setAiAdvice(advice);
+                    trackEvent("ai_advice_loaded");
+                } finally {
+                    setLoadingAdvice(false);
+                }
+            }
+        };
+
+        if (shareToken || childId) {
+            loadData();
         }
-    }, [childId, role]);
+    }, [childId, role, shareToken]);
 
     // Scroll Listener
     const [showScrollIndicator, setShowScrollIndicator] = useState(true);
@@ -124,34 +163,9 @@ const ResultPage = () => {
     const lowAxes = sortedAxes.filter(ax => currentScores[ax.id] < avgScore);
 
     // Report Save Handlers
-    const handleEmailClick = () => {
-        setDialogMode('email');
-        setShowNameDialog(true);
-    };
-
     const handleDownloadClick = () => {
         setDialogMode('download');
         setShowNameDialog(true);
-    };
-
-    const handleScreenshotClick = async () => {
-        if (!respondentName.trim()) {
-            const name = window.prompt('レポートに表示するお名前を入力してください');
-            if (!name?.trim()) return;
-            setRespondentName(name.trim());
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        setIsGeneratingPdf(true);
-        try {
-            const canvas = await generateCanvas();
-            if (!canvas) return;
-            setReportImageDataUrl(canvas.toDataURL('image/png'));
-            setShowReportOverlay(true);
-        } catch (error) {
-            console.error('Screenshot view failed:', error);
-        } finally {
-            setIsGeneratingPdf(false);
-        }
     };
 
     /**
@@ -208,22 +222,29 @@ const ResultPage = () => {
     };
 
     /**
-     * メールでレポートを送信する（PDF添付）
+     * メールでレポートを送信する（URL送信 or PDF添付フォールバック）
      */
-    const sendReportByEmail = async (canvas: HTMLCanvasElement, email: string, newsletterOptIn?: boolean) => {
-        const pdfBase64 = canvasToPdfBase64(canvas);
-        const resultUrl = window.location.href;
+    const sendReportByEmail = async (canvas: HTMLCanvasElement | null, email: string, newsletterOptIn?: boolean) => {
+        const resultUrl = getShareUrl();
+
+        const payload: Record<string, unknown> = {
+            email,
+            name: respondentName,
+            resultUrl,
+            newsletterOptIn: newsletterOptIn ?? false,
+        };
+
+        // トークンがある場合はURLのみ、なければPDF添付
+        if (shareToken) {
+            payload.shareToken = shareToken;
+        } else if (canvas) {
+            payload.pdfBase64 = canvasToPdfBase64(canvas);
+        }
 
         const res = await fetch('/api/send-report', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email,
-                name: respondentName,
-                pdfBase64,
-                resultUrl,
-                newsletterOptIn: newsletterOptIn ?? false,
-            }),
+            body: JSON.stringify(payload),
         });
 
         if (!res.ok) {
@@ -248,6 +269,24 @@ const ResultPage = () => {
      * 保存フロー: メール送信 or ダウンロード
      */
     const handleSaveConfirm = async (format: SaveFormat, mode: SaveMode, email?: string, newsletterOptIn?: boolean) => {
+        if (mode === 'email-url') {
+            // URL-only email: no canvas needed
+            if (!email) return;
+            setIsGeneratingPdf(true);
+            setShowNameDialog(false);
+            try {
+                await sendReportByEmail(null, email, newsletterOptIn);
+                trackEvent('report_sent_email_url');
+                alert('メールを送信しました。受信箱をご確認ください。');
+            } catch (error) {
+                console.error('Email send failed:', error);
+                alert(error instanceof Error ? error.message : '送信に失敗しました。もう一度お試しください。');
+            } finally {
+                setIsGeneratingPdf(false);
+            }
+            return;
+        }
+
         if (!respondentName.trim()) return;
 
         setIsGeneratingPdf(true);
@@ -280,32 +319,40 @@ const ResultPage = () => {
         setRespondentName("");
     };
 
-    const handleShareSite = async () => {
-        const siteUrl = "https://kodomo-shinro.jp/";
-        const shareText = "こどもの進路案内所 — 中学校卒業後の進路選択を支援するサイトです。通信制高校診断もできます。";
+    const getShareUrl = (): string => {
+        if (shareToken) {
+            return `${window.location.origin}/r/${shareToken}`;
+        }
+        return window.location.href;
+    };
+
+    const handleShareResult = async () => {
+        const shareUrl = getShareUrl();
+        const shareText = "通信制高校診断の結果です。あなたもやってみませんか？";
+
+        trackEvent("share_result_click", { has_token: !!shareToken });
 
         // モバイル: Web Share API を優先
         if (isMobileDevice() && navigator.share) {
             try {
                 await navigator.share({
-                    title: "こどもの進路案内所",
+                    title: "通信制高校診断の結果",
                     text: shareText,
-                    url: siteUrl,
+                    url: shareUrl,
                 });
                 return;
             } catch (e) {
-                // ユーザーがキャンセルした場合はそのまま終了
                 if ((e as DOMException).name === "AbortError") return;
             }
         }
 
         // PC / フォールバック: クリップボードにコピー
         try {
-            await navigator.clipboard.writeText(siteUrl);
-            alert("サイトのURLをコピーしました！LINEやメールで共有してください。");
+            await navigator.clipboard.writeText(shareUrl);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
         } catch {
-            // clipboard API が使えない場合
-            prompt("以下のURLをコピーしてください:", siteUrl);
+            prompt("以下のURLをコピーしてください:", shareUrl);
         }
     };
 
@@ -516,16 +563,44 @@ const ResultPage = () => {
                 <div className="glass-card rounded-2xl p-5 space-y-4">
                     <div className="text-center">
                         <p className="text-sm font-bold text-stone-700 mb-1">
-                            診断結果をレポートで保存できます
+                            {shareToken ? "この診断結果を保存・共有できます" : "診断結果をレポートで保存できます"}
                         </p>
                     </div>
                     <div className="flex flex-col gap-3">
+                        {/* Main CTA: Share result */}
+                        {shareToken && (
+                            <button
+                                onClick={handleShareResult}
+                                className="bg-orange-500 hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
+                            >
+                                {copied ? (
+                                    <>
+                                        <CheckIcon size={16} />
+                                        コピーしました！
+                                    </>
+                                ) : (
+                                    <>
+                                        <Share2 size={16} />
+                                        この結果を共有する
+                                    </>
+                                )}
+                            </button>
+                        )}
+
+                        {/* Email: URL-only when token exists, PDF-attached otherwise */}
                         <button
-                            onClick={handleEmailClick}
+                            onClick={() => {
+                                if (shareToken) {
+                                    setDialogMode('email-url' as SaveMode);
+                                } else {
+                                    setDialogMode('email');
+                                }
+                                setShowNameDialog(true);
+                            }}
                             disabled={isGeneratingPdf}
-                            className="bg-stone-700 hover:bg-stone-600 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
+                            className={`${shareToken ? 'bg-stone-700 hover:bg-stone-600' : 'bg-stone-700 hover:bg-stone-600'} active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50`}
                         >
-                            {isGeneratingPdf && dialogMode === 'email' ? (
+                            {isGeneratingPdf && (dialogMode === 'email' || dialogMode === ('email-url' as SaveMode)) ? (
                                 <>
                                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                     送信中...
@@ -533,44 +608,40 @@ const ResultPage = () => {
                             ) : (
                                 <>
                                     <Mail size={16} />
-                                    レポートをメールで受け取る
+                                    メールで結果を受け取る
                                 </>
                             )}
                         </button>
+
+                        {/* Report save (text link, legacy) */}
                         <button
-                            onClick={handleScreenshotClick}
+                            onClick={handleDownloadClick}
                             disabled={isGeneratingPdf}
                             className="text-stone-500 hover:text-stone-700 text-sm font-medium flex items-center justify-center gap-1.5 py-2 transition disabled:opacity-50"
                         >
-                            <Camera size={14} />
-                            スクリーンショットで保存する
+                            {isGeneratingPdf && dialogMode === 'download' ? (
+                                <>
+                                    <span className="w-3.5 h-3.5 border-2 border-stone-400/30 border-t-stone-500 rounded-full animate-spin" />
+                                    生成中...
+                                </>
+                            ) : (
+                                <>
+                                    <FileText size={14} />
+                                    レポートを保存する
+                                </>
+                            )}
                         </button>
-                        {!isMobileDevice() && (
+
+                        {/* Share site (only when no token — avoids duplication with share result) */}
+                        {!shareToken && (
                             <button
-                                onClick={handleDownloadClick}
-                                disabled={isGeneratingPdf}
-                                className="text-stone-500 hover:text-stone-700 text-sm font-medium flex items-center justify-center gap-1.5 py-2 transition disabled:opacity-50"
+                                onClick={handleShareResult}
+                                className="bg-orange-500 hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
                             >
-                                {isGeneratingPdf && dialogMode === 'download' ? (
-                                    <>
-                                        <span className="w-3.5 h-3.5 border-2 border-stone-400/30 border-t-stone-500 rounded-full animate-spin" />
-                                        生成中...
-                                    </>
-                                ) : (
-                                    <>
-                                        <FileText size={14} />
-                                        ダウンロードする
-                                    </>
-                                )}
+                                <Share2 size={16} />
+                                サイトを共有する
                             </button>
                         )}
-                        <button
-                            onClick={handleShareSite}
-                            className="bg-orange-500 hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
-                        >
-                            <Share2 size={16} />
-                            サイトを共有する
-                        </button>
                     </div>
                     <div className="text-center">
                         <button

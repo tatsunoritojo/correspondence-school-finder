@@ -4,8 +4,9 @@ import { sheets_v4, auth as googleAuth } from "@googleapis/sheets";
 interface SendReportBody {
     email: string;
     name: string;
-    pdfBase64: string; // PDF の base64 エンコード文字列
-    resultUrl: string; // 結果ページの URL（協力フォームへの導線）
+    pdfBase64?: string; // PDF の base64 エンコード文字列（URL送信時は省略）
+    resultUrl: string; // 結果ページの URL
+    shareToken?: string; // 共有トークン（存在する場合はURL送信モード）
     newsletterOptIn?: boolean;
 }
 
@@ -111,7 +112,12 @@ const handler: Handler = async (event: HandlerEvent) => {
         return { statusCode: 400, body: JSON.stringify({ error: "不正なリクエストです" }) };
     }
 
-    if (!body.email || !body.name || !body.pdfBase64) {
+    if (!body.email || !body.name) {
+        return { statusCode: 400, body: JSON.stringify({ error: "必須項目が不足しています" }) };
+    }
+
+    // URL送信モードでもPDF添付モードでもない場合はエラー
+    if (!body.shareToken && !body.pdfBase64) {
         return { statusCode: 400, body: JSON.stringify({ error: "必須項目が不足しています" }) };
     }
 
@@ -127,25 +133,34 @@ const handler: Handler = async (event: HandlerEvent) => {
 
     try {
         // 1. メール送信
+        const isUrlMode = !!body.shareToken;
+        const emailPayload: Record<string, unknown> = {
+            from: "こどもの進路案内所 <onboarding@resend.dev>",
+            to: [body.email],
+            subject: `${body.name}さんの診断結果レポート — こどもの進路案内所`,
+            html: isUrlMode
+                ? buildEmailHtmlWithUrl(body.name, body.resultUrl)
+                : buildEmailHtml(body.name, body.resultUrl),
+        };
+
+        // PDF添付モードの場合のみアタッチメントを追加
+        if (!isUrlMode && body.pdfBase64) {
+            emailPayload.attachments = [
+                {
+                    filename: `診断結果レポート_${body.name}.pdf`,
+                    content: body.pdfBase64,
+                    type: "application/pdf",
+                },
+            ];
+        }
+
         const res = await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${apiKey}`,
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                from: "こどもの進路案内所 <onboarding@resend.dev>",
-                to: [body.email],
-                subject: `${body.name}さんの診断結果レポート — こどもの進路案内所`,
-                html: buildEmailHtml(body.name, body.resultUrl),
-                attachments: [
-                    {
-                        filename: `診断結果レポート_${body.name}.pdf`,
-                        content: body.pdfBase64,
-                        type: "application/pdf",
-                    },
-                ],
-            }),
+            body: JSON.stringify(emailPayload),
         });
 
         if (!res.ok) {
@@ -174,6 +189,52 @@ const handler: Handler = async (event: HandlerEvent) => {
         return { statusCode: 500, body: JSON.stringify({ error: "メール送信中にエラーが発生しました" }) };
     }
 };
+
+function buildEmailHtmlWithUrl(name: string, resultUrl: string): string {
+    return `
+<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="utf-8"></head>
+<body style="margin:0; padding:0; background:#fef7ed; font-family:'Hiragino Sans','Meiryo',sans-serif;">
+  <div style="max-width:560px; margin:0 auto; padding:32px 20px;">
+    <div style="text-align:center; margin-bottom:24px;">
+      <h1 style="font-size:20px; color:#44403c; margin:0;">こどもの進路案内所</h1>
+      <p style="font-size:13px; color:#78716c; margin:8px 0 0;">診断結果レポート</p>
+    </div>
+
+    <div style="background:#fff; border-radius:16px; padding:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+      <p style="font-size:15px; color:#44403c; line-height:1.7; margin:0 0 16px;">
+        ${name}さん、診断おつかれさまでした。
+      </p>
+
+      <p style="font-size:13px; color:#78716c; line-height:1.6; margin:0 0 20px;">
+        以下のボタンから、いつでも診断結果を確認できます。
+      </p>
+
+      <div style="text-align:center;">
+        <a href="${resultUrl}" style="display:inline-block; background:#f97316; color:#fff; text-decoration:none; padding:14px 32px; border-radius:12px; font-size:15px; font-weight:bold;">
+          診断結果を見る
+        </a>
+      </div>
+
+      <p style="font-size:12px; color:#a8a29e; text-align:center; margin:16px 0 0;">
+        このURLをブックマークしておくと、いつでも結果を確認できます。
+      </p>
+    </div>
+
+    <div style="text-align:center; margin-top:32px; padding-top:16px; border-top:1px solid #e7e5e4;">
+      <p style="font-size:11px; color:#a8a29e; margin:0;">
+        このメールは「こどもの進路案内所」から自動送信されています。<br>
+        お心当たりがない場合は、このメールを無視してください。
+      </p>
+      <p style="font-size:11px; color:#a8a29e; margin:8px 0 0;">
+        © 2025 One drop. All rights reserved.
+      </p>
+    </div>
+  </div>
+</body>
+</html>`.trim();
+}
 
 function buildEmailHtml(name: string, resultUrl: string): string {
     return `

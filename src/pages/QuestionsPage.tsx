@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { LocalStorageRepository } from "../lib/storage";
 import { calculateScores } from "../lib/scoring";
+import { saveResultToServer } from "../lib/resultApi";
 import { DiagnosisResult, AnswerMap, AxisId } from "../types";
 import { QUESTIONS, AXES } from "../data/constants";
 import { ChevronRight, Check, ChevronLeft } from "lucide-react";
@@ -100,11 +101,20 @@ const QuestionsPage = () => {
     // ID Logic
     const childId = childIdParam || crypto.randomUUID();
 
-    // Save
+    // Save locally
     await LocalStorageRepository.saveResult(childId, result);
 
+    // Save to server for shareable URL (non-blocking)
+    let token: string | undefined;
+    try {
+      token = await saveResultToServer(result);
+    } catch (e) {
+      console.error("Failed to save result to server:", e);
+    }
+
     // Navigate
-    navigate(`/result?child_id=${childId}&role=${role}`);
+    const tokenParam = token ? `&token=${token}` : "";
+    navigate(`/result?child_id=${childId}&role=${role}${tokenParam}`);
   };
 
   return (
