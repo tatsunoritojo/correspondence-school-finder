@@ -28,7 +28,10 @@ function isRateLimited(ip: string): boolean {
 }
 
 function generateToken(): string {
-    return crypto.randomBytes(6).toString("base36").slice(0, 8);
+    const bytes = crypto.randomBytes(6);
+    // Convert to base36 manually: read as integer, convert to string
+    const num = bytes.readUIntBE(0, 6);
+    return num.toString(36).padStart(8, "0").slice(0, 8);
 }
 
 const corsHeaders = {
