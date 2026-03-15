@@ -126,8 +126,8 @@ const handler: Handler = async (event: HandlerEvent) => {
         return { statusCode: 400, body: JSON.stringify({ error: "メールアドレスの形式が正しくありません" }) };
     }
 
-    // base64 サイズ制限（約 7.5MB）
-    if (body.pdfBase64.length > 10_000_000) {
+    // base64 サイズ制限（約 7.5MB）— PDF添付モードのみ
+    if (body.pdfBase64 && body.pdfBase64.length > 10_000_000) {
         return { statusCode: 400, body: JSON.stringify({ error: "ファイルサイズが大きすぎます" }) };
     }
 
