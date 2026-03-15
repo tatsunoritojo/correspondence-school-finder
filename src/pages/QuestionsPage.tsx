@@ -15,6 +15,7 @@ const QuestionsPage = () => {
   const navigate = useNavigate();
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<AnswerMap>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Sort: Knockout last (after all other questions)
   const sortedQuestions = [
@@ -82,6 +83,8 @@ const QuestionsPage = () => {
   };
 
   const finishDiagnosis = async (finalAnswers: AnswerMap) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     // Extract Knockout Axis
     const knockoutQ = QUESTIONS.find(q => q.type === "knockout");
     // The value stored for knockout is the AxisId[]
