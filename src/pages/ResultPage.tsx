@@ -12,7 +12,7 @@ import RadarChart from "../components/RadarChart";
 import PrintableReport from "../components/PrintableReport";
 import NameInputDialog, { SaveFormat, SaveMode } from "../components/NameInputDialog";
 import ReportOverlay from "../components/ReportOverlay";
-import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, Mail, BarChart3, ThumbsUp, Lightbulb, Check as CheckIcon } from "lucide-react";
+import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, Mail, BarChart3, ThumbsUp, Lightbulb, Check as CheckIcon, Users, Save } from "lucide-react";
 import { isMobileDevice } from "../lib/deviceDetection";
 import { trackEvent } from "../lib/analytics";
 import { useTrackView } from "../hooks/useTrackView";
@@ -32,6 +32,7 @@ const ResultPage = () => {
     const [showConditions, setShowConditions] = useState(false);
     const [openAxisIds, setOpenAxisIds] = useState<Set<string>>(new Set());
     const [copied, setCopied] = useState(false);
+    const [parentCopied, setParentCopied] = useState(false);
 
     // Data consent: "none" | "dismissed" | "submitted"
     const [formStatus, setFormStatus] = useState<"none" | "dismissed" | "submitted">(
@@ -331,7 +332,7 @@ const ResultPage = () => {
 
     const handleShareResult = async () => {
         const shareUrl = getShareUrl();
-        const shareText = "通信制高校診断の結果です。あなたもやってみませんか？";
+        const shareText = "通信制高校診断の結果です。保護者や先生と一緒に見てみてください。";
 
         trackEvent("share_result_click", { has_token: !!shareToken });
 
@@ -563,100 +564,174 @@ const ResultPage = () => {
 
                 {/* Action Section */}
                 <div className="my-6 border-t border-stone-200/60" />
-                <div className="glass-card rounded-2xl p-5 space-y-4">
-                    <div className="text-center">
-                        <p className="text-sm font-bold text-stone-700 mb-1">
-                            {shareToken ? "この診断結果を保存・共有できます" : "診断結果をレポートで保存できます"}
+
+                {/* Guide text */}
+                <p className="text-xs text-stone-500 text-center mb-4 leading-relaxed">
+                    気になった結果は保存できます。必要に応じて、保護者や先生と一緒に見ることもできます。
+                </p>
+
+                {/* Section 1: この結果を残す */}
+                <div className="glass-card rounded-2xl p-5 space-y-3 mb-4">
+                    <div className="text-center mb-1">
+                        <p className="text-sm font-bold text-stone-700 flex items-center justify-center gap-1.5">
+                            <Save size={15} className="text-stone-500" />
+                            この結果をあとで見返せるように残す
+                        </p>
+                        <p className="text-xs text-stone-500 mt-1">
+                            あなたのペースで見返せるように保存できます。
                         </p>
                     </div>
-                    <div className="flex flex-col gap-3">
-                        {/* Main CTA: Share result */}
-                        {shareToken && (
+                    <div className="flex flex-col gap-2.5">
+                        {/* メールで受け取る */}
+                        <div>
                             <button
-                                onClick={handleShareResult}
-                                className="bg-orange-500 hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
+                                onClick={() => {
+                                    if (shareToken) {
+                                        setDialogMode('email-url');
+                                    } else {
+                                        setDialogMode('email');
+                                    }
+                                    setShowNameDialog(true);
+                                }}
+                                disabled={isGeneratingPdf}
+                                className="w-full bg-stone-700 hover:bg-stone-600 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
                             >
-                                {copied ? (
+                                {isGeneratingPdf && (dialogMode === 'email' || dialogMode === 'email-url') ? (
                                     <>
-                                        <CheckIcon size={16} />
-                                        コピーしました！
+                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        送信中...
                                     </>
                                 ) : (
                                     <>
-                                        <Share2 size={16} />
-                                        この結果を共有する
+                                        <Mail size={16} />
+                                        メールで受け取る
                                     </>
                                 )}
                             </button>
-                        )}
-
-                        {/* Email: URL-only when token exists, PDF-attached otherwise */}
-                        <button
-                            onClick={() => {
-                                if (shareToken) {
-                                    setDialogMode('email-url');
-                                } else {
-                                    setDialogMode('email');
-                                }
-                                setShowNameDialog(true);
-                            }}
-                            disabled={isGeneratingPdf}
-                            className="bg-stone-700 hover:bg-stone-600 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
-                        >
-                            {isGeneratingPdf && (dialogMode === 'email' || dialogMode === 'email-url') ? (
-                                <>
-                                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    送信中...
-                                </>
-                            ) : (
-                                <>
-                                    <Mail size={16} />
-                                    メールで結果を受け取る
-                                </>
-                            )}
-                        </button>
-
-                        {/* Report save (text link, legacy) */}
-                        <button
-                            onClick={handleDownloadClick}
-                            disabled={isGeneratingPdf}
-                            className="text-stone-500 hover:text-stone-700 text-sm font-medium flex items-center justify-center gap-1.5 py-2 transition disabled:opacity-50"
-                        >
-                            {isGeneratingPdf && dialogMode === 'download' ? (
-                                <>
-                                    <span className="w-3.5 h-3.5 border-2 border-stone-400/30 border-t-stone-500 rounded-full animate-spin" />
-                                    生成中...
-                                </>
-                            ) : (
-                                <>
-                                    <FileText size={14} />
-                                    レポートを保存する
-                                </>
-                            )}
-                        </button>
-
-                        {/* Share site (only when no token — avoids duplication with share result) */}
-                        {!shareToken && (
+                            <p className="text-[11px] text-stone-400 text-center mt-1.5">
+                                あとで見返せるように、自分のメールに送ります。
+                            </p>
+                        </div>
+                        {/* PDFで保存する */}
+                        <div>
                             <button
-                                onClick={handleShareResult}
-                                className="bg-orange-500 hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
+                                onClick={handleDownloadClick}
+                                disabled={isGeneratingPdf}
+                                className="w-full border border-stone-300 hover:bg-stone-100 active:scale-95 text-stone-700 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
                             >
-                                <Share2 size={16} />
-                                サイトを共有する
+                                {isGeneratingPdf && dialogMode === 'download' ? (
+                                    <>
+                                        <span className="w-4 h-4 border-2 border-stone-400/30 border-t-stone-500 rounded-full animate-spin" />
+                                        生成中...
+                                    </>
+                                ) : (
+                                    <>
+                                        <FileText size={16} />
+                                        PDFで保存する
+                                    </>
+                                )}
                             </button>
-                        )}
+                            <p className="text-[11px] text-stone-400 text-center mt-1.5">
+                                手元に残せるレポート形式で保存します。
+                            </p>
+                        </div>
                     </div>
-                    <div className="text-center">
+                </div>
+
+                {/* Section 2: 誰かと共有する */}
+                <div className="glass-card rounded-2xl p-5 space-y-3 mb-4">
+                    <div className="text-center mb-1">
+                        <p className="text-sm font-bold text-stone-700 flex items-center justify-center gap-1.5">
+                            <Share2 size={15} className="text-stone-500" />
+                            この結果を、保護者や先生と一緒に見る
+                        </p>
+                        <p className="text-xs text-stone-500 mt-1">
+                            結果ページのURLを共有すると、診断結果をそのまま見てもらえます。
+                        </p>
+                    </div>
+                    <div>
                         <button
-                            onClick={() => {
-                                if (confirm("診断をやり直しますか？")) navigate("/");
-                            }}
-                            className="text-xs text-stone-400 underline bg-transparent border-none cursor-pointer hover:text-stone-600 transition-colors"
+                            onClick={handleShareResult}
+                            className="w-full bg-orange-500 hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
                         >
-                            <RefreshCw size={12} className="inline mr-1" />
-                            診断をやり直す
+                            {copied ? (
+                                <>
+                                    <CheckIcon size={16} />
+                                    コピーしました！
+                                </>
+                            ) : (
+                                <>
+                                    <Share2 size={16} />
+                                    診断結果ページを共有する
+                                </>
+                            )}
                         </button>
+                        <p className="text-[11px] text-stone-400 text-center mt-1.5">
+                            この結果を保護者や先生に見てもらえます。
+                        </p>
                     </div>
+                </div>
+
+                {/* Section 3: 保護者にも診断してもらう */}
+                {role === "child" && (
+                    <div className="glass-card rounded-2xl p-5 space-y-3 mb-4">
+                        <div className="text-center mb-1">
+                            <p className="text-sm font-bold text-stone-700 flex items-center justify-center gap-1.5">
+                                <Users size={15} className="text-stone-500" />
+                                保護者にも診断してもらう
+                            </p>
+                            <p className="text-xs text-stone-500 mt-1">
+                                本人と保護者でそれぞれ診断すると、考え方の違いや共通点が見えやすくなります。
+                            </p>
+                        </div>
+                        <div>
+                            <button
+                                onClick={async () => {
+                                    const parentUrl = `${window.location.origin}/questions?role=parent&child_id=${childId || ""}`;
+                                    trackEvent("share_parent_diagnosis");
+                                    if (isMobileDevice() && navigator.share) {
+                                        try {
+                                            await navigator.share({
+                                                title: "保護者用 通信制高校診断",
+                                                text: "お子さまと同じ診断を保護者の視点から回答してください。結果を見比べることができます。",
+                                                url: parentUrl,
+                                            });
+                                            return;
+                                        } catch (e) {
+                                            if ((e as DOMException).name === "AbortError") return;
+                                        }
+                                    }
+                                    try {
+                                        await navigator.clipboard.writeText(parentUrl);
+                                        setParentCopied(true);
+                                        setTimeout(() => setParentCopied(false), 2000);
+                                    } catch {
+                                        prompt("以下のURLを保護者に共有してください:", parentUrl);
+                                    }
+                                }}
+                                className="w-full border-2 border-orange-400 hover:bg-orange-50 active:scale-95 text-orange-600 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
+                            >
+                                {parentCopied ? <CheckIcon size={16} /> : <Users size={16} />}
+                                {parentCopied ? "コピーしました！" : "保護者用の診断を送る"}
+                            </button>
+                            <p className="text-[11px] text-stone-400 text-center mt-1.5">
+                                保護者向けの診断ページを共有できます。本人の結果とは別に回答してもらえます。
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* やり直す */}
+                <div className="text-center mt-2 mb-2">
+                    <button
+                        onClick={() => {
+                            if (confirm("診断をやり直しますか？")) navigate("/");
+                        }}
+                        className="text-xs text-stone-400 underline bg-transparent border-none cursor-pointer hover:text-stone-600 transition-colors"
+                    >
+                        <RefreshCw size={12} className="inline mr-1" />
+                        診断をやり直す
+                    </button>
                 </div>
 
                 {/* Consent Notice Banner */}
