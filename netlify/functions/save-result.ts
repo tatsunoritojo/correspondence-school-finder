@@ -84,19 +84,30 @@ export const handler: Handler = async (event: HandlerEvent) => {
 
         const client = new sheets_v4.Sheets({ auth: await authClient.getClient() as any });
 
-        // Generate unique token with collision retry
+        // 既存データを取得（トークン衝突チェック + 重複保存ガード兼用）
+        const existing = await client.spreadsheets.values.get({
+            spreadsheetId: sheetId,
+            range: "results!A:N",
+        });
+        const existingRows = existing.data.values || [];
+
+        // 重複保存ガード: 同一 timestamp + role の行が既にあれば既存トークンを返す
+        for (const row of existingRows) {
+            if (row[13] === String(body.timestamp) && row[2] === body.role) {
+                return {
+                    statusCode: 200,
+                    headers: corsHeaders,
+                    body: JSON.stringify({ ok: true, token: row[0] }),
+                };
+            }
+        }
+
+        // トークン生成（衝突時リトライ）
+        const existingTokens = existingRows.map(r => r[0]);
         let token = "";
         for (let attempt = 0; attempt < 3; attempt++) {
             token = generateToken();
-
-            // Check for collision
-            const existing = await client.spreadsheets.values.get({
-                spreadsheetId: sheetId,
-                range: "results!A:A",
-            });
-
-            const tokens = (existing.data.values || []).flat();
-            if (!tokens.includes(token)) break;
+            if (!existingTokens.includes(token)) break;
 
             if (attempt === 2) {
                 return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ error: "トークン生成に失敗しました" }) };

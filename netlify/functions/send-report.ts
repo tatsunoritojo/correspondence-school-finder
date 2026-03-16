@@ -4,9 +4,9 @@ import { sheets_v4, auth as googleAuth } from "@googleapis/sheets";
 interface SendReportBody {
     email: string;
     name: string;
-    pdfBase64?: string; // PDF の base64 エンコード文字列（URL送信時は省略）
-    resultUrl: string; // 結果ページの URL
-    shareToken?: string; // 共有トークン（存在する場合はURL送信モード）
+    pdfBase64?: string;
+    resultUrl?: string;
+    shareToken?: string;
     newsletterOptIn?: boolean;
 }
 
@@ -47,7 +47,6 @@ async function saveNewsletterSubscriber(name: string, email: string, source: str
     const normalizedEmail = email.trim().toLowerCase();
     const now = new Date().toISOString();
 
-    // 既存の email を検索して upsert
     const existing = await client.spreadsheets.values.get({
         spreadsheetId: sheetId,
         range: "newsletter!D:D",
@@ -63,8 +62,7 @@ async function saveNewsletterSubscriber(name: string, email: string, source: str
     }
 
     if (existingRowIndex >= 0) {
-        // 既存行を更新（updated_at, name, source, status を更新）
-        const rowNum = existingRowIndex + 1; // 1-indexed
+        const rowNum = existingRowIndex + 1;
         await client.spreadsheets.values.update({
             spreadsheetId: sheetId,
             range: `newsletter!B${rowNum}:F${rowNum}`,
@@ -74,7 +72,6 @@ async function saveNewsletterSubscriber(name: string, email: string, source: str
             },
         });
     } else {
-        // 新規行を追加
         await client.spreadsheets.values.append({
             spreadsheetId: sheetId,
             range: "newsletter!A:F",
@@ -112,69 +109,96 @@ const handler: Handler = async (event: HandlerEvent) => {
         return { statusCode: 400, body: JSON.stringify({ error: "不正なリクエストです" }) };
     }
 
+    // 構造化ログ: デバッグ用
+    const isPdfMode = !!body.pdfBase64;
+    const isUrlMode = !!body.shareToken;
+    console.log("send-report request", {
+        mode: isUrlMode ? "url" : isPdfMode ? "pdf" : "unknown",
+        hasEmail: !!body.email,
+        hasName: !!body.name,
+        hasPdfBase64: isPdfMode,
+        pdfLength: body.pdfBase64?.length ?? 0,
+        hasShareToken: isUrlMode,
+        hasResultUrl: !!body.resultUrl,
+    });
+
+    // バリデーション
     if (!body.email || !body.name) {
         return { statusCode: 400, body: JSON.stringify({ error: "必須項目が不足しています" }) };
     }
 
-    // URL送信モードでもPDF添付モードでもない場合はエラー
-    if (!body.shareToken && !body.pdfBase64) {
-        return { statusCode: 400, body: JSON.stringify({ error: "必須項目が不足しています" }) };
+    if (!isPdfMode && !isUrlMode) {
+        return { statusCode: 400, body: JSON.stringify({ error: "送信データが不足しています" }) };
     }
 
-    // 簡易メールバリデーション
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
         return { statusCode: 400, body: JSON.stringify({ error: "メールアドレスの形式が正しくありません" }) };
     }
 
-    // base64 サイズ制限（約 7.5MB）— PDF添付モードのみ
-    if (body.pdfBase64 && body.pdfBase64.length > 10_000_000) {
+    if (isPdfMode && body.pdfBase64!.length > 10_000_000) {
         return { statusCode: 400, body: JSON.stringify({ error: "ファイルサイズが大きすぎます" }) };
     }
 
     try {
-        // 1. メール送信
-        const isUrlMode = !!body.shareToken;
-        const emailPayload: Record<string, unknown> = {
-            from: "こどもの進路案内所 <onboarding@resend.dev>",
-            to: [body.email],
-            subject: `${body.name}さんの診断結果レポート — こどもの進路案内所`,
-            html: isUrlMode
-                ? buildEmailHtmlWithUrl(body.name, body.resultUrl)
-                : buildEmailHtml(body.name, body.resultUrl),
-        };
-
-        // PDF添付モードの場合のみアタッチメントを追加
-        if (!isUrlMode && body.pdfBase64) {
-            emailPayload.attachments = [
-                {
-                    filename: `診断結果レポート_${body.name}.pdf`,
-                    content: body.pdfBase64,
-                    type: "application/pdf",
+        // --- URL共有メール ---
+        if (isUrlMode) {
+            const resultUrl = body.resultUrl || "";
+            const res = await fetch("https://api.resend.com/emails", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${apiKey}`,
+                    "Content-Type": "application/json",
                 },
-            ];
+                body: JSON.stringify({
+                    from: "こどもの進路案内所 <onboarding@resend.dev>",
+                    to: [body.email],
+                    subject: `${body.name}さんの診断結果 — こどもの進路案内所`,
+                    html: buildEmailHtmlWithUrl(body.name, resultUrl),
+                }),
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error("Resend API error (url mode):", res.status, errorText);
+                return { statusCode: 502, body: JSON.stringify({ error: "メール送信に失敗しました" }) };
+            }
+        }
+        // --- PDF添付メール ---
+        else {
+            const resultUrl = body.resultUrl || "";
+            const res = await fetch("https://api.resend.com/emails", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${apiKey}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    from: "こどもの進路案内所 <onboarding@resend.dev>",
+                    to: [body.email],
+                    subject: `${body.name}さんの診断結果レポート — こどもの進路案内所`,
+                    html: buildEmailHtml(body.name, resultUrl),
+                    attachments: [
+                        {
+                            filename: `診断結果レポート_${body.name}.pdf`,
+                            content: body.pdfBase64,
+                            type: "application/pdf",
+                        },
+                    ],
+                }),
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error("Resend API error (pdf mode):", res.status, errorText);
+                return { statusCode: 502, body: JSON.stringify({ error: "メール送信に失敗しました" }) };
+            }
         }
 
-        const res = await fetch("https://api.resend.com/emails", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${apiKey}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(emailPayload),
-        });
-
-        if (!res.ok) {
-            const errorText = await res.text();
-            console.error("Resend API error:", res.status, errorText);
-            return { statusCode: 502, body: JSON.stringify({ error: "メール送信に失敗しました" }) };
-        }
-
-        // 2. メール送信成功後、newsletterOptIn === true の場合のみ保存
+        // newsletter 保存
         if (body.newsletterOptIn) {
             try {
-                await saveNewsletterSubscriber(body.name, body.email, "report_email");
+                await saveNewsletterSubscriber(body.name, body.email, isUrlMode ? "result_url_email" : "report_email");
             } catch (sheetErr) {
-                // newsletter 保存失敗はメール送信の成功を阻害しない
                 console.error("Newsletter save failed (non-blocking):", sheetErr);
             }
         }

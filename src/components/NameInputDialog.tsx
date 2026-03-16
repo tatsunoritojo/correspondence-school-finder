@@ -46,9 +46,11 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
 
     const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
-    const canSubmit = mode === 'email-url'
-        ? (name.trim().length >= 1 && isValidEmail(email))
-        : (name.trim().length >= 2 && (mode === 'download' || (isEmailMode && isValidEmail(email))));
+    const hasValidName = name.trim().length >= (mode === 'email-url' ? 1 : 2);
+    const hasValidEmail = isEmailMode && isValidEmail(email);
+    const canSubmit = mode === 'download'
+        ? hasValidName
+        : hasValidName && hasValidEmail;
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">

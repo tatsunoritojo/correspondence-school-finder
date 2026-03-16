@@ -296,7 +296,10 @@ const ResultPage = () => {
 
         try {
             const canvas = await generateCanvas();
-            if (!canvas) return;
+            if (!canvas) {
+                alert('レポートの生成に失敗しました。ページをリロードしてお試しください。');
+                return;
+            }
 
             if (mode === 'email' && email) {
                 await sendReportByEmail(canvas, email, newsletterOptIn);
@@ -591,16 +594,16 @@ const ResultPage = () => {
                         <button
                             onClick={() => {
                                 if (shareToken) {
-                                    setDialogMode('email-url' as SaveMode);
+                                    setDialogMode('email-url');
                                 } else {
                                     setDialogMode('email');
                                 }
                                 setShowNameDialog(true);
                             }}
                             disabled={isGeneratingPdf}
-                            className={`${shareToken ? 'bg-stone-700 hover:bg-stone-600' : 'bg-stone-700 hover:bg-stone-600'} active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50`}
+                            className="bg-stone-700 hover:bg-stone-600 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
                         >
-                            {isGeneratingPdf && (dialogMode === 'email' || dialogMode === ('email-url' as SaveMode)) ? (
+                            {isGeneratingPdf && (dialogMode === 'email' || dialogMode === 'email-url') ? (
                                 <>
                                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                     送信中...
