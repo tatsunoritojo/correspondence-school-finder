@@ -58,7 +58,7 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
                 {/* 閉じるボタン */}
                 <button
                     onClick={onCancel}
-                    className="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors"
+                    className="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 hover-hover:hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors"
                     disabled={isLoading}
                 >
                     <X size={16} />
@@ -149,7 +149,7 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
                                     className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${
                                         format === 'pdf'
                                             ? 'border-orange-400 bg-orange-50 text-orange-600'
-                                            : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
+                                            : 'border-stone-200 bg-white text-stone-500 hover-hover:hover:bg-stone-50'
                                     }`}
                                 >
                                     <FileText size={14} />
@@ -162,7 +162,7 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
                                     className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${
                                         format === 'image'
                                             ? 'border-orange-400 bg-orange-50 text-orange-600'
-                                            : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
+                                            : 'border-stone-200 bg-white text-stone-500 hover-hover:hover:bg-stone-50'
                                     }`}
                                 >
                                     <Image size={14} />
@@ -177,14 +177,14 @@ const NameInputDialog: React.FC<NameInputDialogProps> = ({
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="flex-1 px-4 py-3 rounded-xl font-bold text-sm text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
+                            className="flex-1 px-4 py-3 rounded-xl font-bold text-sm text-stone-400 hover-hover:hover:text-stone-600 hover-hover:hover:bg-stone-50 transition-colors"
                             disabled={isLoading}
                         >
                             キャンセル
                         </button>
                         <button
                             type="submit"
-                            className="flex-[2] px-4 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold transition-colors shadow-lg shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-[2] px-4 py-3 bg-orange-500 hover-hover:hover:bg-orange-600 text-white rounded-xl font-bold transition-colors shadow-lg shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={isLoading || !canSubmit}
                         >
                             {isLoading ? (

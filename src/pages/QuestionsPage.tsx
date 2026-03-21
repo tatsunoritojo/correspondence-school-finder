@@ -179,7 +179,7 @@ const QuestionsPage = () => {
                         className={`text-left px-6 py-4 rounded-xl border-2 transition-all duration-200 flex justify-between items-center group active:scale-[0.98]
                                     ${isSelected
                             ? "border-orange-500 bg-orange-50 shadow-md"
-                            : "border-stone-100 bg-white/60 hover:border-orange-300 hover:bg-orange-50/50"
+                            : "border-stone-100 bg-white/60 hover-hover:hover:border-orange-300 hover-hover:hover:bg-orange-50/50"
                           }
                                 `}
                       >
@@ -189,7 +189,7 @@ const QuestionsPage = () => {
                         <div className={`w-6 h-6 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition-colors
                                     ${isSelected
                             ? "border-orange-500 bg-orange-500 text-white"
-                            : "border-stone-300 text-transparent group-hover:border-orange-400"
+                            : "border-stone-300 text-transparent hover-hover:group-hover:border-orange-400"
                           }
                                 `}>
                           <Check size={14} strokeWidth={3} />
@@ -202,7 +202,7 @@ const QuestionsPage = () => {
                 <div className="flex justify-center gap-3 mt-2">
                   <button
                     onClick={handleBack}
-                    className="px-6 py-3 bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
+                    className="px-6 py-3 bg-stone-100 hover-hover:hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
                   >
                     <ChevronLeft size={18} />
                     戻る
@@ -210,7 +210,7 @@ const QuestionsPage = () => {
                   <button
                     onClick={handleNext}
                     disabled={!answers[currentQ.id] || (answers[currentQ.id] as unknown as AxisId[]).length === 0}
-                    className="px-8 py-3 bg-orange-500 hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2"
+                    className="px-8 py-3 bg-orange-500 hover-hover:hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2"
                   >
                     次へ進む
                     <ChevronRight size={18} />
@@ -241,7 +241,7 @@ const QuestionsPage = () => {
                         className={`text-left px-6 py-4 rounded-xl border-2 transition-all duration-200 flex justify-between items-center group active:scale-[0.98]
                                                 ${isSelected
                             ? "border-orange-500 bg-orange-50 shadow-md"
-                            : "border-stone-100 bg-white/60 hover:border-orange-300 hover:bg-orange-50/50"
+                            : "border-stone-100 bg-white/60 hover-hover:hover:border-orange-300 hover-hover:hover:bg-orange-50/50"
                           }
                                             `}
                       >
@@ -251,7 +251,7 @@ const QuestionsPage = () => {
                         <div className={`w-6 h-6 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition-colors
                                                 ${isSelected
                             ? "border-orange-500 bg-orange-500 text-white"
-                            : "border-stone-300 text-transparent group-hover:border-orange-400"
+                            : "border-stone-300 text-transparent hover-hover:group-hover:border-orange-400"
                           }
                                             `}>
                           <Check size={14} strokeWidth={3} />
@@ -263,7 +263,7 @@ const QuestionsPage = () => {
                 <div className="flex justify-center gap-3 mt-2">
                   <button
                     onClick={handleBack}
-                    className="px-6 py-3 bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
+                    className="px-6 py-3 bg-stone-100 hover-hover:hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
                   >
                     <ChevronLeft size={18} />
                     戻る
@@ -271,7 +271,7 @@ const QuestionsPage = () => {
                   <button
                     onClick={handleNext}
                     disabled={!answers[currentQ.id] || (Array.isArray(answers[currentQ.id]) && (answers[currentQ.id] as string[]).length === 0)}
-                    className="px-8 py-3 bg-orange-500 hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2"
+                    className="px-8 py-3 bg-orange-500 hover-hover:hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2"
                   >
                     次へ進む
                     <ChevronRight size={18} />
@@ -297,21 +297,21 @@ const QuestionsPage = () => {
                         className={`group relative w-full text-left px-6 py-4 rounded-xl border border-stone-200 transition-all duration-200 active:scale-[0.98]
                             ${isSelected
                             ? "bg-orange-100 border-orange-500 shadow-inner"
-                            : "bg-white/60 hover:border-orange-400 hover:bg-orange-50/90"
+                            : "bg-white/60 hover-hover:hover:border-orange-400 hover-hover:hover:bg-orange-50/90"
                           }
                         `}
                       >
                         <div className="flex items-center justify-between">
-                          <span className={`font-medium ${isSelected ? "text-orange-900 font-bold" : "text-stone-700 group-hover:text-orange-900"}`}>
+                          <span className={`font-medium ${isSelected ? "text-orange-900 font-bold" : "text-stone-700 hover-hover:group-hover:text-orange-900"}`}>
                             {opt.label}
                           </span>
                           <div className={`w-5 h-5 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition-colors
                                 ${isSelected
                               ? "border-orange-500 bg-orange-500"
-                              : "border-stone-300 group-hover:border-orange-500 group-hover:bg-orange-500"
+                              : "border-stone-300 hover-hover:group-hover:border-orange-400"
                             }
                             `}>
-                            <Check className={`w-3 h-3 text-white ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`} />
+                            <Check className={`w-3 h-3 text-white ${isSelected ? "opacity-100" : "opacity-0"}`} />
                           </div>
                         </div>
                       </button>
@@ -321,7 +321,7 @@ const QuestionsPage = () => {
                 <div className="flex justify-center gap-3 mt-2">
                   <button
                     onClick={handleBack}
-                    className="px-6 py-3 bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
+                    className="px-6 py-3 bg-stone-100 hover-hover:hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
                   >
                     <ChevronLeft size={18} />
                     戻る
@@ -329,7 +329,7 @@ const QuestionsPage = () => {
                   <button
                     onClick={handleNext}
                     disabled={!answers[currentQ.id]}
-                    className="px-8 py-3 bg-orange-500 hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2"
+                    className="px-8 py-3 bg-orange-500 hover-hover:hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2"
                   >
                     次へ進む
                     <ChevronRight size={18} />

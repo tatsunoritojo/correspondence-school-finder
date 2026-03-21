@@ -455,7 +455,7 @@ const ResultPage = () => {
                 <div ref={ctaSectionRef}>
                     <button
                         onClick={() => setShowConditions(prev => !prev)}
-                        className="w-full glass-card p-4 rounded-2xl flex items-center justify-between bg-transparent border-none cursor-pointer text-left transition-colors hover:bg-white/60"
+                        className="w-full glass-card p-4 rounded-2xl flex items-center justify-between bg-transparent border-none cursor-pointer text-left transition-colors hover-hover:hover:bg-white/60"
                     >
                         <span className="flex items-center gap-2 text-base font-bold text-stone-700">
                             <FileText size={18} className="text-orange-400" />
@@ -565,20 +565,26 @@ const ResultPage = () => {
                 {/* Action Section */}
                 <div className="my-6 border-t border-stone-200/60" />
 
-                {/* Guide text */}
-                <p className="text-xs text-stone-500 text-center mb-4 leading-relaxed">
-                    気になった結果は保存できます。必要に応じて、保護者や先生と一緒に見ることもできます。
-                </p>
+                {/* URL永続性の案内 */}
+                <div className="glass-card rounded-2xl p-4 mb-4 text-center">
+                    <p className="text-sm font-bold text-stone-700 leading-relaxed">
+                        この結果は、あとで見返せます
+                    </p>
+                    <p className="text-xs text-stone-500 mt-1.5 leading-relaxed">
+                        URLを保存しておくと、後から開きなおせます。<br />
+                        自分用に残す場合は、URLをコピーしてメモやLINEに保存してください。
+                    </p>
+                </div>
 
                 {/* Section 1: この結果を残す */}
                 <div className="glass-card rounded-2xl p-5 space-y-3 mb-4">
                     <div className="text-center mb-1">
                         <p className="text-sm font-bold text-stone-700 flex items-center justify-center gap-1.5">
                             <Save size={15} className="text-stone-500" />
-                            この結果をあとで見返せるように残す
+                            メールやPDFで保存する
                         </p>
                         <p className="text-xs text-stone-500 mt-1">
-                            あなたのペースで見返せるように保存できます。
+                            結果をメールで受け取ったり、PDF形式で残すこともできます。
                         </p>
                     </div>
                     <div className="flex flex-col gap-2.5">
@@ -594,7 +600,7 @@ const ResultPage = () => {
                                     setShowNameDialog(true);
                                 }}
                                 disabled={isGeneratingPdf}
-                                className="w-full bg-stone-700 hover:bg-stone-600 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
+                                className="w-full bg-stone-700 hover-hover:hover:bg-stone-600 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
                             >
                                 {isGeneratingPdf && (dialogMode === 'email' || dialogMode === 'email-url') ? (
                                     <>
@@ -617,7 +623,7 @@ const ResultPage = () => {
                             <button
                                 onClick={handleDownloadClick}
                                 disabled={isGeneratingPdf}
-                                className="w-full border border-stone-300 hover:bg-stone-100 active:scale-95 text-stone-700 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
+                                className="w-full border border-stone-300 hover-hover:hover:bg-stone-100 active:scale-95 text-stone-700 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
                             >
                                 {isGeneratingPdf && dialogMode === 'download' ? (
                                     <>
@@ -638,21 +644,21 @@ const ResultPage = () => {
                     </div>
                 </div>
 
-                {/* Section 2: 誰かと共有する */}
+                {/* Section 2: URLを保存・共有する */}
                 <div className="glass-card rounded-2xl p-5 space-y-3 mb-4">
                     <div className="text-center mb-1">
                         <p className="text-sm font-bold text-stone-700 flex items-center justify-center gap-1.5">
                             <Share2 size={15} className="text-stone-500" />
-                            この結果を、保護者や先生と一緒に見る
+                            結果ページのURLを保存・共有する
                         </p>
                         <p className="text-xs text-stone-500 mt-1">
-                            結果ページのURLを共有すると、診断結果をそのまま見てもらえます。
+                            自分用にURLを残したり、保護者や先生に送って一緒に見ることができます。
                         </p>
                     </div>
                     <div>
                         <button
                             onClick={handleShareResult}
-                            className="w-full bg-orange-500 hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
+                            className="w-full bg-orange-500 hover-hover:hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
                         >
                             {copied ? (
                                 <>
@@ -667,7 +673,7 @@ const ResultPage = () => {
                             )}
                         </button>
                         <p className="text-[11px] text-stone-400 text-center mt-1.5">
-                            この結果を保護者や先生に見てもらえます。
+                            LINEなどでは、プレビュー画像が表示されないことがあります。
                         </p>
                     </div>
                 </div>
@@ -709,7 +715,7 @@ const ResultPage = () => {
                                         prompt("以下のURLを保護者に共有してください:", parentUrl);
                                     }
                                 }}
-                                className="w-full border-2 border-orange-400 hover:bg-orange-50 active:scale-95 text-orange-600 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
+                                className="w-full border-2 border-orange-400 hover-hover:hover:bg-orange-50 active:scale-95 text-orange-600 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
                             >
                                 {parentCopied ? <CheckIcon size={16} /> : <Users size={16} />}
                                 {parentCopied ? "コピーしました！" : "保護者用の診断を送る"}
@@ -924,7 +930,7 @@ function AxisAccordionItem({ axis, score, role, isAboveAvg, isOpen, onToggle }: 
         <div>
             <button
                 onClick={onToggle}
-                className="w-full flex items-center gap-3 px-4 py-3.5 bg-transparent border-none cursor-pointer text-left transition-colors hover:bg-white/60"
+                className="w-full flex items-center gap-3 px-4 py-3.5 bg-transparent border-none cursor-pointer text-left transition-colors hover-hover:hover:bg-white/60"
             >
                 <div className="flex-1 min-w-0">
                     <span className="text-sm font-bold text-stone-700 block truncate">

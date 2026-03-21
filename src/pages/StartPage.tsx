@@ -38,26 +38,26 @@ const StartPage = () => {
         <div className="flex flex-col gap-4">
           <button
             onClick={() => navigate("/questions?role=child")}
-            className="group relative bg-white hover:bg-orange-50 border-2 border-transparent hover:border-orange-200 text-left p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4"
+            className="group relative bg-white hover-hover:hover:bg-orange-50 border-2 border-transparent hover-hover:hover:border-orange-200 text-left p-6 rounded-2xl shadow-sm hover-hover:hover:shadow-md transition-all duration-300 flex items-center gap-4"
           >
-            <div className="w-12 h-12 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center hover-hover:group-hover:scale-110 transition-transform">
               <User size={24} />
             </div>
             <div>
-              <span className="block font-bold text-base md:text-lg text-stone-700 group-hover:text-orange-700 transition-colors">生徒として診断する</span>
+              <span className="block font-bold text-base md:text-lg text-stone-700 hover-hover:group-hover:text-orange-700 transition-colors">生徒として診断する</span>
               <span className="block text-xs text-stone-400">自分の気持ちを整理したい方</span>
             </div>
           </button>
 
           <button
             onClick={() => navigate("/questions?role=parent")}
-            className="group relative bg-white hover:bg-teal-50 border-2 border-transparent hover:border-teal-200 text-left p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4"
+            className="group relative bg-white hover-hover:hover:bg-teal-50 border-2 border-transparent hover-hover:hover:border-teal-200 text-left p-6 rounded-2xl shadow-sm hover-hover:hover:shadow-md transition-all duration-300 flex items-center gap-4"
           >
-            <div className="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center hover-hover:group-hover:scale-110 transition-transform">
               <Users size={24} />
             </div>
             <div>
-              <span className="block font-bold text-base md:text-lg text-stone-700 group-hover:text-teal-700 transition-colors">保護者として診断する</span>
+              <span className="block font-bold text-base md:text-lg text-stone-700 hover-hover:group-hover:text-teal-700 transition-colors">保護者として診断する</span>
               <span className="block text-xs text-stone-400">お子様の学校選びを考えたい方</span>
             </div>
           </button>
