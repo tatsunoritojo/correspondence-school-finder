@@ -16,7 +16,7 @@ export default function Footer() {
                 {/* One drop ホームページ */}
                 <FadeIn delay={0.08}>
                     <a
-                        href="https://onedrop2025.wixsite.com/my-site-1"
+                        href="https://onedrop2025.com"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-block border-2 border-accent rounded-lg px-6 py-2 md:px-10 md:py-3 font-bold text-base md:text-xl tracking-widest mb-4 md:mb-6 text-text no-underline transition-all duration-200 hover:bg-accent hover:text-white"

@@ -835,7 +835,7 @@ const ResultPage = () => {
                     </p>
 
                     <a
-                        href="https://onedrop2025.wixsite.com/my-site-1"
+                        href="https://onedrop2025.com"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-block border-2 border-orange-500 rounded-lg px-6 py-2 font-bold text-base tracking-widest mb-4 text-stone-700 no-underline transition-all duration-200 hover:bg-orange-500 hover:text-white"
