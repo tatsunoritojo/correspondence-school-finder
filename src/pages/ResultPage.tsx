@@ -19,6 +19,15 @@ import { useTrackView } from "../hooks/useTrackView";
 import DataConsentForm from "../components/DataConsentForm";
 
 const ResultPage = () => {
+    // noindex for dynamic result pages
+    useEffect(() => {
+        const meta = document.createElement("meta");
+        meta.name = "robots";
+        meta.content = "noindex, nofollow";
+        document.head.appendChild(meta);
+        return () => { document.head.removeChild(meta); };
+    }, []);
+
     const [searchParams] = useSearchParams();
     const { token: routeToken } = useParams<{ token?: string }>();
     const navigate = useNavigate();

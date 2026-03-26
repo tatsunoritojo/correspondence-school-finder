@@ -3,6 +3,7 @@ import { Noto_Sans_JP, Zen_Kurenaido } from "next/font/google";
 import "./globals.css";
 import { AccessibilityProvider } from "@/contexts/AccessibilityContext";
 import SkipLink from "@/components/SkipLink";
+import { faqCategories } from "@/data/faqData";
 
 const notoSansJP = Noto_Sans_JP({
     subsets: ["latin"],
@@ -23,12 +24,31 @@ export const metadata: Metadata = {
     description:
         "中学校卒業後の選択肢は1つじゃない。合格できる学校ではなく、続けられる学校を。全日制・通信制・定時制など9種類の進路を紹介。",
     keywords: "進路, 高校選び, 通信制高校, 不登校, 中学生, 保護者, 東広島",
+    alternates: {
+        canonical: "https://kodomo-shinro.jp/",
+    },
     openGraph: {
         title: "こどもの進路案内所 | One drop",
         description:
             "中学校卒業後の選択肢は1つじゃない。合格できる学校ではなく、続けられる学校を。",
         type: "website",
         locale: "ja_JP",
+        url: "https://kodomo-shinro.jp/",
+        siteName: "こどもの進路案内所",
+        images: [
+            {
+                url: "https://kodomo-shinro.jp/og-image.png",
+                width: 1200,
+                height: 630,
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "こどもの進路案内所 | One drop",
+        description:
+            "中学校卒業後の選択肢は1つじゃない。合格できる学校ではなく、続けられる学校を。",
+        images: ["https://kodomo-shinro.jp/og-image.png"],
     },
 };
 
@@ -48,6 +68,7 @@ export default function RootLayout({
                             "@context": "https://schema.org",
                             "@type": "EducationalOrganization",
                             name: "One drop",
+                            url: "https://onedrop2025.com",
                             address: {
                                 "@type": "PostalAddress",
                                 streetAddress: "西条町下見303-1",
@@ -57,6 +78,25 @@ export default function RootLayout({
                                 addressCountry: "JP",
                             },
                             telephone: "080-1740-4209",
+                        }),
+                    }}
+                />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "FAQPage",
+                            mainEntity: faqCategories
+                                .flatMap((cat) => cat.items)
+                                .map((item) => ({
+                                    "@type": "Question",
+                                    name: item.question,
+                                    acceptedAnswer: {
+                                        "@type": "Answer",
+                                        text: `${item.answerPoints.join("。")}。${item.answerSummary}`,
+                                    },
+                                })),
                         }),
                     }}
                 />
