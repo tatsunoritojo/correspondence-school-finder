@@ -6,7 +6,12 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# P0-1: noindex for dynamic result pages (HTTP header — JS非依存)
+# SEO対象は / のみ。他の全ルートは noindex でインデックス除外
+[[headers]]
+  for = "/questions"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 [[headers]]
   for = "/result"
   [headers.values]
