@@ -6,12 +6,30 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# SPA fallback
+# P0-1: noindex for dynamic result pages (HTTP header — JS非依存)
+[[headers]]
+  for = "/result"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/r/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+# P0-2: Resolve /diagnose duplication (301 → /questions)
+[[redirects]]
+  from = "/diagnose"
+  to = "/questions"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
+# SPA fallback (must be last)
 [[redirects]]
   from = "/*"
   to = "/index.html"
