@@ -10,22 +10,22 @@
 [[headers]]
   for = "/questions"
   [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
+    X-Robots-Tag = "noindex"
 
 [[headers]]
   for = "/result"
   [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
+    X-Robots-Tag = "noindex"
 
 [[headers]]
   for = "/r/*"
   [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
+    X-Robots-Tag = "noindex"
 
-# P0-2: Resolve /diagnose duplication (301 → /questions)
+# /diagnose のシグナルを / に直接集約
 [[redirects]]
   from = "/diagnose"
-  to = "/questions"
+  to = "/"
   status = 301
   force = true
 
