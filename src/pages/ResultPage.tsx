@@ -12,7 +12,7 @@ import RadarChart from "../components/RadarChart";
 import PrintableReport from "../components/PrintableReport";
 import NameInputDialog, { SaveFormat, SaveMode } from "../components/NameInputDialog";
 import ReportOverlay from "../components/ReportOverlay";
-import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, Mail, BarChart3, ThumbsUp, Lightbulb, Check as CheckIcon, Users, Save } from "lucide-react";
+import { Share2, RefreshCw, MessageCircle, Sparkles, AlertCircle, ChevronDown, FileText, Mail, BarChart3, ThumbsUp, Lightbulb, Check as CheckIcon, Users } from "lucide-react";
 import { isMobileDevice } from "../lib/deviceDetection";
 import { trackEvent } from "../lib/analytics";
 import { useTrackView } from "../hooks/useTrackView";
@@ -135,20 +135,23 @@ const ResultPage = () => {
         }
     }, [childId, role, shareToken]);
 
-    // Scroll Listener
-    const [showScrollIndicator, setShowScrollIndicator] = useState(true);
-
+    // Auto-open top-1 high axis on data load
     useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 50) {
-                setShowScrollIndicator(false);
-            } else {
-                setShowScrollIndicator(true);
-            }
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+        if (!data) return;
+        const myResult = role === "child" ? data.child : data.parent;
+        const display = myResult || data.child;
+        if (!display) return;
+        const scores = display.scores;
+        const sorted = [...AXES].sort((a, b) => scores[b.id] - scores[a.id]);
+        const avg = AXES.reduce((sum, ax) => sum + scores[ax.id], 0) / AXES.length;
+        const topAxis = sorted.find(ax => scores[ax.id] >= avg);
+        if (topAxis) {
+            setOpenAxisIds(prev => {
+                if (prev.size > 0) return prev; // don't override user interaction
+                return new Set([topAxis.id]);
+            });
+        }
+    }, [data, role]);
 
     if (!data) return (
         <div className="min-h-screen flex items-center justify-center bg-orange-50">
@@ -374,33 +377,67 @@ const ResultPage = () => {
             <div className="max-w-3xl mx-auto p-6" ref={resultRef}>
 
                 {/* Header */}
-                <div className="text-center mb-6 mt-4">
+                <div className="text-center mb-4 mt-2">
                     <h1 className="text-xl md:text-2xl font-bold text-stone-700">
-                        {role === "child" ? "あなたの学校選びの軸" : "お子様との価値観診断"}
+                        あなたの診断結果
                     </h1>
                     {data.parent && data.child && (
                         <p className="text-teal-600 font-bold mt-2 flex items-center justify-center gap-1 text-xs bg-teal-50 py-1 px-3 rounded-full inline-flex mx-auto">
                             <MessageCircle size={12} /> 親子マッチング完了
                         </p>
                     )}
+                </div>
 
-                    {/* Scroll Indicator (Mobile) */}
-                    <div className={`mt-6 md:hidden transition-opacity duration-500 ${showScrollIndicator ? 'opacity-100' : 'opacity-0'}`}>
-                        <div className="flex flex-col items-center gap-1 animate-bounce text-stone-400">
-                            <span className="text-[10px] font-bold tracking-widest uppercase">Scroll</span>
-                            <ChevronDown size={20} />
+                {/* Knockout: あなたが最も大切にしていること */}
+                {finalDisplay.knockoutAnswers && finalDisplay.knockoutAnswers.length > 0 && (
+                    <div className="text-center mb-4">
+                        <p className="text-xs font-bold text-stone-500 mb-2">あなたが最も大切にしていること</p>
+                        <div className="flex flex-wrap justify-center gap-2">
+                            {finalDisplay.knockoutAnswers.map(axId => {
+                                const axis = AXES.find(a => a.id === axId);
+                                return axis ? (
+                                    <span key={axId} className="px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">
+                                        {axis.shortDescription}
+                                    </span>
+                                ) : null;
+                            })}
                         </div>
                     </div>
-                </div>
+                )}
+
+                {/* AI Summary (hero position) */}
+                {loadingAdvice && (
+                    <div className="text-center mb-4">
+                        <div className="h-4 bg-stone-200 rounded w-2/3 mx-auto animate-pulse" />
+                    </div>
+                )}
+                {aiAdvice && (
+                    <div className="text-center mb-4 animate-fade-in-up">
+                        <p className="text-base md:text-lg font-bold text-stone-700 leading-relaxed">
+                            {aiAdvice.summary}
+                        </p>
+                    </div>
+                )}
 
                 {/* Chart Section */}
                 <div ref={chartRef} className="glass-card p-6 rounded-2xl mb-6 relative overflow-hidden shadow-lg">
-                    <h2 className="text-lg font-bold text-center mb-4 text-stone-600">バランスチャート</h2>
+                    <h2 className="text-lg font-bold text-center mb-4 text-stone-600">あなたの価値観バランス</h2>
                     <RadarChart
                         axes={AXES}
                         childScores={childScores}
                         parentScores={parentScores}
                     />
+                    {/* Chart summary labels */}
+                    <div className="flex justify-center gap-4 mt-3">
+                        <span className="text-xs text-stone-600">
+                            最も重視: <span className="font-bold text-orange-600">{sortedAxes[0]?.shortDescription}</span>
+                            <span className="text-stone-400 ml-1">({currentScores[sortedAxes[0]?.id]?.toFixed(1)})</span>
+                        </span>
+                        <span className="text-xs text-stone-600">
+                            控えめ: <span className="font-bold text-stone-500">{sortedAxes[sortedAxes.length - 1]?.shortDescription}</span>
+                            <span className="text-stone-400 ml-1">({currentScores[sortedAxes[sortedAxes.length - 1]?.id]?.toFixed(1)})</span>
+                        </span>
+                    </div>
                     {data.parent && data.child && (
                         <div className="mt-4 p-4 bg-white/60 rounded-xl border border-teal-100 text-center text-xs text-stone-600">
                             <p>
@@ -412,34 +449,25 @@ const ResultPage = () => {
                     )}
                 </div>
 
-                {/* AI Advisor Section */}
+                {/* AI Advice Section (strength + advice cards) */}
                 {loadingAdvice && (
-                    <div className="glass-card p-6 md:p-8 rounded-2xl mb-6 shadow-xl animate-pulse">
+                    <div className="glass-card p-6 rounded-2xl mb-6 shadow-xl animate-pulse">
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-400">
-                                <Sparkles size={18} />
-                            </div>
-                            <h2 className="font-bold text-lg text-stone-400">AI アドバイザー</h2>
+                            <Sparkles size={16} className="text-orange-400" />
+                            <h2 className="font-bold text-sm text-stone-400">あなたへのアドバイス</h2>
                         </div>
-                        <div className="space-y-3">
-                            <div className="h-4 bg-stone-200 rounded w-3/4"></div>
-                            <div className="h-4 bg-stone-200 rounded w-full"></div>
-                            <div className="h-4 bg-stone-200 rounded w-2/3"></div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div className="bg-orange-50/50 p-4 rounded-xl h-20" />
+                            <div className="bg-stone-100/50 p-4 rounded-xl h-20" />
                         </div>
-                        <p className="text-xs text-stone-400 mt-4 text-center">AI がアドバイスを作成しています...</p>
                     </div>
                 )}
                 {aiAdvice && (
-                    <div className="glass-card p-6 md:p-8 rounded-2xl mb-6 shadow-xl animate-fade-in-up">
+                    <div className="glass-card p-6 rounded-2xl mb-6 shadow-xl animate-fade-in-up">
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-500">
-                                <Sparkles size={18} />
-                            </div>
-                            <h2 className="font-bold text-lg text-stone-700">AI アドバイザー</h2>
+                            <Sparkles size={16} className="text-orange-500" />
+                            <h2 className="font-bold text-sm text-stone-700">あなたへのアドバイス</h2>
                         </div>
-                        <p className="text-stone-700 leading-relaxed mb-6 font-medium">
-                            {aiAdvice.summary}
-                        </p>
                         <div className="grid md:grid-cols-2 gap-4">
                             <div className="bg-orange-50/80 p-4 rounded-xl border border-orange-100">
                                 <span className="text-xs font-bold text-orange-600 mb-1 flex items-center gap-1">
@@ -542,11 +570,18 @@ const ResultPage = () => {
                         </h2>
                         <div className="glass-card rounded-2xl overflow-hidden divide-y divide-stone-100">
                             {highAxes.map((axis: Axis) => (
-                                <AxisAccordionItem key={axis.id} axis={axis} score={currentScores[axis.id]} role={role} isAboveAvg={true} isOpen={openAxisIds.has(axis.id)} onToggle={() => setOpenAxisIds(prev => {
-                                    const next = new Set(prev);
-                                    if (next.has(axis.id)) next.delete(axis.id); else next.add(axis.id);
-                                    return next;
-                                })} />
+                                <AxisAccordionItem key={axis.id} axis={axis} score={currentScores[axis.id]} role={role} isAboveAvg={true} isOpen={openAxisIds.has(axis.id)} onToggle={() => {
+                                    setOpenAxisIds(prev => {
+                                        const next = new Set(prev);
+                                        if (next.has(axis.id)) {
+                                            next.delete(axis.id);
+                                        } else {
+                                            next.add(axis.id);
+                                            trackEvent("axis_detail_expand", { axis_id: axis.id, group: "high" });
+                                        }
+                                        return next;
+                                    });
+                                }} />
                             ))}
                         </div>
                     </div>
@@ -560,11 +595,18 @@ const ResultPage = () => {
                             </h2>
                             <div className="glass-card rounded-2xl overflow-hidden divide-y divide-stone-100">
                                 {lowAxes.map((axis: Axis) => (
-                                    <AxisAccordionItem key={axis.id} axis={axis} score={currentScores[axis.id]} role={role} isAboveAvg={false} isOpen={openAxisIds.has(axis.id)} onToggle={() => setOpenAxisIds(prev => {
+                                    <AxisAccordionItem key={axis.id} axis={axis} score={currentScores[axis.id]} role={role} isAboveAvg={false} isOpen={openAxisIds.has(axis.id)} onToggle={() => {
+                                    setOpenAxisIds(prev => {
                                         const next = new Set(prev);
-                                        if (next.has(axis.id)) next.delete(axis.id); else next.add(axis.id);
+                                        if (next.has(axis.id)) {
+                                            next.delete(axis.id);
+                                        } else {
+                                            next.add(axis.id);
+                                            trackEvent("axis_detail_expand", { axis_id: axis.id, group: "low" });
+                                        }
                                         return next;
-                                    })} />
+                                    });
+                                }} />
                                 ))}
                             </div>
                         </div>
@@ -574,170 +616,140 @@ const ResultPage = () => {
                 {/* Action Section */}
                 <div className="my-6 border-t border-stone-200/60" />
 
-                {/* URL永続性の案内 */}
-                <div className="glass-card rounded-2xl p-4 mb-4 text-center">
-                    <p className="text-sm font-bold text-stone-700 leading-relaxed">
-                        この結果は、あとで見返せます
-                    </p>
-                    <p className="text-xs text-stone-500 mt-1.5 leading-relaxed">
-                        URLを保存しておくと、後から開きなおせます。<br />
-                        自分用に残す場合は、URLをコピーしてメモやLINEに保存してください。
-                    </p>
-                </div>
-
-                {/* Section 1: この結果を残す */}
-                <div className="glass-card rounded-2xl p-5 space-y-3 mb-4">
-                    <div className="text-center mb-1">
+                {/* Primary: URL共有・保存 */}
+                <div className="glass-card rounded-2xl p-5 mb-4">
+                    <div className="text-center mb-3">
                         <p className="text-sm font-bold text-stone-700 flex items-center justify-center gap-1.5">
-                            <Save size={15} className="text-stone-500" />
-                            メールやPDFで保存する
+                            <Share2 size={15} className="text-orange-500" />
+                            この結果を保存する
                         </p>
                         <p className="text-xs text-stone-500 mt-1">
-                            結果をメールで受け取ったり、PDF形式で残すこともできます。
+                            URLを保存しておくと、いつでも見返せます。
                         </p>
                     </div>
-                    <div className="flex flex-col gap-2.5">
-                        {/* メールで受け取る */}
-                        <div>
-                            <button
-                                onClick={() => {
-                                    if (shareToken) {
-                                        setDialogMode('email-url');
-                                    } else {
-                                        setDialogMode('email');
-                                    }
-                                    setShowNameDialog(true);
-                                }}
-                                disabled={isGeneratingPdf}
-                                className="w-full bg-stone-700 hover-hover:hover:bg-stone-600 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
-                            >
-                                {isGeneratingPdf && (dialogMode === 'email' || dialogMode === 'email-url') ? (
-                                    <>
-                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        送信中...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Mail size={16} />
-                                        メールで受け取る
-                                    </>
-                                )}
-                            </button>
-                            <p className="text-[11px] text-stone-400 text-center mt-1.5">
-                                あとで見返せるように、自分のメールに送ります。
-                            </p>
-                        </div>
-                        {/* PDFで保存する */}
-                        <div>
-                            <button
-                                onClick={handleDownloadClick}
-                                disabled={isGeneratingPdf}
-                                className="w-full border border-stone-300 hover-hover:hover:bg-stone-100 active:scale-95 text-stone-700 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition disabled:opacity-50"
-                            >
-                                {isGeneratingPdf && dialogMode === 'download' ? (
-                                    <>
-                                        <span className="w-4 h-4 border-2 border-stone-400/30 border-t-stone-500 rounded-full animate-spin" />
-                                        生成中...
-                                    </>
-                                ) : (
-                                    <>
-                                        <FileText size={16} />
-                                        PDFで保存する
-                                    </>
-                                )}
-                            </button>
-                            <p className="text-[11px] text-stone-400 text-center mt-1.5">
-                                手元に残せるレポート形式で保存します。
-                            </p>
-                        </div>
+                    <button
+                        onClick={handleShareResult}
+                        className="w-full bg-orange-500 hover-hover:hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
+                    >
+                        {copied ? (
+                            <>
+                                <CheckIcon size={16} />
+                                コピーしました！
+                            </>
+                        ) : (
+                            <>
+                                <Share2 size={16} />
+                                URLを保存・共有する
+                            </>
+                        )}
+                    </button>
+                    <p className="text-[11px] text-stone-400 text-center mt-2">
+                        LINEのKeepメモや、メモアプリに貼り付けると便利です。
+                    </p>
+
+                    {/* スクショ保存の案内 */}
+                    <div className="mt-4 pt-3 border-t border-stone-100 text-center">
+                        <p className="text-xs text-stone-500">
+                            📱 このページをスクリーンショットで保存することもできます
+                        </p>
                     </div>
                 </div>
 
-                {/* Section 2: URLを保存・共有する */}
-                <div className="glass-card rounded-2xl p-5 space-y-3 mb-4">
-                    <div className="text-center mb-1">
-                        <p className="text-sm font-bold text-stone-700 flex items-center justify-center gap-1.5">
-                            <Share2 size={15} className="text-stone-500" />
-                            結果ページのURLを保存・共有する
-                        </p>
-                        <p className="text-xs text-stone-500 mt-1">
-                            自分用にURLを残したり、保護者や先生に送って一緒に見ることができます。
-                        </p>
-                    </div>
-                    <div>
+                {/* Secondary: メール・PDF（補助） */}
+                <div className="glass-card rounded-2xl p-4 mb-4">
+                    <p className="text-xs font-bold text-stone-500 text-center mb-3">
+                        その他の保存方法
+                    </p>
+                    <div className="flex gap-2">
                         <button
-                            onClick={handleShareResult}
-                            className="w-full bg-orange-500 hover-hover:hover:bg-orange-400 active:scale-95 text-white py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
+                            onClick={() => {
+                                if (shareToken) {
+                                    setDialogMode('email-url');
+                                } else {
+                                    setDialogMode('email');
+                                }
+                                setShowNameDialog(true);
+                            }}
+                            disabled={isGeneratingPdf}
+                            className="flex-1 border border-stone-300 hover-hover:hover:bg-stone-50 active:scale-95 text-stone-600 py-2.5 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition disabled:opacity-50"
                         >
-                            {copied ? (
+                            {isGeneratingPdf && (dialogMode === 'email' || dialogMode === 'email-url') ? (
                                 <>
-                                    <CheckIcon size={16} />
-                                    コピーしました！
+                                    <span className="w-3 h-3 border-2 border-stone-300 border-t-stone-500 rounded-full animate-spin" />
+                                    送信中
                                 </>
                             ) : (
                                 <>
-                                    <Share2 size={16} />
-                                    診断結果ページを共有する
+                                    <Mail size={14} />
+                                    メールで受け取る
                                 </>
                             )}
                         </button>
-                        <p className="text-[11px] text-stone-400 text-center mt-1.5">
-                            LINEなどでは、プレビュー画像が表示されないことがあります。
-                        </p>
+                        <button
+                            onClick={handleDownloadClick}
+                            disabled={isGeneratingPdf}
+                            className="flex-1 border border-stone-300 hover-hover:hover:bg-stone-50 active:scale-95 text-stone-600 py-2.5 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition disabled:opacity-50"
+                        >
+                            {isGeneratingPdf && dialogMode === 'download' ? (
+                                <>
+                                    <span className="w-3 h-3 border-2 border-stone-300 border-t-stone-500 rounded-full animate-spin" />
+                                    生成中
+                                </>
+                            ) : (
+                                <>
+                                    <FileText size={14} />
+                                    PDFで保存
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
 
-                {/* Section 3: 保護者にも診断してもらう */}
-                {role === "child" && (
-                    <div className="glass-card rounded-2xl p-5 space-y-3 mb-4">
-                        <div className="text-center mb-1">
-                            <p className="text-sm font-bold text-stone-700 flex items-center justify-center gap-1.5">
-                                <Users size={15} className="text-stone-500" />
-                                保護者にも診断してもらう
-                            </p>
-                            <p className="text-xs text-stone-500 mt-1">
-                                本人と保護者でそれぞれ診断すると、考え方の違いや共通点が見えやすくなります。
-                            </p>
-                        </div>
-                        <div>
-                            <button
-                                onClick={async () => {
-                                    const parentUrl = `${window.location.origin}/questions?role=parent&child_id=${childId || ""}`;
-                                    trackEvent("share_parent_diagnosis");
-                                    if (isMobileDevice() && navigator.share) {
-                                        try {
-                                            await navigator.share({
-                                                title: "保護者用 通信制高校診断",
-                                                text: "お子さまと同じ診断を保護者の視点から回答してください。結果を見比べることができます。",
-                                                url: parentUrl,
-                                            });
-                                            return;
-                                        } catch (e) {
-                                            if ((e as DOMException).name === "AbortError") return;
-                                        }
-                                    }
-                                    try {
-                                        await navigator.clipboard.writeText(parentUrl);
-                                        setParentCopied(true);
-                                        setTimeout(() => setParentCopied(false), 2000);
-                                    } catch {
-                                        prompt("以下のURLを保護者に共有してください:", parentUrl);
-                                    }
-                                }}
-                                className="w-full border-2 border-orange-400 hover-hover:hover:bg-orange-50 active:scale-95 text-orange-600 py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition"
-                            >
-                                {parentCopied ? <CheckIcon size={16} /> : <Users size={16} />}
-                                {parentCopied ? "コピーしました！" : "保護者用の診断を送る"}
-                            </button>
-                            <p className="text-[11px] text-stone-400 text-center mt-1.5">
-                                保護者向けの診断ページを共有できます。本人の結果とは別に回答してもらえます。
-                            </p>
-                        </div>
-                    </div>
-                )}
+                {/* 家族にも診断を試してもらう（控えめな補助リンク） */}
+                <div className="text-center mt-4 mb-2">
+                    <button
+                        onClick={async () => {
+                            const otherRole = role === "child" ? "parent" : "child";
+                            const targetUrl = otherRole === "parent"
+                                ? `${window.location.origin}/questions?role=parent&child_id=${childId || ""}`
+                                : `${window.location.origin}/questions?role=child`;
+                            trackEvent("share_family_diagnosis", { target_role: otherRole });
+                            if (isMobileDevice() && navigator.share) {
+                                try {
+                                    await navigator.share({
+                                        title: "通信制高校診断",
+                                        text: role === "child"
+                                            ? "保護者にも同じ診断を試してもらえませんか？"
+                                            : "お子さまにも同じ診断を試してもらえませんか？",
+                                        url: targetUrl,
+                                    });
+                                    return;
+                                } catch (e) {
+                                    if ((e as DOMException).name === "AbortError") return;
+                                }
+                            }
+                            try {
+                                await navigator.clipboard.writeText(targetUrl);
+                                setParentCopied(true);
+                                setTimeout(() => setParentCopied(false), 2000);
+                            } catch {
+                                prompt("以下のURLを共有してください:", targetUrl);
+                            }
+                        }}
+                        className="text-xs text-stone-500 underline bg-transparent border-none cursor-pointer hover:text-orange-500 transition-colors"
+                    >
+                        <Users size={12} className="inline mr-1" />
+                        {parentCopied
+                            ? "コピーしました！"
+                            : role === "child"
+                                ? "家族にも同じ診断を試してもらう"
+                                : "お子さまにも同じ診断を試してもらう"
+                        }
+                    </button>
+                </div>
 
                 {/* やり直す */}
-                <div className="text-center mt-2 mb-2">
+                <div className="text-center mt-1 mb-2">
                     <button
                         onClick={() => {
                             if (confirm("診断をやり直しますか？")) navigate("/");
