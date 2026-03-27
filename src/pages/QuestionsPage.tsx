@@ -7,13 +7,6 @@ import { DiagnosisResult, AnswerMap, AxisId } from "../types";
 import { QUESTIONS, AXES } from "../data/constants";
 import { ChevronRight, Check, ChevronLeft } from "lucide-react";
 
-type SubmitPhase = "calculating" | "saving" | "preparing" | null;
-
-const SUBMIT_MESSAGES: Record<Exclude<SubmitPhase, null>, string> = {
-  calculating: "結果を集計中です…",
-  saving: "結果を保存しています…",
-  preparing: "あとで見返せるように準備しています…",
-};
 
 const QuestionsPage = () => {
   const [searchParams] = useSearchParams();
@@ -24,7 +17,6 @@ const QuestionsPage = () => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitPhase, setSubmitPhase] = useState<SubmitPhase>(null);
 
   // Sort: Knockout last (after all other questions)
   const sortedQuestions = [
@@ -94,7 +86,6 @@ const QuestionsPage = () => {
   const finishDiagnosis = async (finalAnswers: AnswerMap) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
-    setSubmitPhase("calculating");
 
     // Extract Knockout Axis
     const knockoutQ = QUESTIONS.find(q => q.type === "knockout");
@@ -115,11 +106,9 @@ const QuestionsPage = () => {
     const childId = childIdParam || crypto.randomUUID();
 
     // Save locally
-    setSubmitPhase("saving");
     await LocalStorageRepository.saveResult(childId, result);
 
     // Save to server for shareable URL
-    setSubmitPhase("preparing");
     let token: string | undefined;
     try {
       token = await saveResultToServer(result);
@@ -132,7 +121,7 @@ const QuestionsPage = () => {
     navigate(`/result?child_id=${childId}&role=${role}${tokenParam}`);
   };
 
-  if (submitPhase) {
+  if (isSubmitting) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-orange-50/30">
         <div className="flex flex-col items-center gap-6 animate-fade-in-up">
@@ -140,7 +129,7 @@ const QuestionsPage = () => {
             <div className="w-8 h-8 border-3 border-orange-200 border-t-orange-500 rounded-full animate-spin" />
           </div>
           <p className="text-base font-bold text-stone-600 tracking-wide">
-            {SUBMIT_MESSAGES[submitPhase]}
+            処理中…
           </p>
           <div className="flex gap-1.5 mt-2">
             <div className="w-2 h-2 bg-orange-300 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
