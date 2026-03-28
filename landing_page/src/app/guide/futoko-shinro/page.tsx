@@ -28,9 +28,9 @@ export default function FutokoShinroPage() {
                 className="text-sm leading-relaxed mb-10"
                 style={{ color: "rgb(var(--color-text-sub-rgb))" }}
             >
-                学校に通いづらい状況にあるお子さまの進路を考えるとき、
-                「高校に行けるのか」「どんな選択肢があるのか」という不安を感じるのは自然なことです。
-                実際には、通学の頻度や形態を柔軟に選べる進路がいくつもあります。
+                学校に通いづらい状況にあるお子さまの進路を考えるとき、「高校に進学できるのか」「どの選択肢が合うのか」と不安を抱える家庭は少なくありません。
+                進路や学習の遅れへの不安を抱えながらも、今の環境から少し離れてほっとした気持ちを持つお子さまもいます。
+                焦って一つに決めるのではなく、今の状態や必要な支援を整理しながら、選択肢を比べていくことが大切です。
             </p>
 
             <section className="mb-10">
@@ -44,16 +44,16 @@ export default function FutokoShinroPage() {
                     <div className="rounded-lg border p-5" style={{ borderColor: "rgb(var(--color-border-rgb))", backgroundColor: "rgb(var(--color-card-bg-rgb))" }}>
                         <p className="text-sm font-bold mb-2" style={{ color: "rgb(var(--color-text-rgb))" }}>通信制高校</p>
                         <p className="text-sm" style={{ color: "rgb(var(--color-text-sub-rgb))" }}>
-                            自宅学習が中心で、登校日数を柔軟に選べます。
-                            オンラインで授業を受けられる学校も増えています。
-                            心や体の状態に合わせて、段階的に通学を増やすことも可能です。
+                            通信制課程では、添削指導・面接指導・試験を基本とし、学校によってはインターネット等を活用した学習も取り入れています。
+                            登校日数を柔軟に選べる学校が多く、心や体の状態に合わせて段階的に通学を増やすことも可能です。
                         </p>
                     </div>
                     <div className="rounded-lg border p-5" style={{ borderColor: "rgb(var(--color-border-rgb))", backgroundColor: "rgb(var(--color-card-bg-rgb))" }}>
                         <p className="text-sm font-bold mb-2" style={{ color: "rgb(var(--color-text-rgb))" }}>定時制高校</p>
                         <p className="text-sm" style={{ color: "rgb(var(--color-text-sub-rgb))" }}>
-                            夕方以降の授業が中心で、朝起きるのが難しい場合に向いています。
-                            対面授業があるため、一人で学習を進めるのが不安な方にも適しています。
+                            定時制高校は、夜間やその他の特別な時間帯に授業を行う課程です。
+                            学校によって時間帯や学び方が異なるため、生活リズムや支援体制に合うかを確認することが大切です。
+                            対面授業があるため、一人で学習を進めることに不安がある場合にも選択肢になります。
                         </p>
                     </div>
                     <div className="rounded-lg border p-5" style={{ borderColor: "rgb(var(--color-border-rgb))", backgroundColor: "rgb(var(--color-card-bg-rgb))" }}>
@@ -66,8 +66,8 @@ export default function FutokoShinroPage() {
                     <div className="rounded-lg border p-5" style={{ borderColor: "rgb(var(--color-border-rgb))", backgroundColor: "rgb(var(--color-card-bg-rgb))" }}>
                         <p className="text-sm font-bold mb-2" style={{ color: "rgb(var(--color-text-rgb))" }}>特別支援学校</p>
                         <p className="text-sm" style={{ color: "rgb(var(--color-text-sub-rgb))" }}>
-                            より手厚い支援のもとで学びたい場合の選択肢です。
-                            入学には療育手帳が必要になる場合があります。
+                            特別支援学校は、障害の状態や教育的ニーズに応じた支援を受けながら学ぶ選択肢です。
+                            対象や出願条件は地域や学校によって異なるため、教育委員会や学校に確認することが大切です。
                         </p>
                     </div>
                 </div>
@@ -84,16 +84,16 @@ export default function FutokoShinroPage() {
                     className="text-sm leading-relaxed mb-4"
                     style={{ color: "rgb(var(--color-text-sub-rgb))" }}
                 >
-                    学校の種類を比較するだけでなく、お子さまの今の状態を整理することが大切です。
+                    学校の種類を比較するだけでなく、お子さまの今の状態と必要な支援を整理することが大切です。
                 </p>
                 <ul
                     className="text-sm space-y-2 leading-relaxed"
                     style={{ color: "rgb(var(--color-text-sub-rgb))" }}
                 >
-                    <li><strong>外出が難しい場合</strong> ― オンライン中心の通信制高校から始める</li>
-                    <li><strong>人との関わりが不安な場合</strong> ― 少人数制の学校や個別対応のあるサポート校を検討する</li>
-                    <li><strong>朝が起きられない場合</strong> ― 定時制高校や、登校日を選べる通信制を選ぶ</li>
-                    <li><strong>学力に不安がある場合</strong> ― 基礎からの学び直しに対応している学校を確認する</li>
+                    <li><strong>外出が難しい場合</strong> ― 登校日数が少ない通信制高校や、自宅学習を中心に進められる学校から検討する</li>
+                    <li><strong>人との関わりに不安がある場合</strong> ― 少人数制の学校や個別対応のあるサポート校を検討する</li>
+                    <li><strong>生活リズムに課題がある場合</strong> ― 定時制高校や、登校日を選べる通信制高校を選択肢に入れる</li>
+                    <li><strong>学力に不安がある場合</strong> ― 基礎からの学び直しに対応している学校があるか確認する</li>
                 </ul>
             </section>
 
@@ -102,17 +102,46 @@ export default function FutokoShinroPage() {
                     className="text-lg md:text-xl font-bold mb-4"
                     style={{ color: "rgb(var(--color-text-rgb))" }}
                 >
-                    焦らなくていい
+                    焦らず、整理するところから
                 </h2>
                 <p
                     className="text-sm leading-relaxed"
                     style={{ color: "rgb(var(--color-text-sub-rgb))" }}
                 >
                     登校が難しい状況から進路を考えるとき、「早く決めなければ」と感じることがあるかもしれません。
-                    でも、まずはお子さまの気持ちや優先順位を整理することが最初のステップです。
-                    何を大切にしたいか、何が不安なのかを言葉にしてみるだけでも、選択肢がぐっと見えやすくなります。
+                    しかし、まずはお子さまの気持ちや状態、必要な支援を整理し、それに合う選択肢を比べていくことが確実な進め方です。
+                    何を大切にしたいか、何が不安なのかを言葉にしてみるだけでも、選択肢が見えやすくなります。
                 </p>
             </section>
+
+            {/* 出典・参考資料 */}
+            <footer className="mt-12 pt-6 border-t" style={{ borderColor: "rgb(var(--color-border-rgb))" }}>
+                <p className="text-xs mb-3" style={{ color: "rgb(var(--color-text-light-rgb))" }}>
+                    ※本ページの制度に関する記述は、文部科学省等の公表資料をもとに作成しています。
+                    <br />※制度の詳細や出願条件は、各自治体・各学校の公式案内も必ず確認してください。
+                    <br />※最終確認日：2026年3月29日
+                </p>
+                <details className="text-xs" style={{ color: "rgb(var(--color-text-light-rgb))" }}>
+                    <summary className="cursor-pointer font-medium mb-2">出典・参考資料</summary>
+                    <ul className="space-y-1.5 pl-4 list-disc">
+                        <li>
+                            <a href="https://www.mext.go.jp/content/20251027_mxt_koukou01_000045516_0002.pdf" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-70 transition-opacity" style={{ color: "rgb(var(--color-link-rgb))" }}>
+                                文部科学省「高等学校教育について」(PDF)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.mext.go.jp/a_menu/shotou/mushouka/1342674.htm" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-70 transition-opacity" style={{ color: "rgb(var(--color-link-rgb))" }}>
+                                文部科学省「高等学校等就学支援金制度」
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.mext.go.jp/content/20211006-mxt_jidou02-000018318-2.pdf" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-70 transition-opacity" style={{ color: "rgb(var(--color-link-rgb))" }}>
+                                文部科学省「令和2年度不登校児童生徒の実態把握に関する調査報告書」(PDF)
+                            </a>
+                        </li>
+                    </ul>
+                </details>
+            </footer>
         </article>
     );
 }
