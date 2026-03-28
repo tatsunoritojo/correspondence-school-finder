@@ -60,34 +60,7 @@ export default function GuideLayout({
                 </div>
             </section>
 
-            {/* Related Guides */}
-            <nav className="border-t border-gray-200/50 py-10">
-                <div className="max-w-3xl mx-auto px-5">
-                    <p
-                        className="text-xs font-bold mb-4 tracking-wide"
-                        style={{ color: "rgb(var(--color-text-light-rgb))" }}
-                    >
-                        関連ガイド
-                    </p>
-                    <ul className="space-y-2">
-                        <li>
-                            <Link href="/guide/support-school" className="text-sm hover:underline" style={{ color: "rgb(var(--color-link-rgb))" }}>
-                                通信制高校とサポート校の違い
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/guide/futoko-shinro" className="text-sm hover:underline" style={{ color: "rgb(var(--color-link-rgb))" }}>
-                                学校に通いづらいお子さまの進路の選択肢
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/guide/erabikata" className="text-sm hover:underline" style={{ color: "rgb(var(--color-link-rgb))" }}>
-                                通信制高校の選び方
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            {/* Related Guides — クライアント確認後に公開予定 */}
 
             {/* Footer */}
             <footer className="border-t border-gray-200/50 py-6">

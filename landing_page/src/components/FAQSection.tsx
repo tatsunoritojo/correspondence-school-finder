@@ -125,27 +125,7 @@ export default function FAQSection() {
                         ))}
                     </div>
 
-                    {/* ⑤b 関連ガイド */}
-                    <FadeIn className="mt-10 md:mt-12" y={20}>
-                        <p className="text-[13px] md:text-[14px] font-bold text-text-light mb-3 tracking-wide">
-                            もっと詳しく知りたい方へ
-                        </p>
-                        <div className="space-y-2">
-                            {[
-                                { href: "/guide/support-school", label: "通信制高校とサポート校の違い" },
-                                { href: "/guide/futoko-shinro", label: "学校に通いづらいお子さまの進路の選択肢" },
-                                { href: "/guide/erabikata", label: "通信制高校の選び方" },
-                            ].map(({ href, label }) => (
-                                <a
-                                    key={href}
-                                    href={href}
-                                    className="block text-[13px] md:text-[14px] text-link hover:underline underline-offset-2"
-                                >
-                                    {label}
-                                </a>
-                            ))}
-                        </div>
-                    </FadeIn>
+                    {/* ⑤b 関連ガイド — クライアント確認後に公開予定 */}
 
                     {/* ⑥ CTA */}
                     <FadeIn className="mt-10 md:mt-12 text-center" y={30}>
