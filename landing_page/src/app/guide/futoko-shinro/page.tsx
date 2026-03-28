@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "不登校の中学生の進路はどうする？高校進学の選択肢と選び方 | こどもの進路案内所",
+    title: "学校に通いづらいお子さまの進路の選択肢と選び方 | こどもの進路案内所",
     description:
-        "不登校の中学生でも高校に進学できます。通信制・定時制・全日制など、お子さまの状態に合わせた進路の選択肢と選び方を保護者向けに整理。登録不要の診断ツールで優先順位を可視化できます。",
+        "学校に通いづらい中学生でも高校に進学できます。通信制・定時制・全日制など、お子さまの状態に合わせた進路の選択肢と選び方を保護者向けに整理。登録不要の診断ツールで優先順位を可視化できます。",
     alternates: {
         canonical: "https://kodomo-shinro.jp/guide/futoko-shinro",
+    },
+    openGraph: {
+        title: "学校に通いづらいお子さまの進路の選択肢と選び方",
+        description:
+            "通信制・定時制・全日制など、お子さまの状態に合わせた進路の選択肢を整理。",
+        url: "https://kodomo-shinro.jp/guide/futoko-shinro",
     },
 };
 

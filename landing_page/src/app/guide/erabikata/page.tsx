@@ -7,6 +7,12 @@ export const metadata: Metadata = {
     alternates: {
         canonical: "https://kodomo-shinro.jp/guide/erabikata",
     },
+    openGraph: {
+        title: "通信制高校の選び方",
+        description:
+            "通学頻度、費用、サポート体制、進路実績など、学校選びで確認すべきポイントを整理。",
+        url: "https://kodomo-shinro.jp/guide/erabikata",
+    },
 };
 
 export default function ErabikataPage() {

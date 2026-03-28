@@ -7,6 +7,12 @@ export const metadata: Metadata = {
     alternates: {
         canonical: "https://kodomo-shinro.jp/guide/support-school",
     },
+    openGraph: {
+        title: "通信制高校とサポート校の違い",
+        description:
+            "高卒資格の取り方、費用、サポート内容の違いをわかりやすく整理。",
+        url: "https://kodomo-shinro.jp/guide/support-school",
+    },
 };
 
 export default function SupportSchoolPage() {
