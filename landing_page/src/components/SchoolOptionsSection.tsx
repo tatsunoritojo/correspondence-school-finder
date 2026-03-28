@@ -54,7 +54,7 @@ export default function SchoolOptionsSection() {
                     50% { transform: scale(1.03); box-shadow: 0 4px 12px rgba(var(--color-accent-rgb, 232,121,47), 0.3); }
                 }
                 .btn-pulse {
-                    animation: pulse-btn 1.5s ease-in-out 3;
+                    animation: pulse-btn 2s ease-in-out 3;
                 }
             `}</style>
             <h2 className="sr-only">進路の選択肢</h2>
@@ -83,7 +83,7 @@ export default function SchoolOptionsSection() {
                                     : { variants: staggerItem })}
                                 onClick={() => setModalOption(opt)}
                                 aria-label={`${opt.label.replace(/\n/g, "")}の説明を見る`}
-                                className={`border-[1.5px] md:border-2 border-accent/30 rounded-lg py-2.5 md:py-4 lg:py-5 px-1 md:px-2 text-[13px] xs:text-sm md:text-lg lg:text-xl font-medium leading-snug text-center whitespace-pre-line min-h-[56px] md:min-h-[80px] lg:min-h-[96px] flex flex-col items-center justify-center transition-all duration-200 select-none bg-accent/5 shadow-sm hover:-translate-y-px hover:shadow-lg active:scale-[0.97] ${
+                                className={`border-[1.5px] md:border-2 border-accent/30 rounded-lg py-2.5 md:py-4 lg:py-5 px-1 md:px-2 text-[13px] xs:text-sm md:text-lg lg:text-xl font-medium leading-snug text-center whitespace-pre-line min-h-[56px] md:min-h-[80px] lg:min-h-[96px] flex flex-col items-center justify-center transition-all duration-200 select-none bg-accent/5 shadow-sm hover:-translate-y-px hover:shadow-lg active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50 ${
                                     idx === 0 && shouldPulse ? "btn-pulse" : ""
                                 }`}
                             >

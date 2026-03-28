@@ -77,7 +77,7 @@ export default function FAQSection() {
                                                         onClick={() => toggle(item.id)}
                                                         aria-expanded={isOpen}
                                                         aria-controls={`faq-panel-${item.id}`}
-                                                        className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between p-5 md:p-6 text-[15px] md:text-[18px] lg:text-[20px] font-semibold text-text text-left gap-4"
+                                                        className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between p-5 md:p-6 text-[15px] md:text-[18px] lg:text-[20px] font-semibold text-text text-left gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50 rounded-lg"
                                                         style={{ WebkitTapHighlightColor: "transparent" }}
                                                     >
                                                         <span className="leading-relaxed">{item.question}</span>
@@ -98,7 +98,7 @@ export default function FAQSection() {
                                                         }}
                                                     >
                                                         <div className="px-5 pb-5 md:px-6 md:pb-6">
-                                                            <div className="bg-[#fafafa] rounded-md border-t border-gray-200 pt-4 px-4 pb-4 md:px-5 md:pb-5">
+                                                            <div className="bg-bg-light rounded-md border-t border-gray-200 pt-4 px-4 pb-4 md:px-5 md:pb-5">
                                                                 <ul className="space-y-2 mb-4">
                                                                     {item.answerPoints.map((point, i) => (
                                                                         <li
@@ -156,7 +156,7 @@ export default function FAQSection() {
                             href="https://shindan.kodomo-shinro.jp/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="cta-pulse inline-flex items-center justify-center gap-1.5 bg-accent text-white px-8 py-3.5 md:px-10 md:py-4 lg:px-12 lg:py-5 rounded-lg text-[16px] md:text-[20px] lg:text-[22px] font-bold tracking-wider no-underline transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-[3px] active:shadow-none"
+                            className="cta-pulse inline-flex items-center justify-center gap-1.5 bg-accent text-white px-8 py-3.5 md:px-10 md:py-4 lg:px-12 lg:py-5 rounded-lg text-[16px] md:text-[20px] lg:text-[22px] font-bold tracking-wider no-underline transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-[3px] active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent"
                         >
                             診断をはじめる
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="ml-0.5 md:w-5 md:h-5 lg:w-6 lg:h-6">

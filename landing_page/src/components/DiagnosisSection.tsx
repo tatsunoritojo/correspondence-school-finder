@@ -95,7 +95,7 @@ export default function DiagnosisSection() {
                             href="https://shindan.kodomo-shinro.jp/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="cta-pulse inline-flex items-center justify-center gap-1.5 bg-accent text-white w-full px-6 py-3.5 md:w-auto md:px-10 md:py-4 lg:px-12 lg:py-5 rounded-lg text-[16px] md:text-[20px] lg:text-[22px] font-bold tracking-wider no-underline transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-[3px] active:shadow-none"
+                            className="cta-pulse inline-flex items-center justify-center gap-1.5 bg-accent text-white w-full px-8 py-3.5 md:w-auto md:px-10 md:py-4 lg:px-12 lg:py-5 rounded-lg text-[16px] md:text-[20px] lg:text-[22px] font-bold tracking-wider no-underline transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-[3px] active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent"
                         >
                             診断をはじめる
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="ml-0.5 md:w-5 md:h-5 lg:w-6 lg:h-6">

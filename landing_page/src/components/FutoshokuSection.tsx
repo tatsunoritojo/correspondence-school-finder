@@ -100,7 +100,7 @@ export default function FutoshokuSection() {
                                             onClick={() => toggle(item.id)}
                                             aria-expanded={isOpen}
                                             aria-controls={`futoshoku-panel-${item.id}`}
-                                            className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between p-5 md:p-6 text-left gap-4"
+                                            className="w-full bg-transparent border-none cursor-pointer flex items-center justify-between p-5 md:p-6 text-left gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50 rounded-lg"
                                             style={{
                                                 WebkitTapHighlightColor: "transparent",
                                             }}
@@ -135,7 +135,7 @@ export default function FutoshokuSection() {
                                             }}
                                         >
                                             <div className="px-5 pb-5 md:px-6 md:pb-6">
-                                                <div className="bg-[#fafafa] rounded-md border-t border-gray-200 pt-4 px-4 pb-4 md:px-5 md:pb-5">
+                                                <div className="bg-bg-light rounded-md border-t border-gray-200 pt-4 px-4 pb-4 md:px-5 md:pb-5">
                                                     <p className="text-[14px] md:text-[16px] lg:text-[18px] text-text-sub leading-relaxed">
                                                         {item.detail}
                                                     </p>

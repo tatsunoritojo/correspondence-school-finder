@@ -175,7 +175,7 @@ body {
 }
 
 .cta-pulse {
-  animation: cta-pulse 2.5s ease-in-out infinite;
+  animation: cta-pulse 2s ease-in-out infinite;
 }
 
 /* ══════════════════════════════════════════════
@@ -223,7 +223,7 @@ html.a11y-high-contrast .bg-white {
   background-color: rgb(30 30 30) !important;
 }
 
-html.a11y-high-contrast .bg-\[\#fafafa\] {
+html.a11y-high-contrast .bg-bg-light {
   background-color: rgb(40 40 40) !important;
 }
 

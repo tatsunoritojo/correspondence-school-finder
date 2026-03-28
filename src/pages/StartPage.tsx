@@ -49,7 +49,7 @@ const StartPage = () => {
         <div className="flex flex-col gap-4">
           <button
             onClick={() => handleStartDiagnosis("child")}
-            className="group relative bg-white hover-hover:hover:bg-orange-50 border-2 border-transparent hover-hover:hover:border-orange-200 text-left p-6 rounded-2xl shadow-sm hover-hover:hover:shadow-md transition-all duration-300 flex items-center gap-4"
+            className="group relative bg-white hover-hover:hover:bg-orange-50 border-2 border-transparent hover-hover:hover:border-orange-200 text-left p-6 rounded-2xl shadow-sm hover-hover:hover:shadow-md transition-all duration-300 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
           >
             <div className="w-12 h-12 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center hover-hover:group-hover:scale-110 transition-transform">
               <User size={24} />
@@ -62,7 +62,7 @@ const StartPage = () => {
 
           <button
             onClick={() => handleStartDiagnosis("parent")}
-            className="group relative bg-white hover-hover:hover:bg-teal-50 border-2 border-transparent hover-hover:hover:border-teal-200 text-left p-6 rounded-2xl shadow-sm hover-hover:hover:shadow-md transition-all duration-300 flex items-center gap-4"
+            className="group relative bg-white hover-hover:hover:bg-teal-50 border-2 border-transparent hover-hover:hover:border-teal-200 text-left p-6 rounded-2xl shadow-sm hover-hover:hover:shadow-md transition-all duration-300 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2"
           >
             <div className="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center hover-hover:group-hover:scale-110 transition-transform">
               <Users size={24} />

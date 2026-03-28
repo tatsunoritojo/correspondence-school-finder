@@ -178,7 +178,7 @@ const QuestionsPage = () => {
       {/* Main Content with top padding to avoid header overlap */}
       <div className="w-full max-w-xl animate-fade-in-up px-6 pb-10 pt-32">
         {/* Question Card */}
-        <div className="glass-card p-8 md:p-10 rounded-[2rem] shadow-xl border-white/60 relative overflow-hidden">
+        <div className="glass-card p-8 md:p-10 rounded-[2.5rem] shadow-xl border-white/60 relative overflow-hidden">
           {/* Decorative background element */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-orange-100 rounded-bl-[4rem] -mr-8 -mt-8 opacity-50 pointer-events-none"></div>
 
@@ -237,7 +237,7 @@ const QuestionsPage = () => {
                 <div className="flex justify-center gap-3 mt-2">
                   <button
                     onClick={handleBack}
-                    className="px-6 py-3 bg-stone-100 hover-hover:hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
+                    className="px-6 py-3 bg-stone-100 hover-hover:hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2"
                   >
                     <ChevronLeft size={18} />
                     戻る
@@ -245,7 +245,7 @@ const QuestionsPage = () => {
                   <button
                     onClick={handleNext}
                     disabled={!answers[currentQ.id] || (answers[currentQ.id] as unknown as AxisId[]).length === 0}
-                    className="px-8 py-3 bg-orange-500 hover-hover:hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2"
+                    className="px-8 py-3 bg-orange-500 hover-hover:hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
                   >
                     次へ進む
                     <ChevronRight size={18} />
@@ -298,7 +298,7 @@ const QuestionsPage = () => {
                 <div className="flex justify-center gap-3 mt-2">
                   <button
                     onClick={handleBack}
-                    className="px-6 py-3 bg-stone-100 hover-hover:hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
+                    className="px-6 py-3 bg-stone-100 hover-hover:hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2"
                   >
                     <ChevronLeft size={18} />
                     戻る
@@ -306,7 +306,7 @@ const QuestionsPage = () => {
                   <button
                     onClick={handleNext}
                     disabled={!answers[currentQ.id] || (Array.isArray(answers[currentQ.id]) && (answers[currentQ.id] as string[]).length === 0)}
-                    className="px-8 py-3 bg-orange-500 hover-hover:hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2"
+                    className="px-8 py-3 bg-orange-500 hover-hover:hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
                   >
                     次へ進む
                     <ChevronRight size={18} />
@@ -356,7 +356,7 @@ const QuestionsPage = () => {
                 <div className="flex justify-center gap-3 mt-2">
                   <button
                     onClick={handleBack}
-                    className="px-6 py-3 bg-stone-100 hover-hover:hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2"
+                    className="px-6 py-3 bg-stone-100 hover-hover:hover:bg-stone-200 text-stone-600 font-bold rounded-full shadow-md transition-all active:scale-95 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2"
                   >
                     <ChevronLeft size={18} />
                     戻る
@@ -364,7 +364,7 @@ const QuestionsPage = () => {
                   <button
                     onClick={handleNext}
                     disabled={!answers[currentQ.id]}
-                    className="px-8 py-3 bg-orange-500 hover-hover:hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2"
+                    className="px-8 py-3 bg-orange-500 hover-hover:hover:bg-orange-600 disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-bold rounded-full shadow-lg transition-all active:scale-95 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
                   >
                     次へ進む
                     <ChevronRight size={18} />
