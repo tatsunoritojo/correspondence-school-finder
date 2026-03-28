@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { LocalStorageRepository } from "../lib/storage";
 import { calculateScores } from "../lib/scoring";
@@ -6,6 +6,7 @@ import { saveResultToServer } from "../lib/resultApi";
 import { DiagnosisResult, AnswerMap, AxisId } from "../types";
 import { QUESTIONS, AXES } from "../data/constants";
 import { ChevronRight, Check, ChevronLeft } from "lucide-react";
+import { trackEvent } from "../lib/analytics";
 
 
 const QuestionsPage = () => {
@@ -17,6 +18,10 @@ const QuestionsPage = () => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    trackEvent("questions_page_view", { role });
+  }, [role]);
 
   // Sort: Knockout last (after all other questions)
   const sortedQuestions = [
@@ -67,9 +72,17 @@ const QuestionsPage = () => {
   const handleNext = async () => {
     // General next handler for all types
     if (currentIdx < sortedQuestions.length - 1) {
-      setCurrentIdx(currentIdx + 1);
+      const nextIdx = currentIdx + 1;
+      // Track milestone progress (25%, 50%, 75%, 100%)
+      const total = sortedQuestions.length;
+      const milestones = [Math.floor(total * 0.25), Math.floor(total * 0.5), Math.floor(total * 0.75)];
+      if (milestones.includes(nextIdx)) {
+        trackEvent("question_milestone", { progress: Math.round(((nextIdx + 1) / total) * 100), role });
+      }
+      setCurrentIdx(nextIdx);
       window.scrollTo(0, 0);
     } else {
+      trackEvent("diagnosis_completed", { role });
       await finishDiagnosis(answers);
     }
   };
@@ -114,6 +127,7 @@ const QuestionsPage = () => {
       token = await saveResultToServer(result);
     } catch (e) {
       console.error("Failed to save result to server:", e);
+      trackEvent("api_error", { action: "save_result", error: String(e) });
     }
 
     // Navigate

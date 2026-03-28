@@ -1,7 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate, useParams } from "react-router-dom";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 import { LocalStorageRepository } from "../lib/storage";
 import { getResultFromServer } from "../lib/resultApi";
 import { getPersonalizedAdvice, AIAdvice } from "../lib/gemini";
@@ -193,7 +191,8 @@ const ResultPage = () => {
 
         await new Promise(resolve => setTimeout(resolve, 200));
 
-        const canvas = await html2canvas(printableRef.current, {
+        const { default: html2canvasFn } = await import("html2canvas");
+        const canvas = await html2canvasFn(printableRef.current, {
             scale: 3,
             backgroundColor: '#fff7ed',
             useCORS: true,
@@ -214,7 +213,7 @@ const ResultPage = () => {
     /**
      * Canvas → PDF base64 を生成する
      */
-    const canvasToPdfBase64 = (canvas: HTMLCanvasElement): string => {
+    const canvasToPdfBase64 = async (canvas: HTMLCanvasElement): Promise<string> => {
         const imgData = canvas.toDataURL('image/png');
         const imgWidth = canvas.width;
         const imgHeight = canvas.height;
@@ -223,7 +222,8 @@ const ResultPage = () => {
         const pdfWidth = 210; // mm
         const pdfHeight = (imgHeight / imgWidth) * pdfWidth;
 
-        const pdf = new jsPDF({
+        const { jsPDF: JsPDF } = await import("jspdf");
+        const pdf = new JsPDF({
             orientation: pdfHeight > pdfWidth ? 'portrait' : 'landscape',
             unit: 'mm',
             format: [pdfWidth, pdfHeight],
@@ -251,7 +251,7 @@ const ResultPage = () => {
         if (shareToken) {
             payload.shareToken = shareToken;
         } else if (canvas) {
-            payload.pdfBase64 = canvasToPdfBase64(canvas);
+            payload.pdfBase64 = await canvasToPdfBase64(canvas);
         }
 
         const res = await fetch('/api/send-report', {
