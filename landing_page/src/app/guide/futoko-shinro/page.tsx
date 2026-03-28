@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "不登校からの進路選択ガイド | こどもの進路案内所",
+    title: "不登校の中学生の進路はどうする？高校進学の選択肢と選び方 | こどもの進路案内所",
     description:
-        "不登校の状態から高校進学を考えるとき、どんな選択肢があるか。全日制・通信制・定時制・特別支援学校の特徴と、お子さまの状態に合わせた選び方を整理します。",
+        "不登校の中学生でも高校に進学できます。通信制・定時制・全日制など、お子さまの状態に合わせた進路の選択肢と選び方を保護者向けに整理。登録不要の診断ツールで優先順位を可視化できます。",
     alternates: {
         canonical: "https://kodomo-shinro.jp/guide/futoko-shinro",
     },
@@ -16,13 +16,13 @@ export default function FutokoShinroPage() {
                 className="text-2xl md:text-3xl font-bold leading-tight mb-6"
                 style={{ color: "rgb(var(--color-text-rgb))" }}
             >
-                不登校からの進路選択ガイド
+                学校に通いづらいお子さまの進路の選択肢
             </h1>
             <p
                 className="text-sm leading-relaxed mb-10"
                 style={{ color: "rgb(var(--color-text-sub-rgb))" }}
             >
-                中学校を休みがちだったり、不登校の状態にあるお子さまの進路を考えるとき、
+                学校に通いづらい状況にあるお子さまの進路を考えるとき、
                 「高校に行けるのか」「どんな選択肢があるのか」という不安を感じるのは自然なことです。
                 実際には、通学の頻度や形態を柔軟に選べる進路がいくつもあります。
             </p>
@@ -32,7 +32,7 @@ export default function FutokoShinroPage() {
                     className="text-lg md:text-xl font-bold mb-4"
                     style={{ color: "rgb(var(--color-text-rgb))" }}
                 >
-                    不登校の状態からでも進学できる学校の種類
+                    登校が難しい状況からでも進学できる学校の種類
                 </h2>
                 <div className="space-y-4">
                     <div className="rounded-lg border p-5" style={{ borderColor: "rgb(var(--color-border-rgb))", backgroundColor: "rgb(var(--color-card-bg-rgb))" }}>
@@ -102,7 +102,7 @@ export default function FutokoShinroPage() {
                     className="text-sm leading-relaxed"
                     style={{ color: "rgb(var(--color-text-sub-rgb))" }}
                 >
-                    不登校の状態から進路を考えるとき、「早く決めなければ」と感じることがあるかもしれません。
+                    登校が難しい状況から進路を考えるとき、「早く決めなければ」と感じることがあるかもしれません。
                     でも、まずはお子さまの気持ちや優先順位を整理することが最初のステップです。
                     何を大切にしたいか、何が不安なのかを言葉にしてみるだけでも、選択肢がぐっと見えやすくなります。
                 </p>

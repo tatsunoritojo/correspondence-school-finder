@@ -77,7 +77,7 @@ export default function GuideLayout({
                         </li>
                         <li>
                             <Link href="/guide/futoko-shinro" className="text-sm hover:underline" style={{ color: "rgb(var(--color-link-rgb))" }}>
-                                不登校からの進路選択ガイド
+                                学校に通いづらいお子さまの進路の選択肢
                             </Link>
                         </li>
                         <li>

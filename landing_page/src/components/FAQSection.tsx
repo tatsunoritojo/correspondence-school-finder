@@ -133,7 +133,7 @@ export default function FAQSection() {
                         <div className="space-y-2">
                             {[
                                 { href: "/guide/support-school", label: "通信制高校とサポート校の違い" },
-                                { href: "/guide/futoko-shinro", label: "不登校からの進路選択ガイド" },
+                                { href: "/guide/futoko-shinro", label: "学校に通いづらいお子さまの進路の選択肢" },
                                 { href: "/guide/erabikata", label: "通信制高校の選び方" },
                             ].map(({ href, label }) => (
                                 <a
