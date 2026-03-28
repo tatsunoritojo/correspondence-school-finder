@@ -1,7 +1,9 @@
 # Correspondence School Finder - Specification v1.0
 
-**Status**: MVP Complete Version
+**Status**: MVP Complete Version (historical — 現在の実装とは差異あり)
 **Scope**: All questions, logic, UI, open school questions, and psychological framework integrated
+
+> **⚠️ 注意（2026-03-29追記）**: 本仕様書はMVP時点（17問）の記録です。現在は21問に拡張されています。最新の実装はソースコード（`src/data/questions.ts`）を参照してください。
 
 This document provides complete implementation-ready specifications that can be directly used for development tasks.
 
