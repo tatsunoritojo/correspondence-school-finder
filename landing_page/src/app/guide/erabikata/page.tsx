@@ -123,7 +123,7 @@ export default function ErabikataPage() {
                     <br />※最終確認日：2026年3月29日
                 </p>
                 <details className="text-xs" style={{ color: "rgb(var(--color-text-light-rgb))" }}>
-                    <summary className="cursor-pointer font-medium mb-2">出典・参考資料</summary>
+                    <summary className="cursor-pointer font-medium mb-2 py-1">出典・参考資料</summary>
                     <ul className="space-y-1.5 pl-4 list-disc">
                         <li>
                             <a href="https://www.mext.go.jp/content/20251027_mxt_koukou01_000045516_0002.pdf" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-70 transition-opacity" style={{ color: "rgb(var(--color-link-rgb))" }}>

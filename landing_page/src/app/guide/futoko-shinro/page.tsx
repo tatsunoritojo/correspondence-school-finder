@@ -45,7 +45,7 @@ export default function FutokoShinroPage() {
                         <p className="text-sm font-bold mb-2" style={{ color: "rgb(var(--color-text-rgb))" }}>通信制高校</p>
                         <p className="text-sm" style={{ color: "rgb(var(--color-text-sub-rgb))" }}>
                             通信制課程では、添削指導・面接指導・試験を基本とし、学校によってはインターネット等を活用した学習も取り入れています。
-                            登校日数を柔軟に選べる学校が多く、心や体の状態に合わせて段階的に通学を増やすことも可能です。
+                            学校によって登校日数や学習方法は異なり、心や体の状態に合わせて学び方を選びやすい場合があります。
                         </p>
                     </div>
                     <div className="rounded-lg border p-5" style={{ borderColor: "rgb(var(--color-border-rgb))", backgroundColor: "rgb(var(--color-card-bg-rgb))" }}>
@@ -109,7 +109,7 @@ export default function FutokoShinroPage() {
                     style={{ color: "rgb(var(--color-text-sub-rgb))" }}
                 >
                     登校が難しい状況から進路を考えるとき、「早く決めなければ」と感じることがあるかもしれません。
-                    しかし、まずはお子さまの気持ちや状態、必要な支援を整理し、それに合う選択肢を比べていくことが確実な進め方です。
+                    しかし、まずはお子さまの気持ちや状態、必要な支援を整理し、それに合う選択肢を比べていくことが大切です。
                     何を大切にしたいか、何が不安なのかを言葉にしてみるだけでも、選択肢が見えやすくなります。
                 </p>
             </section>
@@ -122,7 +122,7 @@ export default function FutokoShinroPage() {
                     <br />※最終確認日：2026年3月29日
                 </p>
                 <details className="text-xs" style={{ color: "rgb(var(--color-text-light-rgb))" }}>
-                    <summary className="cursor-pointer font-medium mb-2">出典・参考資料</summary>
+                    <summary className="cursor-pointer font-medium mb-2 py-1">出典・参考資料</summary>
                     <ul className="space-y-1.5 pl-4 list-disc">
                         <li>
                             <a href="https://www.mext.go.jp/content/20251027_mxt_koukou01_000045516_0002.pdf" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-70 transition-opacity" style={{ color: "rgb(var(--color-link-rgb))" }}>
