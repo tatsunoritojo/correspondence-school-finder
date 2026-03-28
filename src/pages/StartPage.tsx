@@ -91,7 +91,7 @@ const StartPage = () => {
           <div>
             <h2 className="text-base font-bold text-stone-700 mb-2">診断の特徴</h2>
             <ul className="text-sm text-stone-500 leading-relaxed space-y-1.5">
-              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5">✓</span>完全無料・登録不要で今すぐ始められます</li>
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5">✓</span>登録不要・資料請求なしで今すぐ始められます</li>
               <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5">✓</span>所要時間は約3〜4分（全21問）</li>
               <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5">✓</span>結果はレーダーチャートとPDFレポートで確認</li>
               <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5">✓</span>生徒本人と保護者、それぞれの視点で診断可能</li>
@@ -100,7 +100,7 @@ const StartPage = () => {
 
           <div className="pt-2 border-t border-stone-200/50">
             <p className="text-xs text-stone-400 leading-relaxed">
-              この診断は、学校選びの優先順位を整理するためのヒントとして設計されています。特定の学校を推薦するものではありません。資料請求や会員登録は一切不要です。
+              この診断は、学校選びの優先順位を整理するためのヒントとして設計されています。特定の学校を推薦するものではありません。資料請求・会員登録は一切不要です。
               進路についてより詳しく知りたい方は<a href="https://kodomo-shinro.jp/" className="text-orange-500 hover:text-orange-600 underline underline-offset-2">こどもの進路案内所</a>もご覧ください。
             </p>
           </div>
