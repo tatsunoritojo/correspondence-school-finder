@@ -68,6 +68,45 @@ const StartPage = () => {
         </div>
       </div>
 
+      {/* SEO Content Section */}
+      <section className="relative z-10 max-w-lg w-full text-left mt-4 mb-8 px-2">
+        <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/50 shadow-sm space-y-6">
+          <div>
+            <h2 className="text-base font-bold text-stone-700 mb-2">この診断でわかること</h2>
+            <p className="text-sm text-stone-500 leading-relaxed">
+              通信制高校を選ぶうえで大切な<strong>8つの軸</strong>（通学頻度・費用・オンライン適性・自己管理力・進路志向・学校生活・メンタルヘルス・専門課程）について、あなた自身の優先順位をレーダーチャートで可視化します。
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-base font-bold text-stone-700 mb-2">こんな方におすすめ</h2>
+            <ul className="text-sm text-stone-500 leading-relaxed space-y-1.5">
+              <li className="flex items-start gap-2"><span className="text-orange-400 mt-0.5">●</span>通信制高校への進学を検討している中学生・高校生</li>
+              <li className="flex items-start gap-2"><span className="text-orange-400 mt-0.5">●</span>不登校の状態から進路を考えたい方</li>
+              <li className="flex items-start gap-2"><span className="text-orange-400 mt-0.5">●</span>お子さまの学校選びをサポートしたい保護者の方</li>
+              <li className="flex items-start gap-2"><span className="text-orange-400 mt-0.5">●</span>全日制・通信制・定時制の違いを整理したい方</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="text-base font-bold text-stone-700 mb-2">診断の特徴</h2>
+            <ul className="text-sm text-stone-500 leading-relaxed space-y-1.5">
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5">✓</span>完全無料・登録不要で今すぐ始められます</li>
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5">✓</span>所要時間は約3〜4分（全21問）</li>
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5">✓</span>結果はレーダーチャートとPDFレポートで確認</li>
+              <li className="flex items-start gap-2"><span className="text-teal-400 mt-0.5">✓</span>生徒本人と保護者、それぞれの視点で診断可能</li>
+            </ul>
+          </div>
+
+          <div className="pt-2 border-t border-stone-200/50">
+            <p className="text-xs text-stone-400 leading-relaxed">
+              この診断は、学校選びの優先順位を整理するためのヒントとして設計されています。特定の学校を推薦するものではありません。資料請求や会員登録は一切不要です。
+              進路についてより詳しく知りたい方は<a href="https://kodomo-shinro.jp/" className="text-orange-500 hover:text-orange-600 underline underline-offset-2">こどもの進路案内所</a>もご覧ください。
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Footer Branding */}
       <footer className="relative z-10 text-center">
         <p className="text-[10px] text-stone-400 mb-1">Produced by</p>
