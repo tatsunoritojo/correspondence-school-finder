@@ -74,7 +74,7 @@ export default function SchoolOptionsSection() {
                     <p className="text-[13px] md:text-[15px] text-accent font-medium text-center mb-3">
                         気になる選択肢をタップしてみましょう
                     </p>
-                    <div className="grid grid-cols-3 gap-2 md:gap-4 lg:gap-5 mb-4">
+                    <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 md:gap-4 lg:gap-5 mb-4">
                         {schoolOptions.map((opt, idx) => (
                             <ItemWrapper
                                 key={opt.id}
@@ -83,7 +83,7 @@ export default function SchoolOptionsSection() {
                                     : { variants: staggerItem })}
                                 onClick={() => setModalOption(opt)}
                                 aria-label={`${opt.label.replace(/\n/g, "")}の説明を見る`}
-                                className={`border-[1.5px] md:border-2 border-accent/30 rounded-lg py-2.5 md:py-4 lg:py-5 px-1 md:px-2 text-sm md:text-lg lg:text-xl font-medium leading-snug text-center whitespace-pre-line min-h-[56px] md:min-h-[80px] lg:min-h-[96px] flex flex-col items-center justify-center transition-all duration-200 select-none bg-accent/5 shadow-sm hover:-translate-y-px hover:shadow-lg active:scale-[0.97] ${
+                                className={`border-[1.5px] md:border-2 border-accent/30 rounded-lg py-2.5 md:py-4 lg:py-5 px-1 md:px-2 text-[13px] xs:text-sm md:text-lg lg:text-xl font-medium leading-snug text-center whitespace-pre-line min-h-[56px] md:min-h-[80px] lg:min-h-[96px] flex flex-col items-center justify-center transition-all duration-200 select-none bg-accent/5 shadow-sm hover:-translate-y-px hover:shadow-lg active:scale-[0.97] ${
                                     idx === 0 && shouldPulse ? "btn-pulse" : ""
                                 }`}
                             >
