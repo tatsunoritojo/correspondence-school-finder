@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, Zen_Kurenaido } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { AccessibilityProvider } from "@/contexts/AccessibilityContext";
 import SkipLink from "@/components/SkipLink";
@@ -60,6 +61,13 @@ export default function RootLayout({
     return (
         <html lang="ja">
             <head>
+                <Script
+                    src="https://www.googletagmanager.com/gtag/js?id=G-R2PCB02NRQ"
+                    strategy="afterInteractive"
+                />
+                <Script id="ga4-init" strategy="afterInteractive">
+                    {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-R2PCB02NRQ');`}
+                </Script>
                 <meta name="google-site-verification" content="jyQvFXdFiqblWsUqjoEEaZRXuENr_dJgUg7HjluPe0Y" />
                 <script
                     type="application/ld+json"
